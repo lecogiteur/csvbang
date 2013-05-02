@@ -203,7 +203,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 			return null;
 		}
 		sLine.delete(0, delimiterLength);
-		sLine.insert(0, conf.startLine).append(conf.endLine);
+		sLine.insert(0, conf.startRecord).append(conf.endRecord);
 		return sLine;
 	}
 	

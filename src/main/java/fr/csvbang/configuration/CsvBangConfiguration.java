@@ -33,9 +33,9 @@ public class CsvBangConfiguration {
 	
 	public String delimiter;
 	
-	public String endLine;
+	public String endRecord;
 	
-	public String startLine;
+	public String startRecord;
 	
 	public String charset;
 	

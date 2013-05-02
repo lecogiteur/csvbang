@@ -96,7 +96,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 		if (conf == null){
 			throw new CsvBangException("Pas de conf");
 		}
-		if (0 < conf.getBlockingSize()){
+		if (0 < conf.blockingSize){
 			return new BlockingCsvWriter<T>(destination, conf);
 		}
 
@@ -110,7 +110,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 			throw new CsvBangException("Pas de conf");
 		}
 		
-		if (0 < conf.getBlockingSize()){
+		if (0 < conf.blockingSize){
 			return new BlockingCsvWriter<T>(destination, conf);
 		}
 		
@@ -130,15 +130,15 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 					if (annontation instanceof CsvType){
 						final CsvType csvType = (CsvType) annontation;
 						conf = new CsvBangConfiguration();
-						conf.setBlockingSize(csvType.blocksize());
-						conf.setCharset(csvType.charsetName());
-						conf.setDelimiter(csvType.delimiter());
-						conf.setEndLine(csvType.endLine());
-						conf.setStartLine(csvType.startLine());
-						conf.setDisplayHeader(csvType.header());
-						conf.setEscapeQuoteCharacter(csvType.quoteEscapeCharacter());
+						conf.blockingSize = csvType.blocksize();
+						conf.charset = csvType.charsetName();
+						conf.delimiter = csvType.delimiter();
+						conf.endRecord = csvType.endRecord();
+						conf.startRecord = csvType.startRecord();
+						conf.isDisplayHeader = csvType.header();
+						conf.escapeQuoteCharacter = csvType.quoteEscapeCharacter();
 						if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
-							conf.setQuote(csvType.quoteCharacter().charAt(0));
+							conf.quote = csvType.quoteCharacter().charAt(0);
 						}
 						break;
 					}
@@ -169,7 +169,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 				if (confFileds.size() == 0){
 					continue;
 				}
-				conf.setFields(confFileds.values());
+				conf.fields = confFileds.values();
 				generateHeader(conf, confFileds);
 				configurations.put(clazz, conf);
 			}
@@ -197,7 +197,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 						++count;
 					}
 					
-					conf.setName(csvField.name());
+					conf.name = csvField.name();
 					
 
 
@@ -215,18 +215,18 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 						}
 					}
 					
-					conf.setMemberBean(temp);
+					conf.memberBean = temp;
 					
-					conf.setNullReplaceString(csvField.defaultIfNull());
-					if (conf.getFormat() == null){
-						conf.setFormat(DEFAULT_FORMAT);
+					conf.nullReplaceString = csvField.defaultIfNull();
+					if (conf.format == null){
+						conf.format = DEFAULT_FORMAT;
 					}
 					//TODO vérifier si déjà renseigné à cette position
 					confFileds.put(pos, conf);
 					
 				}else if (annontation instanceof CsvFormat){
 					final CsvFormat csvFormat = (CsvFormat) annontation;
-					conf.setFormat(getFormat(csvFormat));
+					conf.format = getFormat(csvFormat);
 				}
 			}
 		}
@@ -235,20 +235,20 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 	}
 	
 	private void generateHeader(final CsvBangConfiguration conf, final Map<Integer, CsvFieldConfiguration> confFileds){
-		if (conf.isDisplayHeader()){
-			final StringBuilder header = new StringBuilder(1000).append(conf.getStartLine());
+		if (conf.isDisplayHeader){
+			final StringBuilder header = new StringBuilder(1000).append(conf.startLine);
 			for (final Entry<Integer, CsvFieldConfiguration> entry:confFileds.entrySet()){
 				
 				final CsvFieldConfiguration field = entry.getValue();
-				String n = field.getName();
+				String n = field.name;
 				if (!(n != null && n.length() > 0)){
-					n = ((Member)field.getMemberBean()).getName();
+					n = ((Member)field.memberBean).getName();
 				}
-				header.append(n).append(conf.getDelimiter());
+				header.append(n).append(conf.delimiter);
 			}
-			header.delete(header.length() - conf.getDelimiter().length(), header.length());
-			header.append(conf.getEndLine());
-			conf.setHeader(header.toString());
+			header.delete(header.length() - conf.delimiter.length(), header.length());
+			header.append(conf.endLine);
+			conf.header = header.toString();
 		}
 	}
 	

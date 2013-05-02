@@ -58,20 +58,20 @@ public @interface CsvType {
 	String charsetName() default "UTF-8";
 
 	/**
-	 * String to put at the start of line. By default nothing
-	 * @return the start of line
+	 * String to put at the start of record. By default nothing
+	 * @return the start of record
 	 * 
 	 * @author Tony EMMA
 	 */
-	String startLine() default "";
+	String startRecord() default "";
 	
 	/**
-	 * String to put at the end of line. By default End of line {@value \n}
-	 * @return end of line
+	 * String to put at the end of record. By default End of line {@value \n}
+	 * @return end of record
 	 * 
 	 * @author Tony EMMA
 	 */
-	String endLine() default "\n";
+	String endRecord() default "\n";
 	
 	/**
 	 * Size of buffer in number of line. Negative value means no buffer.
