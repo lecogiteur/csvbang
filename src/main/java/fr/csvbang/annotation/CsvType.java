@@ -66,7 +66,7 @@ public @interface CsvType {
 	String startRecord() default "";
 	
 	/**
-	 * String to put at the end of record. By default End of line {@value \n}
+	 * String to put at the end of record. By default the character {@value \n}
 	 * @return end of record
 	 * 
 	 * @author Tony EMMA
@@ -74,15 +74,17 @@ public @interface CsvType {
 	String endRecord() default "\n";
 	
 	/**
-	 * Size of buffer in number of line. Negative value means no buffer.
-	 * @return the size in number of line
+	 * Size of buffer in number of record. Negative value means no buffer.
+	 * @return the size in number of record
 	 * 
 	 * @author Tony EMMA
 	 */
 	int blocksize() default -1;
 	
 	/**
-	 * Display the header on the first line. By default {@value false}
+	 * Display the header on the first line. By default {@value false}.
+	 * The header is generated with the name of field. If no name is defined for a field, 
+	 * we take the property name or method name
 	 * @return True or false
 	 * 
 	 * @author Tony EMMA
@@ -90,7 +92,7 @@ public @interface CsvType {
 	boolean header() default false;
 	
 	/**
-	 * Character in order to quote value. By default, no quote.
+	 * Character in order to quote value. By default, no quote defined.
 	 * @return character
 	 * 
 	 * @author Tony EMMA

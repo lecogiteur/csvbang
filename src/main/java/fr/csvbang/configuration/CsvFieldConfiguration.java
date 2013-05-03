@@ -27,17 +27,29 @@ import java.lang.reflect.AnnotatedElement;
 import fr.csvbang.formatter.CsvFormatter;
 
 /**
- * Configuration field
+ * Configuration of field
  * @author Tony EMMA
  *
  */
 public class CsvFieldConfiguration {
 	
+	/**
+	 * Name of field. Used in order to generate header.
+	 */
 	public String name;
 	
+	/**
+	 * property or method of bean
+	 */
 	public AnnotatedElement memberBean;
 	
+	/**
+	 * String which replace null value
+	 */
 	public String nullReplaceString;
 	
+	/**
+	 * Format value
+	 */
 	public CsvFormatter format;
 }

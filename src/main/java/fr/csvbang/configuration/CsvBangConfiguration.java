@@ -31,23 +31,57 @@ import java.util.Collection;
  */
 public class CsvBangConfiguration {
 	
+	/**
+	 * Delimiter between fields. By default {@value ,}
+	 */
 	public String delimiter;
 	
+	/**
+	 * String to put at the end of record. By default the character {@value \n}
+	 */
 	public String endRecord;
 	
+	/**
+	 * String to put at the start of record. By default nothing
+	 */
 	public String startRecord;
 	
+	/**
+	 * Charset of file. By default {@value UTF-8}
+	 */
 	public String charset;
 	
+	/**
+	 * list of fields
+	 */
 	public Collection<CsvFieldConfiguration> fields;
 	
-	public int blockingSize = 50;
+	/**
+	 * Size of buffer in number of record. Negative value means no buffer.
+	 * By default -1
+	 */
+	public int blockingSize = -1;
 	
+	/**
+	 * the header of CSV file generated.
+	 * The header is generated with the name of field. If no name is defined for a field, 
+	 * we take the property name or method name
+	 * 
+	 */
 	public String header;
 
+	/**
+	 * True if we must display the name of field on first line of file.
+	 */
 	public boolean isDisplayHeader = false;
 	
+	/**
+	 * Character in order to quote value of field. By default, no quote defined.
+	 */
 	public Character quote;
 	
+	/**
+	 * Character in order to escape quote. By default {@value \}
+	 */
 	public char escapeQuoteCharacter = '\\';
 }

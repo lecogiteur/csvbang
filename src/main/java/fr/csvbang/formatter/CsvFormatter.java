@@ -24,18 +24,45 @@ package fr.csvbang.formatter;
 
 import java.util.Locale;
 
+
 /**
+ * Format a value. One instance of this class is created by field
  * @author Tony EMMA
  *
  */
 public interface CsvFormatter {
 	
+	/**
+	 * Initialize the 
+	 * 
+	 * @author Tony EMMA
+	 */
 	void init();
 	
+	/**
+	 * set pattern linked to this formatter
+	 * @param pattern the pattern
+	 * 
+	 * @author Tony EMMA
+	 */
 	void setPattern(final String pattern);
 	
+	/**
+	 * Locale to set
+	 * @param locale the locale
+	 * 
+	 * @author Tony EMMA
+	 */
 	void setLocal(final Locale locale);
 	
+	/**
+	 * Format a value
+	 * @param o the value
+	 * @param defaultIfNull String if value is null defined in {@link fr.csvbang.annotation.CsvField}
+	 * @return the value formatted
+	 * 
+	 * @author Tony EMMA
+	 */
 	String format(final Object o, final String defaultIfNull);
 
 }
