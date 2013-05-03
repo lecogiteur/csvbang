@@ -67,19 +67,19 @@ import fr.csvbang.writer.SimpleCsvWriter;
  *
  */
 public class FactoryCsvWriter {
-	
-private static final Pattern PACKAGE_SEPARATOR = Pattern.compile("\\s*,\\s*"); 
-private static final Pattern LOCALE_SEPARATOR = Pattern.compile("_"); 
-private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
-	
-	
-	private Map<Class<?>, CsvBangConfiguration> configurations = new HashMap<Class<?>, CsvBangConfiguration>();
-	
-	
+
+	private static final Pattern PACKAGE_SEPARATOR = Pattern.compile("\\s*,\\s*"); 
+	private static final Pattern LOCALE_SEPARATOR = Pattern.compile("_"); 
+	private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
+
+
+	private final Map<Class<?>, CsvBangConfiguration> configurations = new HashMap<Class<?>, CsvBangConfiguration>();
+
+
 	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
 		loadConfigurations(clazzs);
 	}
-	
+
 	public FactoryCsvWriter (final String sPkg) throws ClassNotFoundException, IOException, IntrospectionException, IllegalAccessException, InstantiationException{
 		final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
 		if (pkgs != null){
@@ -89,7 +89,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 			}
 		}
 	}
-	
+
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
 
@@ -102,21 +102,21 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 
 		return new SimpleCsvWriter<T>(destination, conf);
 	}
-	
+
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
 
 		if (conf == null){
 			throw new CsvBangException("Pas de conf");
 		}
-		
+
 		if (0 < conf.blockingSize){
 			return new BlockingCsvWriter<T>(destination, conf);
 		}
-		
+
 		return new SimpleCsvWriter<T>(destination, conf);
 	}
-	
+
 	private void loadConfigurations(final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
 		if (clazzs != null){
 			for (final Class<?> clazz:clazzs){
@@ -146,8 +146,8 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 				if (conf == null){
 					continue;
 				}
-				
-				
+
+
 				final List<AnnotatedElement> members = new ArrayList<AnnotatedElement>();
 				Field[] fields = null;
 				Method[] methods = null;
@@ -163,8 +163,8 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 					}
 					parent = parent.getSuperclass();
 				}
-				
-				
+
+
 				final TreeMap<Integer, CsvFieldConfiguration> confFileds = loadCsvField(clazz, members);
 				if (confFileds.size() == 0){
 					continue;
@@ -175,7 +175,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 			}
 		}
 	}
-	
+
 	private final TreeMap<Integer, CsvFieldConfiguration> loadCsvField(final Class<?> c, final Collection<AnnotatedElement> members) 
 	throws IntrospectionException, IllegalAccessException, InstantiationException{
 		final TreeMap<Integer, CsvFieldConfiguration> confFileds = new TreeMap<Integer, CsvFieldConfiguration>();
@@ -185,8 +185,8 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 			if (annotations == null || annotations.length == 0){
 				continue;
 			}
-			
-			
+
+
 			final CsvFieldConfiguration conf = new CsvFieldConfiguration();
 			for (final Annotation annontation:annotations){
 				if (annontation instanceof CsvField){
@@ -196,16 +196,16 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 						pos = members.size() + count;
 						++count;
 					}
-					
+
 					conf.name = csvField.name();
-					
+
 
 
 					AnnotatedElement temp = member;
 					if (member instanceof Field){
 						Field f = (Field)member;
 						if (!f.isAccessible()){
-							final Method m = getGetter(c, f.getName());
+							final Method m = ReflectionUti.getGetterMethod(c, f.getName());
 							if (m != null){
 								temp = m;
 							}else{
@@ -214,31 +214,31 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 							}
 						}
 					}
-					
+
 					conf.memberBean = temp;
-					
+
 					conf.nullReplaceString = csvField.defaultIfNull();
 					if (conf.format == null){
 						conf.format = DEFAULT_FORMAT;
 					}
 					//TODO vérifier si déjà renseigné à cette position
 					confFileds.put(pos, conf);
-					
+
 				}else if (annontation instanceof CsvFormat){
 					final CsvFormat csvFormat = (CsvFormat) annontation;
 					conf.format = getFormat(csvFormat);
 				}
 			}
 		}
-		
+
 		return confFileds;
 	}
-	
+
 	private void generateHeader(final CsvBangConfiguration conf, final Map<Integer, CsvFieldConfiguration> confFileds){
 		if (conf.isDisplayHeader){
-			final StringBuilder header = new StringBuilder(1000).append(conf.startLine);
+			final StringBuilder header = new StringBuilder(1000).append(conf.startRecord);
 			for (final Entry<Integer, CsvFieldConfiguration> entry:confFileds.entrySet()){
-				
+
 				final CsvFieldConfiguration field = entry.getValue();
 				String n = field.name;
 				if (!(n != null && n.length() > 0)){
@@ -247,32 +247,22 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 				header.append(n).append(conf.delimiter);
 			}
 			header.delete(header.length() - conf.delimiter.length(), header.length());
-			header.append(conf.endLine);
+			header.append(conf.endRecord);
 			conf.header = header.toString();
 		}
 	}
-	
-	private Method getGetter(Class<?> c, String name) throws IntrospectionException{
-		final BeanInfo info = Introspector.getBeanInfo(c);
-		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-			if (pd.getReadMethod() != null && name.equals(pd.getName())){
-				return pd.getReadMethod();
-			}
-		}
-		return null;
-	}
-	
+
 	private CsvFormatter getFormat(final CsvFormat csvFormat) throws IllegalAccessException, InstantiationException{
 		CsvFormatter format = null;
 		if (!TYPE_FORMAT.NONE.equals(csvFormat.type())){
 			final String[] localeParams = LOCALE_SEPARATOR.split(csvFormat.locale());
 			Locale locale = null;
 			if (localeParams.length == 3){
-			locale =new Locale(localeParams[0], localeParams[1], localeParams[2]);
+				locale =new Locale(localeParams[0], localeParams[1], localeParams[2]);
 			}else{
 				locale = Locale.FRANCE;
 			}
-			
+
 			switch (csvFormat.type()) {
 			case DATE:
 				format = new DateCsvFormatter();
@@ -295,7 +285,7 @@ private static final CsvFormatter DEFAULT_FORMAT = new Default();
 				format = DEFAULT_FORMAT;
 				break;
 			}
-			
+
 			format.setLocal(locale);
 			format.setPattern(csvFormat.pattern());
 			format.init();

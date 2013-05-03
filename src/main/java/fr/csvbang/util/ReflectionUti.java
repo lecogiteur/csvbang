@@ -22,6 +22,10 @@
  */
 package fr.csvbang.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
@@ -46,14 +50,14 @@ import fr.csvbang.exception.CsvBangException;
  *
  */
 public class ReflectionUti {
-	
+
 	private static final String CLASS_EXTENSION = ".class";
-	
+
 	private static final Pattern CLASS_FILE = Pattern.compile("^.*" + Pattern.quote(CLASS_EXTENSION) + "$");
-	
+
 	private static final String JAR_PROTOCOL = "jar";
-	
-	
+
+
 	/**
 	 * Generate a class from the type name
 	 * @param className the name of the non-base type class to find
@@ -75,8 +79,8 @@ public class ReflectionUti {
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Scan a package in order to get all classes of a package
 	 * @param directory directory of package
@@ -86,12 +90,12 @@ public class ReflectionUti {
 	 * @author Tony EMMA
 	 */
 	private static Collection<Class<?>> scanSimplePackage(final File directory, final String packageName) {
-		
+
 		Collection<Class<?>> clazzs = null;
-		
+
 		//list of file of directory
 		final String[] files = directory.list();
-		
+
 		if (files != null && files.length > 0){
 			clazzs = new HashSet<Class<?>>();
 			for (final String file:files) {
@@ -99,7 +103,7 @@ public class ReflectionUti {
 				final StringBuilder fileName = new StringBuilder(file);
 				String className = null;
 				final Matcher m = CLASS_FILE.matcher(fileName);
-				
+
 				if (m.matches()) {
 					//if the file it's a class
 					className = fileName.delete(fileName.length() - CLASS_EXTENSION.length(), fileName.length()).insert(0, ".").insert(0, packageName).toString();
@@ -135,18 +139,18 @@ public class ReflectionUti {
 	throws IOException {
 
 		Collection<Class<?>> clazzs = null;
-		
+
 		//Get the jar
 		final JarURLConnection connection = (JarURLConnection) resource.openConnection();
-	    final JarFile jarFile = new JarFile(new File(connection.getJarFileURL().getFile()));   
-	    
-	    //list of entries of Jar
+		final JarFile jarFile = new JarFile(new File(connection.getJarFileURL().getFile()));   
+
+		//list of entries of Jar
 		final Enumeration<JarEntry> entries = jarFile.entries();
-		
+
 		if (entries.hasMoreElements()){
 			clazzs = new HashSet<Class<?>>();
 			final Pattern p = Pattern.compile("^" + Pattern.quote(pathOfPackage) + ".+" + Pattern.quote(CLASS_EXTENSION) + "$");
-			
+
 			while(entries.hasMoreElements()) {
 				final JarEntry entry = entries.nextElement();
 				final String entryName = entry.getName();
@@ -162,104 +166,104 @@ public class ReflectionUti {
 				}
 			}
 		}
-		
+
 		return clazzs;
 	}
-	
-	
-	
 
-    /**
-     * Get all classes of the package
-     * @param packageUrls list of package from classloaders
-     * @param pathOfPackage the package to find
-     * @param packageName name of package to find
-     * @return Get all classes of package
-     * @throws IOException if there is problem with a jar
-     * 
-     * @author Tony EMMA
-     */
-    private static Collection<Class<?>> getClasses(final Enumeration<URL> packageUrls, final String pathOfPackage, 
-    		String packageName) throws IOException{
-        final Collection<Class<?>> clazzs = new HashSet<Class<?>>();
 
-        if (packageUrls == null) {
-            return null;
-        }
 
-        while (packageUrls.hasMoreElements()){
-            final URL packageUrl = packageUrls.nextElement();
-            Collection<Class<?>> c = null;
-            if(JAR_PROTOCOL.equals(packageUrl.getProtocol())) {
-            	//if it's a jar
-                c = scanJar(packageUrl, pathOfPackage);
-            } else {
-            	//if it's a package
-                c = scanSimplePackage(new File(packageUrl.getPath()), packageName);
-            }
 
-            if (c != null && c.size() > 0){
-                clazzs.addAll(c);
-            }
-        }
+	/**
+	 * Get all classes of the package
+	 * @param packageUrls list of package from classloaders
+	 * @param pathOfPackage the package to find
+	 * @param packageName name of package to find
+	 * @return Get all classes of package
+	 * @throws IOException if there is problem with a jar
+	 * 
+	 * @author Tony EMMA
+	 */
+	private static Collection<Class<?>> getClasses(final Enumeration<URL> packageUrls, final String pathOfPackage, 
+			String packageName) throws IOException{
+		final Collection<Class<?>> clazzs = new HashSet<Class<?>>();
 
-        return clazzs;
-    }
+		if (packageUrls == null) {
+			return null;
+		}
 
-    /**
-     * Scan all classloader in order to find all classes of the package
-     * @param packageName the package to find
-     * @return all classes of the package
-     * @throws IOException if there is problem with a jar
-     * 
-     * @author Tony EMMA
-     */
-    public static Collection<Class<?>> scanPackageClass(String packageName) throws IOException {
-    	if (packageName == null || "".equals(packageName)){
-    		return null;
-    	}
-    	
-    	final Collection<Class<?>> clazzs = new HashSet<Class<?>>();
-    	
-    	String pn = packageName;
-    	if (packageName.endsWith(".*")){
-    		pn = packageName.substring(0, packageName.length() - 2);
-    	}
-    	
-    	final String pathOfPackage = pn.replace('.', File.separatorChar);
-    	
-    	//get package the the system classloader
-    	Enumeration<URL> packageUrls = ClassLoader.getSystemClassLoader().getResources(pathOfPackage);
-    	Collection<Class<?>> c = getClasses(packageUrls, pathOfPackage, pn);
-    	
-    	if (c != null && c.size() > 0){
-    		clazzs.addAll(c);
-    	}
-    	
-    	//get package from the classloader of application
-    	final ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
-    	if (contextLoader != null){
-    		//No need to get classloader parent, "getResources" do it.
-    		packageUrls = contextLoader.getResources(pathOfPackage);
-    		c = getClasses(packageUrls, pathOfPackage, pn);
-    		if (c != null && c.size() > 0){
-    			clazzs.addAll(c);
-    		}
-    	}
-    	
-    	return clazzs;
-    }
-    
-    /**
-     * Get value of property or method of a bean
-     * @param m the property or method
-     * @param bean the bean
-     * @return the value
-     * @throws CsvBangException if can't retrieve the value
-     * 
-     * @author Tony EMMA
-     */
-    public static final Object getValue(final AnnotatedElement m, final Object bean) throws CsvBangException{
+		while (packageUrls.hasMoreElements()){
+			final URL packageUrl = packageUrls.nextElement();
+			Collection<Class<?>> c = null;
+			if(JAR_PROTOCOL.equals(packageUrl.getProtocol())) {
+				//if it's a jar
+				c = scanJar(packageUrl, pathOfPackage);
+			} else {
+				//if it's a package
+				c = scanSimplePackage(new File(packageUrl.getPath()), packageName);
+			}
+
+			if (c != null && c.size() > 0){
+				clazzs.addAll(c);
+			}
+		}
+
+		return clazzs;
+	}
+
+	/**
+	 * Scan all classloader in order to find all classes of the package
+	 * @param packageName the package to find
+	 * @return all classes of the package
+	 * @throws IOException if there is problem with a jar
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static Collection<Class<?>> scanPackageClass(String packageName) throws IOException {
+		if (packageName == null || "".equals(packageName)){
+			return null;
+		}
+
+		final Collection<Class<?>> clazzs = new HashSet<Class<?>>();
+
+		String pn = packageName;
+		if (packageName.endsWith(".*")){
+			pn = packageName.substring(0, packageName.length() - 2);
+		}
+
+		final String pathOfPackage = pn.replace('.', File.separatorChar);
+
+		//get package the the system classloader
+		Enumeration<URL> packageUrls = ClassLoader.getSystemClassLoader().getResources(pathOfPackage);
+		Collection<Class<?>> c = getClasses(packageUrls, pathOfPackage, pn);
+
+		if (c != null && c.size() > 0){
+			clazzs.addAll(c);
+		}
+
+		//get package from the classloader of application
+		final ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+		if (contextLoader != null){
+			//No need to get classloader parent, "getResources" do it.
+			packageUrls = contextLoader.getResources(pathOfPackage);
+			c = getClasses(packageUrls, pathOfPackage, pn);
+			if (c != null && c.size() > 0){
+				clazzs.addAll(c);
+			}
+		}
+
+		return clazzs;
+	}
+
+	/**
+	 * Get value of property or method of a bean
+	 * @param m the property or method
+	 * @param bean the bean
+	 * @return the value
+	 * @throws CsvBangException if can't retrieve the value
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static final Object getValue(final AnnotatedElement m, final Object bean) throws CsvBangException{
 		Object v = null;
 		try{
 			if (m instanceof Field){
@@ -272,13 +276,33 @@ public class ReflectionUti {
 		}
 		return v;
 	}
-    
-	 public static void main(String[] args) throws ClassNotFoundException, IOException{
-		 scanPackageClass("java.lang");
-		 String[] kiki = new String[]{};
-		 if (kiki instanceof Object[]){
-			 System.out.println("year !!");
-		 }
-	 }
+
+	/**
+	 * Get the getter method of a property
+	 * @param c the class
+	 * @param name the name of property
+	 * @return the getter
+	 * @throws IntrospectionException if an error occurred when retrieve the getter
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static final Method getGetterMethod(final Class<?> c, final String name) throws IntrospectionException{
+		final BeanInfo info = Introspector.getBeanInfo(c);
+		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+			if (pd.getReadMethod() != null && name.equals(pd.getName())){
+				return pd.getReadMethod();
+			}
+		}
+		return null;
+	}
+
+
+	public static void main(String[] args) throws ClassNotFoundException, IOException{
+		scanPackageClass("java.lang");
+		String[] kiki = new String[]{};
+		if (kiki instanceof Object[]){
+			System.out.println("year !!");
+		}
+	}
 
 }
