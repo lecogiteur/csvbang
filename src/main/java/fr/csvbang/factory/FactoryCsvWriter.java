@@ -22,10 +22,7 @@
  */
 package fr.csvbang.factory;
 
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -63,23 +60,56 @@ import fr.csvbang.writer.CsvWriter;
 import fr.csvbang.writer.SimpleCsvWriter;
 
 /**
+ * Factory which generate CSV write
  * @author Tony EMMA
  *
  */
 public class FactoryCsvWriter {
 
-	private static final Pattern PACKAGE_SEPARATOR = Pattern.compile("\\s*,\\s*"); 
+	/**
+	 * Pattern in order to split a list of package
+	 */
+	private static final Pattern PACKAGE_SEPARATOR = Pattern.compile("\\s*,\\s*");
+	
+	/**
+	 * Pattern in order to split local
+	 */
 	private static final Pattern LOCALE_SEPARATOR = Pattern.compile("_"); 
+	
+	/**
+	 * Default Format
+	 */
 	private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
 
 
+	/**
+	 * List of CSV bean with their configuration
+	 */
 	private final Map<Class<?>, CsvBangConfiguration> configurations = new HashMap<Class<?>, CsvBangConfiguration>();
 
 
+	/**
+	 * Constructor
+	 * @param clazzs list of class to parse. This class must be annotated with {@link CsvType}
+	 * @throws IntrospectionException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	//TODO revoir les exception
 	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
 		loadConfigurations(clazzs);
 	}
 
+	/**
+	 * Constructor
+	 * @param sPkg list of package separated by comma and contained class annotated with {@link CsvType}
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws IntrospectionException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	//TODO revoir les exceptions
 	public FactoryCsvWriter (final String sPkg) throws ClassNotFoundException, IOException, IntrospectionException, IllegalAccessException, InstantiationException{
 		final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
 		if (pkgs != null){
@@ -90,6 +120,17 @@ public class FactoryCsvWriter {
 		}
 	}
 
+	/**
+	 * Create a writer
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param destination path of file  for destination
+	 * @return the CSV writer
+	 * @throws CsvBangException if an error occurred
+	 * 
+	 * @author Tony EMMA
+	 */
+	//TODO revoir les exceptions
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
 
@@ -103,6 +144,17 @@ public class FactoryCsvWriter {
 		return new SimpleCsvWriter<T>(destination, conf);
 	}
 
+	/**
+	 * Create a writer
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param destination path of file  for destination
+	 * @return the CSV writer
+	 * @throws CsvBangException if an error occurred
+	 * 
+	 * @author Tony EMMA
+	 */
+	//TODO revoir les exceptions
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
 
@@ -117,6 +169,16 @@ public class FactoryCsvWriter {
 		return new SimpleCsvWriter<T>(destination, conf);
 	}
 
+	/**
+	 * Parse class annotated with {@link CsvType} and load the configuration
+	 * @param clazzs a list of class
+	 * @throws IntrospectionException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * 
+	 * @author Tony EMMA
+	 */
+	//TODO revoir les exceptions
 	private void loadConfigurations(final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
 		if (clazzs != null){
 			for (final Class<?> clazz:clazzs){
@@ -170,13 +232,26 @@ public class FactoryCsvWriter {
 					continue;
 				}
 				conf.fields = confFileds.values();
-				generateHeader(conf, confFileds);
+				generateHeader(conf);
 				configurations.put(clazz, conf);
 			}
 		}
 	}
 
-	private final TreeMap<Integer, CsvFieldConfiguration> loadCsvField(final Class<?> c, final Collection<AnnotatedElement> members) 
+	/**
+	 * Parse and load configuration of fields
+	 * @param c the class
+	 * @param members list of property and method of the class
+	 * @return list of field
+	 * @throws IntrospectionException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * 
+	 * @author Tony EMMA
+	 */
+	//TODO revoir les exceptions
+	private final TreeMap<Integer, CsvFieldConfiguration> loadCsvField(final Class<?> c, 
+			final Collection<AnnotatedElement> members) 
 	throws IntrospectionException, IllegalAccessException, InstantiationException{
 		final TreeMap<Integer, CsvFieldConfiguration> confFileds = new TreeMap<Integer, CsvFieldConfiguration>();
 		int count = 1000;
@@ -221,7 +296,7 @@ public class FactoryCsvWriter {
 					if (conf.format == null){
 						conf.format = DEFAULT_FORMAT;
 					}
-					//TODO vérifier si déjà renseigné à cette position
+					//TODO vérifier si déjà renseigné à cette position et mettre log avec Warn
 					confFileds.put(pos, conf);
 
 				}else if (annontation instanceof CsvFormat){
@@ -234,12 +309,18 @@ public class FactoryCsvWriter {
 		return confFileds;
 	}
 
-	private void generateHeader(final CsvBangConfiguration conf, final Map<Integer, CsvFieldConfiguration> confFileds){
+	/**
+	 * Generate header of file if necessary
+	 * @param conf a general configuration
+	 * 
+	 * @author Tony EMMA
+	 */
+	//TODO revoir les exceptions
+	private void generateHeader(final CsvBangConfiguration conf){
 		if (conf.isDisplayHeader){
 			final StringBuilder header = new StringBuilder(1000).append(conf.startRecord);
-			for (final Entry<Integer, CsvFieldConfiguration> entry:confFileds.entrySet()){
-
-				final CsvFieldConfiguration field = entry.getValue();
+			for (final CsvFieldConfiguration field : conf.fields){
+				
 				String n = field.name;
 				if (!(n != null && n.length() > 0)){
 					n = ((Member)field.memberBean).getName();
@@ -252,6 +333,15 @@ public class FactoryCsvWriter {
 		}
 	}
 
+	/**
+	 * Parse and load the formatter of value
+	 * @param csvFormat an annotation
+	 * @return an instance of the formatter
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * 
+	 * @author Tony EMMA
+	 */
 	private CsvFormatter getFormat(final CsvFormat csvFormat) throws IllegalAccessException, InstantiationException{
 		CsvFormatter format = null;
 		if (!TYPE_FORMAT.NONE.equals(csvFormat.type())){
