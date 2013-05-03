@@ -231,19 +231,20 @@ public class ReflectionUti {
     	//get package the the system classloader
     	Enumeration<URL> packageUrls = ClassLoader.getSystemClassLoader().getResources(pathOfPackage);
     	Collection<Class<?>> c = getClasses(packageUrls, pathOfPackage, pn);
+    	
     	if (c != null && c.size() > 0){
     		clazzs.addAll(c);
     	}
     	
-    	//get package from the classloader
-    	ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
-    	while (contextLoader != null){
+    	//get package from the classloader of application
+    	final ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+    	if (contextLoader != null){
+    		//No need to get classloader parent, "getResources" do it.
     		packageUrls = contextLoader.getResources(pathOfPackage);
     		c = getClasses(packageUrls, pathOfPackage, pn);
     		if (c != null && c.size() > 0){
     			clazzs.addAll(c);
     		}
-    		contextLoader = contextLoader.getParent();
     	}
     	
     	return clazzs;
