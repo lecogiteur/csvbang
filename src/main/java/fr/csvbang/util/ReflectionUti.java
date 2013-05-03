@@ -250,16 +250,25 @@ public class ReflectionUti {
     	return clazzs;
     }
     
-    public static final Object getValue(final AnnotatedElement m, final Object value) throws CsvBangException{
+    /**
+     * Get value of property or method of a bean
+     * @param m the property or method
+     * @param bean the bean
+     * @return the value
+     * @throws CsvBangException if can't retrieve the value
+     * 
+     * @author Tony EMMA
+     */
+    public static final Object getValue(final AnnotatedElement m, final Object bean) throws CsvBangException{
 		Object v = null;
 		try{
 			if (m instanceof Field){
-				v = ((Field) m).get(value);
+				v = ((Field) m).get(bean);
 			}else if (m instanceof Method){
-				v = ((Method) m).invoke(value);
+				v = ((Method) m).invoke(bean);
 			}
 		}catch(Exception e){
-			throw new CsvBangException(String.format("Un problème est survenue dans la récupération d'un champs ou une méthode dans [%s]: %s", value.getClass(), ((Member)m).getName()), e);
+			throw new CsvBangException(String.format("Un problème est survenue dans la récupération d'un champs ou une méthode dans [%s]: %s", bean.getClass(), ((Member)m).getName()), e);
 		}
 		return v;
 	}
