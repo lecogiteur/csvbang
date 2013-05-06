@@ -66,4 +66,12 @@ public @interface CsvField {
 	 * @author Tony EMMA
 	 */
 	String defaultIfNull() default "";
+	
+	/**
+	 * Delete field if the value is null. Delete field only for the current record. By default false.
+	 * @return True if we must delete field.
+	 * 
+	 * @author Tony EMMA
+	 */
+	boolean deleteIfNull() default false; 
 }

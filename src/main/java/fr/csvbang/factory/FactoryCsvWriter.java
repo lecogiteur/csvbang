@@ -308,6 +308,7 @@ public class FactoryCsvWriter {
 					}
 
 					conf.name = csvField.name();
+					conf.isDeleteFieldIfNull = csvField.deleteIfNull();
 
 
 

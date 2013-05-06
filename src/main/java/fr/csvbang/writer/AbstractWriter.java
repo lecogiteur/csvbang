@@ -217,7 +217,10 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 				}else{
 					addField(f, sLine, v);					
 				}
-			}else{
+			}else {
+				if (f.isDeleteFieldIfNull){
+					continue;
+				}
 				addField(f, sLine, v);		
 			}
 		}
@@ -256,6 +259,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @author Tony EMMA
 	 */
 	private void addField(final CsvFieldConfiguration f, final StringBuilder s, final Object v){
+		
 		//add delimeter
 		s.append(conf.delimiter);
 		
@@ -283,6 +287,9 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	private void saveCollection(final CsvFieldConfiguration f, final StringBuilder s, final Collection<?> c){
 		for (final Object o:c){
+			if (o == null && f.isDeleteFieldIfNull){
+				continue;
+			}
 			addField(f, s, o);
 		}
 	}

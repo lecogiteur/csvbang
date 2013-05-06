@@ -49,6 +49,11 @@ public class CsvFieldConfiguration {
 	public String nullReplaceString;
 	
 	/**
+	 * Delete field if the value is null. Delete field only for the current record. By default false.
+	 */
+	public boolean isDeleteFieldIfNull = false;
+	
+	/**
 	 * Format value
 	 */
 	public CsvFormatter format;
