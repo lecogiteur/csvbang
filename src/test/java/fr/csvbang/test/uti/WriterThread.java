@@ -55,12 +55,14 @@ public class WriterThread<T> implements Runnable {
 	 */
 	public void run() {
 		try {
-			int i=0;
-			while (i<beans.size()){
-				final List<T> l = beans.subList(i, Math.min(i + 1000, beans.size()));
-				writer.write(l);
-				System.out.println(i + "-" + Math.min(i, beans.size()) + " --> " + l.size());
-				i +=1000;
+			for (int j=0; j<15; j++){
+				int i=0;
+				while (i<beans.size()){
+					final List<T> l = beans.subList(i, Math.min(i + 1000, beans.size()));
+					writer.write(l);
+					//System.out.println(i + "-" + Math.min(i, beans.size()) + " --> " + l.size());
+					i +=1000;
+				}
 			}
 		} catch (CsvBangException e) {
 			// TODO Auto-generated catch block

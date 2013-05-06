@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import fr.csvbang.configuration.CsvBangConfiguration;
 import fr.csvbang.configuration.CsvFieldConfiguration;
@@ -160,6 +161,28 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 				throw new CsvBangException(e);
 			}
 		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object)
+	 */
+	public void write(final T line) throws CsvBangException {
+		if (line == null){
+			return;
+		}
+		write(Collections.singleton(line));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object[])
+	 */
+	public void write(final T[] lines) throws CsvBangException {
+		if (lines == null || lines.length > 0){
+			return;
+		}
+		write(Arrays.asList(lines));
 	}
 
 	/**

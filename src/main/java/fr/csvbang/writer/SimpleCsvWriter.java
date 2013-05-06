@@ -57,28 +57,6 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object)
-	 */
-	public void write(final T line) throws CsvBangException {
-		if (line == null){
-			return;
-		}
-		write(Collections.singleton(line));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object[])
-	 */
-	public void write(final T[] lines) throws CsvBangException {
-		if (lines == null || lines.length > 0){
-			return;
-		}
-		write(Arrays.asList(lines));
-	}
-
-	/**
-	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.util.Collection)
 	 */
 	public void write(final Collection<T> lines) throws CsvBangException {

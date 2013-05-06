@@ -82,6 +82,17 @@ public @interface CsvType {
 	int blocksize() default -1;
 	
 	/**
+	 * True if you want to write file asynchronously. 
+	 * You can define the number of thread dedicate to write file in {@link fr.csvbang.factory.FactoryCsvWriter}. 
+	 * By default the number of processor divide by 3.
+	 * If you create several files in the same time, the thread will be share for each files.
+	 * @return True if you want to write asynchronously 
+	 * 
+	 * @author Tony EMMA
+	 */
+	boolean asynchronousWriter() default false;
+	
+	/**
 	 * Display the header on the first line. By default {@value false}.
 	 * The header is generated with the name of field. If no name is defined for a field, 
 	 * we take the property name or method name

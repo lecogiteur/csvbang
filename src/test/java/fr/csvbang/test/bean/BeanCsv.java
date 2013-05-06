@@ -31,7 +31,7 @@ import fr.csvbang.annotation.CsvType;
  * @author Tony EMMA
  *
  */
-@CsvType(header=true, blocksize=10000)
+@CsvType(header=true, blocksize=10000, asynchronousWriter=true)
 public class BeanCsv {
 
 	@CsvField(name="fieldName", position=2)

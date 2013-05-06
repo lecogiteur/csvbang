@@ -4,3 +4,14 @@
 *.jar
 *.war
 *.ear
+
+#eclipse
+.classpath
+.settings/*
+Snap.*
+heapdump.*
+javacore.*
+.project
+
+#maven
+target/*

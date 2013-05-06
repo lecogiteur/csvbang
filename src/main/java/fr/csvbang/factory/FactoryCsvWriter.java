@@ -37,8 +37,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import fr.csvbang.annotation.CsvField;
@@ -55,6 +56,8 @@ import fr.csvbang.formatter.DateCsvFormatter;
 import fr.csvbang.formatter.Default;
 import fr.csvbang.formatter.NumberCsvFormatter;
 import fr.csvbang.util.ReflectionUti;
+import fr.csvbang.writer.AsynchronousBlockingCsvWriter;
+import fr.csvbang.writer.AsynchronousCsvWriter;
 import fr.csvbang.writer.BlockingCsvWriter;
 import fr.csvbang.writer.CsvWriter;
 import fr.csvbang.writer.SimpleCsvWriter;
@@ -80,6 +83,10 @@ public class FactoryCsvWriter {
 	 * Default Format
 	 */
 	private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
+	
+	private int numberOfWriterThread = Math.max(1, Math.round(Runtime.getRuntime().availableProcessors() / 3));
+	
+	private ExecutorService executorService;
 
 
 	/**
@@ -98,6 +105,7 @@ public class FactoryCsvWriter {
 	//TODO revoir les exception
 	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
 		loadConfigurations(clazzs);
+		executorService = Executors.newFixedThreadPool(numberOfWriterThread);
 	}
 
 	/**
@@ -118,6 +126,18 @@ public class FactoryCsvWriter {
 				loadConfigurations(clazzs);
 			}
 		}
+		executorService = Executors.newFixedThreadPool(numberOfWriterThread);
+	}
+	
+	/**
+	 * Set the number of thread in order to write files. Used only if you want to write asynchronous. By default the number of processor divide by 3.
+	 * @param number number of thread
+	 * 
+	 * @author Tony EMMA
+	 */
+	public void setNumberOfWriterThread(int number){
+		this.numberOfWriterThread = number;
+		executorService = Executors.newFixedThreadPool(numberOfWriterThread);
 	}
 
 	/**
@@ -138,7 +158,14 @@ public class FactoryCsvWriter {
 			throw new CsvBangException("Pas de conf");
 		}
 		if (0 < conf.blockingSize){
+			if (conf.isAsynchronousWrite){
+				return new AsynchronousBlockingCsvWriter<T>(destination, conf, executorService);
+			}
 			return new BlockingCsvWriter<T>(destination, conf);
+		}
+		
+		if (conf.isAsynchronousWrite){
+			return new AsynchronousCsvWriter<T>(destination, conf, executorService);
 		}
 
 		return new SimpleCsvWriter<T>(destination, conf);
@@ -163,7 +190,14 @@ public class FactoryCsvWriter {
 		}
 
 		if (0 < conf.blockingSize){
+			if (conf.isAsynchronousWrite){
+				return new AsynchronousBlockingCsvWriter<T>(destination, conf, executorService);
+			}
 			return new BlockingCsvWriter<T>(destination, conf);
+		}
+		
+		if (conf.isAsynchronousWrite){
+			return new AsynchronousCsvWriter<T>(destination, conf, executorService);
 		}
 
 		return new SimpleCsvWriter<T>(destination, conf);
@@ -193,6 +227,7 @@ public class FactoryCsvWriter {
 						final CsvType csvType = (CsvType) annontation;
 						conf = new CsvBangConfiguration();
 						conf.blockingSize = csvType.blocksize();
+						conf.isAsynchronousWrite = csvType.asynchronousWriter();
 						conf.charset = csvType.charsetName();
 						conf.delimiter = csvType.delimiter();
 						conf.endRecord = csvType.endRecord();

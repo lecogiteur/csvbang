@@ -27,12 +27,12 @@ public class WriterTest {
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony.csv");
 		
 		
-		List<BeanChildCsv> list1 = new ArrayList<BeanChildCsv>(10000);
-		for (int i=0; i<10000; i++){
+		List<BeanChildCsv> list1 = new ArrayList<BeanChildCsv>(100000);
+		for (int i=0; i<100000; i++){
 			BeanChildCsv b = new BeanChildCsv();
 			b.setName("toto");
 			b.setValue("titi");
-			b.setDudu("myDudu");
+			b.setDudu("myDududududududududududududududududududududududu");
 			b.setDate("myDate");
 			b.setMadate(new Date());
 			b.setYes("Oui");
@@ -41,12 +41,12 @@ public class WriterTest {
 		}
 		Runnable r1 = new WriterThread<BeanChildCsv>(writer, list1);
 		
-		List<BeanChildCsv> list2 = new ArrayList<BeanChildCsv>(10000);
-		for (int i=0; i<10000; i++){
+		List<BeanChildCsv> list2 = new ArrayList<BeanChildCsv>(100000);
+		for (int i=0; i<100000; i++){
 			BeanChildCsv b = new BeanChildCsv();
-			b.setName("jiji");
-			b.setValue("juju");
-			b.setDudu("mumu");
+			b.setName("jijijuju");
+			b.setValue("jujujujujujujujujujjuujujujujujujuuujujuujujuju");
+			b.setDudu("mumuumumumumumumumumumumumumumumumumumumu");
 			b.setDate("gugu");
 			b.setMadate(new Date());
 			b.setYes("Non");
@@ -54,11 +54,11 @@ public class WriterTest {
 		}
 		Runnable r2 = new WriterThread<BeanChildCsv>(writer, list2);
 		
-		List<BeanChildCsv> list3 = new ArrayList<BeanChildCsv>(10000);
-		for (int i=0; i<10000; i++){
+		List<BeanChildCsv> list3 = new ArrayList<BeanChildCsv>(100000);
+		for (int i=0; i<100000; i++){
 			BeanChildCsv b = new BeanChildCsv();
 			b.setName("sasa");
-			b.setValue("fafa");
+			b.setValue("fafafafafafafafafafafafafafafafafaffafafafafa");
 			b.setDudu("zaza");
 			b.setDate("rara");
 			b.setMadate(new Date());
@@ -70,30 +70,116 @@ public class WriterTest {
 		
 		
 		
-		//List<BeanChildCsv> list = new ArrayList<BeanChildCsv>(10000);
-		
-		/*for (int i=0; i<10000; i++){
-			BeanChildCsv b = new BeanChildCsv();
-			b.setName("toto");
-			b.setValue("titi");
-			b.setDudu("myDudu");
-			b.setDate("myDate");
-			list.add(b);
-		}*/
 		
 		Thread t1 = new Thread(r1);
 		Thread t2 = new Thread(r2);
 		Thread t3 = new Thread(r3);
 		
 		long start = System.currentTimeMillis();
-		//writer.write(list);
 		t1.start();
 		t2.start();
 		t3.start();
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){};
-		/*writer.write(list1);
-		writer.write(list2);
-		writer.write(list3);*/
+		writer.close();
+		System.out.println(System.currentTimeMillis() - start + " ms" );
+	}
+	
+	@Test
+	public void testSimpleWriter2() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
+		FactoryCsvWriter factory = new FactoryCsvWriter("fr.csvbang.test.bean.*");
+		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony2.csv");
+		
+		List<BeanChildCsv> list = new ArrayList<BeanChildCsv>(10000);
+		
+		for (int i=0; i<100000; i++){
+			BeanChildCsv b = new BeanChildCsv();
+			b.setName("sasa");
+			b.setValue("fafafafafafafafafafafafafafafafafaffafafafafa");
+			b.setDudu("zaza");
+			b.setDate("rara");
+			b.setMadate(new Date());
+			b.setYes("Oui");
+			b.setDateYear(Arrays.asList(new Date[]{new Date(), new Date(), new Date()}));
+			list.add(b);
+		}
+		
+		long start = System.currentTimeMillis();
+		
+		for (int j=0; j<45; j++){
+			int i=0;
+			while (i<list.size()){
+				final List<BeanChildCsv> l = list.subList(i, Math.min(i + 1000, list.size()));
+				writer.write(l);
+				i +=1000;
+			}
+		}
+		
+		
+		
+		writer.close();
+		System.out.println(System.currentTimeMillis() - start + " ms" );
+	}
+	
+	@Test
+	public void testSimpleWriter3() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
+		FactoryCsvWriter factory = new FactoryCsvWriter("fr.csvbang.test.bean.*");
+		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony3.csv");
+		
+		
+		List<BeanChildCsv> list1 = new ArrayList<BeanChildCsv>(100000);
+		for (int i=0; i<100000; i++){
+			BeanChildCsv b = new BeanChildCsv();
+			b.setName("sasa");
+			b.setValue("gtgtfafafafafafafafafafafafafafafaffafafafafa");
+			b.setDudu("zaza");
+			b.setDate("rara");
+			b.setMadate(new Date());
+			b.setYes("Oui");
+			b.setDateYear(Arrays.asList(new Date[]{new Date(), new Date(), new Date()}));
+			list1.add(b);
+		}
+		Runnable r1 = new WriterThread<BeanChildCsv>(writer, list1);
+		
+		List<BeanChildCsv> list2 = new ArrayList<BeanChildCsv>(100000);
+		for (int i=0; i<100000; i++){
+			BeanChildCsv b = new BeanChildCsv();
+			b.setName("sasa");
+			b.setValue("sesefafafafafafafafafafafafafafafaffafafafafa");
+			b.setDudu("zaza");
+			b.setDate("rara");
+			b.setMadate(new Date());
+			b.setYes("Non");
+			b.setDateYear(Arrays.asList(new Date[]{new Date(), new Date(), new Date()}));
+			list2.add(b);
+		}
+		Runnable r2 = new WriterThread<BeanChildCsv>(writer, list2);
+		
+		List<BeanChildCsv> list3 = new ArrayList<BeanChildCsv>(100000);
+		for (int i=0; i<100000; i++){
+			BeanChildCsv b = new BeanChildCsv();
+			b.setName("sasa");
+			b.setValue("fafafafafafafafafafafafafafafafafaffafafafafa");
+			b.setDudu("zaza");
+			b.setDate("rara");
+			b.setMadate(new Date());
+			b.setYes("Oui");
+			b.setDateYear(Arrays.asList(new Date[]{new Date(), new Date(), new Date()}));
+			list3.add(b);
+		}
+		Runnable r3 = new WriterThread<BeanChildCsv>(writer, list3);
+		
+		
+		
+		
+		Thread t1 = new Thread(r1);
+		Thread t2 = new Thread(r2);
+		Thread t3 = new Thread(r3);
+		
+		long start = System.currentTimeMillis();
+		t1.start();
+		t2.start();
+		t3.start();
+		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){};
 		writer.close();
 		System.out.println(System.currentTimeMillis() - start + " ms" );
 	}
