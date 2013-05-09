@@ -14,7 +14,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.factory.FactoryCsvWriter;
 import fr.csvbang.test.bean.BeanChildCsv;
-import fr.csvbang.test.uti.WriterThread;
+import fr.csvbang.test.util.WriterThread;
 import fr.csvbang.writer.CsvWriter;
 
 
