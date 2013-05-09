@@ -24,6 +24,8 @@ package fr.csvbang.configuration;
 
 import java.util.Collection;
 
+import fr.csvbang.util.IConstantsCsvBang;
+
 /**
  * General configuration
  * @author Tony EMMA
@@ -34,22 +36,22 @@ public class CsvBangConfiguration {
 	/**
 	 * Delimiter between fields. By default {@value ,}
 	 */
-	public String delimiter;
+	public String delimiter = IConstantsCsvBang.DEFAULT_DELIMITER;
 	
 	/**
 	 * String to put at the end of record. By default the character {@value \n}
 	 */
-	public String endRecord;
+	public String endRecord = IConstantsCsvBang.DEFAULT_END_RECORD;
 	
 	/**
 	 * String to put at the start of record. By default nothing
 	 */
-	public String startRecord;
+	public String startRecord = IConstantsCsvBang.DEFAULT_START_RECORD;
 	
 	/**
 	 * Charset of file. By default {@value UTF-8}
 	 */
-	public String charset;
+	public String charset = IConstantsCsvBang.DEFAULT_CHARSET_NAME;
 	
 	/**
 	 * list of fields
@@ -60,7 +62,7 @@ public class CsvBangConfiguration {
 	 * Size of buffer in number of record. Negative value means no buffer.
 	 * By default -1
 	 */
-	public int blockingSize = -1;
+	public int blockingSize = IConstantsCsvBang.DEFAULT_BLOCKING_SIZE;
 	
 	/**
 	 * 
@@ -69,7 +71,7 @@ public class CsvBangConfiguration {
 	 * By default the number of processor divide by 3.
 	 * If you create several files in the same time, the thread will be share for each files. c
 	 */
-	public boolean isAsynchronousWrite = false;
+	public boolean isAsynchronousWrite = IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE;
 	
 	/**
 	 * the header of CSV file generated.
@@ -82,7 +84,7 @@ public class CsvBangConfiguration {
 	/**
 	 * True if we must display the name of field on first line of file.
 	 */
-	public boolean isDisplayHeader = false;
+	public boolean isDisplayHeader = IConstantsCsvBang.DEFAULT_HEADER;
 	
 	/**
 	 * Character in order to quote value of field. By default, no quote defined.
@@ -92,5 +94,21 @@ public class CsvBangConfiguration {
 	/**
 	 * Character in order to escape quote. By default {@value \}
 	 */
-	public char escapeQuoteCharacter = '\\';
+	public char escapeQuoteCharacter = IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER;
+	
+	/**
+	 * <p>You can define a static file name. </p>
+	 * <p>It is not required. You could define dynamically the filename in Factory.</p>
+	 * 
+	 * @author Tony EMMA
+	 */
+	public String filename = IConstantsCsvBang.DEFAULT_FILE_NAME;
+	
+	/**
+	 * <p>True if you want to append csv data to a file (if it exist). If the file doesn't exist, it create a new file.</p>
+	 * <p>False, if you already want to create a new file. By default, it's false.</p>
+	 * 
+	 * @author Tony EMMA
+	 */
+	public boolean isAppendToFile = IConstantsCsvBang.DEFAULT_APPEND_FILE;
 }

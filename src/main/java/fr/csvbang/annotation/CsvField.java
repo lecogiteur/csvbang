@@ -30,6 +30,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import fr.csvbang.util.IConstantsCsvBang;
+
 /**
  * Annotation in order to define a CSV field
  * @author Tony EMMA
@@ -42,22 +44,28 @@ import java.lang.annotation.Target;
 public @interface CsvField {
 
 	/**
-	 * Name of field in CSV file
+	 * Name of field in CSV file. If no name is defined, the name of member (field or method) is selected.
+	 * By default no name is defined.
 	 * @return name
 	 * 
 	 * @author Tony EMMA
 	 */
-	String name() default "";
+	String name() default IConstantsCsvBang.DEFAULT_FIELD_NAME;
 	
 	/**
+	 * <P>
 	 * Position of field in file. The first position of the first field is 1. 
-	 * It is not required that position numbers follow.
-	 * If no position is required you can set a negative position. 
+	 * It is not required that position numbers follow. The default position is -1.
+	 * </p>
+	 * <p>
+	 * If no position is required you can set a negative position. If you want to override a {@link CsvField} annotation in sub class, you
+	 * must set a negative value other than -1
+	 * </p>
 	 * @return the position of field
 	 * 
 	 * @author Tony EMMA
 	 */
-	int position() default -1;
+	int position() default IConstantsCsvBang.DEFAULT_FIELD_POSITION;
 	
 	/**
 	 * Default value if the value is null. By default, it's an empty string
@@ -65,7 +73,7 @@ public @interface CsvField {
 	 * 
 	 * @author Tony EMMA
 	 */
-	String defaultIfNull() default "";
+	String defaultIfNull() default IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE;
 	
 	/**
 	 * Delete field if the value is null. Delete field only for the current record. By default false.
@@ -73,5 +81,5 @@ public @interface CsvField {
 	 * 
 	 * @author Tony EMMA
 	 */
-	boolean deleteIfNull() default false; 
+	boolean deleteIfNull() default IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL; 
 }

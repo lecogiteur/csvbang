@@ -55,6 +55,7 @@ import fr.csvbang.formatter.CurrencyCsvFormatter;
 import fr.csvbang.formatter.DateCsvFormatter;
 import fr.csvbang.formatter.Default;
 import fr.csvbang.formatter.NumberCsvFormatter;
+import fr.csvbang.util.ConfigurationUti;
 import fr.csvbang.util.ReflectionUti;
 import fr.csvbang.writer.AsynchronousBlockingCsvWriter;
 import fr.csvbang.writer.AsynchronousCsvWriter;
@@ -216,6 +217,14 @@ public class FactoryCsvWriter {
 	private void loadConfigurations(final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
 		if (clazzs != null){
 			for (final Class<?> clazz:clazzs){
+				final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(clazz);
+				if (conf != null){
+					configurations.put(clazz, conf);
+				}
+			}
+		}
+		/*if (clazzs != null){
+			for (final Class<?> clazz:clazzs){
 				final Annotation[] annotations = clazz.getAnnotations();
 				if (annotations == null || annotations.length == 0){
 					continue;
@@ -270,7 +279,7 @@ public class FactoryCsvWriter {
 				generateHeader(conf);
 				configurations.put(clazz, conf);
 			}
-		}
+		}*/
 	}
 
 	/**

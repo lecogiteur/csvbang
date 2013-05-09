@@ -28,20 +28,27 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.csvbang.annotation.CsvField;
+import fr.csvbang.annotation.CsvFormat;
+import fr.csvbang.annotation.CsvType;
 import fr.csvbang.exception.CsvBangException;
 
 /**
@@ -219,7 +226,7 @@ public class ReflectionUti {
 	 * @author Tony EMMA
 	 */
 	public static Collection<Class<?>> scanPackageClass(String packageName) throws IOException {
-		if (packageName == null || "".equals(packageName)){
+		if (CsvbangUti.isStringBlank(packageName)){
 			return null;
 		}
 
@@ -294,6 +301,62 @@ public class ReflectionUti {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Retrieve the CsvType annotation
+	 * @param annotations the list of annotation
+	 * @return the CsvType annotation or null if not exists
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static CsvType getCsvTypeAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvType){
+				return (CsvType)annotation;
+			}
+		}
+		return null;
+	}
+	
+	public static CsvField getCsvFieldAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvField){
+				return (CsvField)annotation;
+			}
+		}
+		return null;
+	}
+	
+	public static CsvFormat getCsvFormatAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvFormat){
+				return (CsvFormat)annotation;
+			}
+		}
+		return null;
+	}
+	
+	public static List<AnnotatedElement> getMembers(Class<?> clazz){
+		final List<AnnotatedElement> members = new ArrayList<AnnotatedElement>();
+		Field[] fields = clazz.getDeclaredFields();
+		Method[] methods = clazz.getMethods();
+		if (fields != null && fields.length > 0){
+			members.addAll(Arrays.asList(fields));
+		}
+		if (methods != null && methods.length > 0){
+			members.addAll(Arrays.asList(methods));
+		}
+		return members;
 	}
 
 

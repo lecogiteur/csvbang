@@ -29,6 +29,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import fr.csvbang.util.IConstantsCsvBang;
+
 /**
  * A type which map a CSV file
  * 
@@ -47,7 +49,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	String delimiter() default ",";
+	String delimiter() default IConstantsCsvBang.DEFAULT_DELIMITER;
 	
 	/**
 	 * Charset of file. By default {@value UTF-8}
@@ -55,7 +57,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	String charsetName() default "UTF-8";
+	String charsetName() default IConstantsCsvBang.DEFAULT_CHARSET_NAME;
 
 	/**
 	 * String to put at the start of record. By default nothing
@@ -63,7 +65,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	String startRecord() default "";
+	String startRecord() default IConstantsCsvBang.DEFAULT_START_RECORD;
 	
 	/**
 	 * String to put at the end of record. By default the character {@value \n}
@@ -71,7 +73,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	String endRecord() default "\n";
+	String endRecord() default IConstantsCsvBang.DEFAULT_END_RECORD;
 	
 	/**
 	 * Size of buffer in number of record. Negative value means no buffer.
@@ -79,7 +81,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	int blocksize() default -1;
+	int blocksize() default IConstantsCsvBang.DEFAULT_BLOCKING_SIZE;
 	
 	/**
 	 * True if you want to write file asynchronously. 
@@ -90,7 +92,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	boolean asynchronousWriter() default false;
+	boolean asynchronousWriter() default IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE;
 	
 	/**
 	 * Display the header on the first line. By default {@value false}.
@@ -100,7 +102,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	boolean header() default false;
+	boolean header() default IConstantsCsvBang.DEFAULT_HEADER;
 	
 	/**
 	 * Character in order to quote value. By default, no quote defined.
@@ -108,7 +110,7 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	String quoteCharacter() default "";
+	String quoteCharacter() default IConstantsCsvBang.DEFAULT_QUOTE_CHARACTER;
 	
 	/**
 	 * Character in order to escape the quote character. By default {@value \}
@@ -116,5 +118,26 @@ public @interface CsvType {
 	 * 
 	 * @author Tony EMMA
 	 */
-	char quoteEscapeCharacter() default '\\';
+	char quoteEscapeCharacter() default IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER;
+	
+	/**
+	 * <p>You can define a static file name. </p>
+	 * <p>It is not required. You could define dynamically the filename in Factory.</p>
+	 * <p>It is possible to mix configuration. For example you can define dynamically 
+	 * the directory with the factory and a static file name with this annotation.</p>
+	 * <p>If a file is defined by factory, it overrides the file created by the annotation</p>
+	 * @return the file name
+	 * @see {@link fr.csvbang.factory.FactoryCsvWriter} Factory of CSV writer
+	 * @author Tony EMMA
+	 */
+	String fileName() default IConstantsCsvBang.DEFAULT_FILE_NAME;
+	
+	/**
+	 * <p>True if you want to append csv data to a file (if it exist). If the file doesn't exist, it create a new file.</p>
+	 * <p>False, if you already want to create a new file. By default, it's false.</p>
+	 * @return True if you want to append csv data to a file.
+	 * 
+	 * @author Tony EMMA
+	 */
+	boolean append() default IConstantsCsvBang.DEFAULT_APPEND_FILE;
 }

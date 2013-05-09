@@ -1,5 +1,5 @@
 /**
- *  fr.csvbang.writer.BlockingCsvWriter
+ *  fr.csvbang.writer.AsynchronousBlockingCsvWriter
  * 
  *  Copyright (C) 2013  Tony EMMA
  *

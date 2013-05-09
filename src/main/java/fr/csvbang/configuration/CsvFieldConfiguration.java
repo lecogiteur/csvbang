@@ -25,6 +25,7 @@ package fr.csvbang.configuration;
 import java.lang.reflect.AnnotatedElement;
 
 import fr.csvbang.formatter.CsvFormatter;
+import fr.csvbang.util.IConstantsCsvBang;
 
 /**
  * Configuration of field
@@ -36,7 +37,12 @@ public class CsvFieldConfiguration {
 	/**
 	 * Name of field. Used in order to generate header.
 	 */
-	public String name;
+	public String name = IConstantsCsvBang.DEFAULT_FIELD_NAME;
+	
+	/**
+	 * Position of field. Negative value means that field have no position
+	 */
+	public int position = IConstantsCsvBang.DEFAULT_FIELD_POSITION;
 	
 	/**
 	 * property or method of bean
@@ -46,12 +52,12 @@ public class CsvFieldConfiguration {
 	/**
 	 * String which replace null value
 	 */
-	public String nullReplaceString;
+	public String nullReplaceString = IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE;
 	
 	/**
 	 * Delete field if the value is null. Delete field only for the current record. By default false.
 	 */
-	public boolean isDeleteFieldIfNull = false;
+	public boolean isDeleteFieldIfNull = IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL;
 	
 	/**
 	 * Format value

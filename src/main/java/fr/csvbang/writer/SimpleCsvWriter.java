@@ -26,9 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import fr.csvbang.configuration.CsvBangConfiguration;
 import fr.csvbang.exception.CsvBangException;

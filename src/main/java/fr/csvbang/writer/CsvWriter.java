@@ -35,12 +35,23 @@ public interface CsvWriter<T> {
 	
 	
 	/**
-	 * Create CSV file and write header
+	 * <p>Open file in order to write. Initialize file.
+	 * Create CSV file and write header.</p>
+	 * <p>Not necessary to open writer. To the first, write the writer if it's not opened, will be opened.</p>
 	 * @throws CsvBangException if a problem occurred during creation of file
 	 * 
 	 * @author Tony EMMA
 	 */
 	public void open() throws CsvBangException;
+	
+	
+	/**
+	 * Verify if writer is opened
+	 * @return True if already open
+	 * 
+	 * @author Tony EMMA
+	 */
+	public boolean isOpen();
 	
 	/**
 	 * Write a line in file

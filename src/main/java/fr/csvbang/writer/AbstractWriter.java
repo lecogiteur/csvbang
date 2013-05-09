@@ -34,6 +34,7 @@ import java.util.Collections;
 import fr.csvbang.configuration.CsvBangConfiguration;
 import fr.csvbang.configuration.CsvFieldConfiguration;
 import fr.csvbang.exception.CsvBangException;
+import fr.csvbang.util.CsvbangUti;
 import fr.csvbang.util.ReflectionUti;
 
 /**
@@ -81,7 +82,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	protected int defaultLineSize = 100;
 	
 	
-
 	/**
 	 * Constructor
 	 * @param conf configuration
@@ -115,7 +115,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	public AbstractWriter(final String file, final CsvBangConfiguration conf) {
 		this(conf);
-		if (file != null){
+		if (CsvbangUti.isStringNotBlank(file)){
 			this.file = new File(file);
 		}
 	}
@@ -130,6 +130,21 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 			//already open
 			return;
 		}
+		
+		
+		//complete file name with annotation configuration
+		if (CsvbangUti.isStringNotBlank(conf.filename)){
+			if (file != null && file.exists() && file.isDirectory()){
+				//if file defined by factory is a directory
+				file = new File(file, conf.filename);
+			}else if (file == null){
+				//if no file is defined is
+				file = new File(conf.filename);
+			}
+		}
+		
+		
+		
 		if (file == null){
 			throw new CsvBangException("No file defined for CSV writer");
 		}
@@ -147,7 +162,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		}
 		
 		try {
-			out = new FileOutputStream(file);
+			out = new FileOutputStream(file, conf.isAppendToFile);
 		} catch (FileNotFoundException e) {
 			throw new CsvBangException("Could not create file: " + file.getAbsolutePath(), e);
 		}
@@ -163,6 +178,14 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.writer.CsvWriter#isOpen()
+	 */
+	public boolean isOpen() {
+		return out != null;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object)
@@ -218,14 +241,11 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 					addField(f, sLine, v);					
 				}
 			}else {
-				if (f.isDeleteFieldIfNull){
-					continue;
-				}
 				addField(f, sLine, v);		
 			}
 		}
 		
-		if (isNullLine){
+		if (isNullLine || sLine.length() == 0){
 			return null;
 		}
 		sLine.delete(0, delimiterLength);
@@ -260,12 +280,15 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	private void addField(final CsvFieldConfiguration f, final StringBuilder s, final Object v){
 		
-		//add delimeter
-		s.append(conf.delimiter);
-		
 		//format value
 		final String value = f.format.format(v, f.nullReplaceString);
 		
+		if (f.isDeleteFieldIfNull && (v == null || value == null)){
+			return;
+		}
+		
+		//add delimeter
+		s.append(conf.delimiter);
 		
 		if (addQuote){
 			//quote value
@@ -287,9 +310,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	private void saveCollection(final CsvFieldConfiguration f, final StringBuilder s, final Collection<?> c){
 		for (final Object o:c){
-			if (o == null && f.isDeleteFieldIfNull){
-				continue;
-			}
 			addField(f, s, o);
 		}
 	}
