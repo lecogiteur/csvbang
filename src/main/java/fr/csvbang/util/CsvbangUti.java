@@ -22,6 +22,8 @@
  */
 package fr.csvbang.util;
 
+import java.util.Collection;
+
 /**
  * 
  * General Utility class
@@ -60,5 +62,27 @@ public class CsvbangUti {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Verify if a collection is empty
+	 * @param c a collection
+	 * @return True if collection is empty
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static final boolean isCollectionEmpty(final Collection<?> c){
+		return c == null || c.size() == 0;
+	}
+	
+	/**
+	 * Verify if a collection is not empty
+	 * @param c a collection
+	 * @return True if collection is not empty
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static final boolean isCollectionNotEmpty(final Collection<?> c){
+		return c != null && c.size() > 0;
 	}
 }

@@ -58,10 +58,19 @@ import fr.csvbang.exception.CsvBangException;
  */
 public class ReflectionUti {
 
+	/**
+	 * Extension file for class java
+	 */
 	private static final String CLASS_EXTENSION = ".class";
 
+	/**
+	 * Pattern in order to verify if string is a Java file
+	 */
 	private static final Pattern CLASS_FILE = Pattern.compile("^.*" + Pattern.quote(CLASS_EXTENSION) + "$");
 
+	/**
+	 * keyword for JAR protocol
+	 */
 	private static final String JAR_PROTOCOL = "jar";
 
 
@@ -76,6 +85,7 @@ public class ReflectionUti {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
+			//TODO gérer des logs.
 			//do nothing
 		} catch (UnsatisfiedLinkError e){
 			//do nothing
@@ -123,7 +133,7 @@ public class ReflectionUti {
 					final File subDirectory = new File(directory, fileName.toString());
 					if (subDirectory.isDirectory()) {
 						final Collection<Class<?>> list = scanSimplePackage(subDirectory, className);
-						if (list != null && list.size() > 0){
+						if (CsvbangUti.isCollectionNotEmpty(list)){
 							clazzs.addAll(list);
 						}
 					}
@@ -209,7 +219,7 @@ public class ReflectionUti {
 				c = scanSimplePackage(new File(packageUrl.getPath()), packageName);
 			}
 
-			if (c != null && c.size() > 0){
+			if (CsvbangUti.isCollectionNotEmpty(c)){
 				clazzs.addAll(c);
 			}
 		}
@@ -243,7 +253,7 @@ public class ReflectionUti {
 		Enumeration<URL> packageUrls = ClassLoader.getSystemClassLoader().getResources(pathOfPackage);
 		Collection<Class<?>> c = getClasses(packageUrls, pathOfPackage, pn);
 
-		if (c != null && c.size() > 0){
+		if (CsvbangUti.isCollectionNotEmpty(c)){
 			clazzs.addAll(c);
 		}
 
@@ -253,7 +263,7 @@ public class ReflectionUti {
 			//No need to get classloader parent, "getResources" do it.
 			packageUrls = contextLoader.getResources(pathOfPackage);
 			c = getClasses(packageUrls, pathOfPackage, pn);
-			if (c != null && c.size() > 0){
+			if (CsvbangUti.isCollectionNotEmpty(c)){
 				clazzs.addAll(c);
 			}
 		}

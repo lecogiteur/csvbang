@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.csvbang.configuration.CsvBangConfiguration;
 import fr.csvbang.exception.CsvBangException;
+import fr.csvbang.util.CsvbangUti;
 
 /**
  * @author Tony EMMA
@@ -72,7 +73,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	 * @see fr.csvbang.writer.CsvWriter#write(java.util.Collection)
 	 */
 	public void write(final Collection<T> lines) throws CsvBangException {
-		if (lines == null || lines.size() == 0){
+		if (CsvbangUti.isCollectionEmpty(lines)){
 			return;
 		}
 

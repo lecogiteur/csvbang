@@ -22,6 +22,9 @@
  */
 package fr.csvbang.test.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,5 +57,25 @@ public class CsvbangUtiTest {
 		Assert.assertTrue("String is not blank", CsvbangUti.isStringNotBlank("fghdfg"));
 		Assert.assertTrue("String is not blank", CsvbangUti.isStringNotBlank("   g  "));
 		Assert.assertTrue("String is not blank", CsvbangUti.isStringNotBlank("g  "));
+	}
+	
+	@Test
+	public void isCollectionEmptyTest(){
+		Collection<String> c = new ArrayList<String>(1);
+		Assert.assertTrue("null collection is empty", CsvbangUti.isCollectionEmpty(null));
+		Assert.assertTrue("empty collection is empty", CsvbangUti.isCollectionEmpty(c));
+		
+		c.add("string");
+		Assert.assertFalse("no empty collection is not empty", CsvbangUti.isCollectionEmpty(c));
+	}
+	
+	@Test
+	public void isCollectionNotEmptyTest(){
+		Collection<String> c = new ArrayList<String>(1);
+		Assert.assertFalse("null collection is empty", CsvbangUti.isCollectionNotEmpty(null));
+		Assert.assertFalse("empty collection is empty", CsvbangUti.isCollectionNotEmpty(c));
+		
+		c.add("string");
+		Assert.assertTrue("no empty collection is not empty", CsvbangUti.isCollectionNotEmpty(c));
 	}
 }
