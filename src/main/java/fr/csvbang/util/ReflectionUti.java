@@ -132,6 +132,7 @@ public class ReflectionUti {
 					//if the file is a directory, we scan this directory in order to get all classes
 					final File subDirectory = new File(directory, fileName.toString());
 					if (subDirectory.isDirectory()) {
+						className = fileName.insert(0, ".").insert(0, packageName).toString();
 						final Collection<Class<?>> list = scanSimplePackage(subDirectory, className);
 						if (CsvbangUti.isCollectionNotEmpty(list)){
 							clazzs.addAll(list);
@@ -306,7 +307,7 @@ public class ReflectionUti {
 	public static final Method getGetterMethod(final Class<?> c, final String name) throws IntrospectionException{
 		final BeanInfo info = Introspector.getBeanInfo(c);
 		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-			if (pd.getReadMethod() != null && name.equals(pd.getName())){
+			if (pd.getReadMethod() != null && pd.getName().equals(name)){
 				return pd.getReadMethod();
 			}
 		}
@@ -332,6 +333,13 @@ public class ReflectionUti {
 		return null;
 	}
 	
+	/**
+	 * Retrieve the CsvField annotation
+	 * @param annotations  the list of annotation
+	 * @return the CsvField annotation or null if not exists
+	 * 
+	 * @author Tony EMMA
+	 */
 	public static CsvField getCsvFieldAnnotation(final Annotation[] annotations){
 		if (annotations == null || annotations.length == 0){
 			return null;
@@ -344,6 +352,13 @@ public class ReflectionUti {
 		return null;
 	}
 	
+	/**
+	 * Retrieve the CsvFormat annotation
+	 * @param annotations  the list of annotation
+	 * @return the CsvFormat annotation or null if not exists
+	 * 
+	 * @author Tony EMMA
+	 */
 	public static CsvFormat getCsvFormatAnnotation(final Annotation[] annotations){
 		if (annotations == null || annotations.length == 0){
 			return null;
@@ -356,26 +371,26 @@ public class ReflectionUti {
 		return null;
 	}
 	
-	public static List<AnnotatedElement> getMembers(Class<?> clazz){
+	/**
+	 * Get Members (fields and methods) of a class. Do not search members of parent class.
+	 * 
+	 * @param clazz a class
+	 * @return methods and all field declared on the class (not on its parent) 
+	 * 
+	 * @author Tony EMMA
+	 */
+	public static List<AnnotatedElement> getMembers(final Class<?> clazz){
 		final List<AnnotatedElement> members = new ArrayList<AnnotatedElement>();
-		Field[] fields = clazz.getDeclaredFields();
-		Method[] methods = clazz.getMethods();
+		final Field[] fields = clazz.getDeclaredFields();
+		final Method[] methods = clazz.getDeclaredMethods();
 		if (fields != null && fields.length > 0){
 			members.addAll(Arrays.asList(fields));
 		}
 		if (methods != null && methods.length > 0){
-			members.addAll(Arrays.asList(methods));
+			for (final Method m:methods){
+				members.add(m);
+			}
 		}
 		return members;
 	}
-
-
-	public static void main(String[] args) throws ClassNotFoundException, IOException{
-		scanPackageClass("java.lang");
-		String[] kiki = new String[]{};
-		if (kiki instanceof Object[]){
-			System.out.println("year !!");
-		}
-	}
-
 }
