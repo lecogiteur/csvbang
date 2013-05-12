@@ -49,10 +49,10 @@ public class BooleanCsvFormatter implements CsvFormatter {
 		simplemap.put("B", new String[]{"T", "F"});
 		simplemap.put("b", new String[]{"t", "f"});
 		simplemap.put("integer", new String[]{"1", "0"});
-		simplemap.put("letterYN", new String[]{"y", "n"});
-		simplemap.put("LetterYN", new String[]{"Y", "N"});
-		simplemap.put("letterON", new String[]{"o", "n"});
-		simplemap.put("LetterON", new String[]{"O", "N"});
+		simplemap.put("y/n", new String[]{"y", "n"});
+		simplemap.put("Y/N", new String[]{"Y", "N"});
+		simplemap.put("o/n", new String[]{"o", "n"});
+		simplemap.put("O/N", new String[]{"O", "N"});
 		simplemap.put("on/off", new String[]{"on", "off"});
 		simplemap.put("On/Off", new String[]{"On", "Off"});
 		simplemap.put("ON/OFF", new String[]{"ON", "OFF"});
@@ -94,17 +94,17 @@ public class BooleanCsvFormatter implements CsvFormatter {
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
 	 */
 	public void init() {
-		if (pattern.equals("litteral")){
+		if ("litteral".equals(pattern)){
 			destination = LocaleMaplitteral.get(locale);
 			if (destination == null){
 				destination = LocaleMaplitteral.get(null);
 			}
-		}else if (pattern.equals("Litteral")){
+		}else if ("Litteral".equals(pattern)){
 			destination = LocaleMapLitteral.get(locale);
 			if (destination == null){
 				destination = LocaleMapLitteral.get(null);
 			}
-		}else if (pattern.equals("LITTERAL")){
+		}else if ("LITTERAL".equals(pattern)){
 			destination = LocaleMapLITTERAL.get(locale);
 			if (destination == null){
 				destination = LocaleMapLITTERAL.get(null);

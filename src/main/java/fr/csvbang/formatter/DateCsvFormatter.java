@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import fr.csvbang.util.CsvbangUti;
+
 /**
  * @author Tony EMMA
  *
@@ -43,6 +45,12 @@ public class DateCsvFormatter implements CsvFormatter {
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
 	 */
 	public void init() {
+		if (locale == null){
+			locale = Locale.US;
+		}
+		if (CsvbangUti.isStringBlank(pattern)){
+			pattern = "MM/dd/yyyy";
+		}
 		format = new SimpleDateFormat(pattern, locale);
 	}
 

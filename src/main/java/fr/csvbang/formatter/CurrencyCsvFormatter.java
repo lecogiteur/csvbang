@@ -23,7 +23,10 @@
 package fr.csvbang.formatter;
 
 import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.Locale;
+
+import fr.csvbang.util.CsvbangUti;
 
 /**
  * @author Tony EMMA
@@ -42,16 +45,21 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
 	 */
 	public void init() {
+		if (locale == null){
+			locale = Locale.US;
+		}
 		format = NumberFormat.getCurrencyInstance(locale);
-		if (pattern != null && pattern.length() > 0){
-			String[] nb = pattern.split(".");
-			format.setParseIntegerOnly(true);
+		format.setCurrency(Currency.getInstance(locale));
+		if (CsvbangUti.isStringNotBlank(pattern)){
+			String[] nb = pattern.split("\\.");
 			
-			format.setMaximumIntegerDigits(nb[0].length());
 			if (nb[0].contains("0") && nb[0].length() > 1){
 				format.setMinimumIntegerDigits(nb[0].length());
 				format.setMaximumIntegerDigits(nb[0].length());
 			}else{
+				if (nb[0].length() != 0){
+					format.setMaximumIntegerDigits(nb[0].length());
+				}
 				format.setMinimumIntegerDigits(0);
 			}
 			
@@ -71,6 +79,7 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
+	 * @see {@link NumberFormat} format class 
 	 */
 	public void setPattern(String pattern) {
 		this.pattern = pattern;

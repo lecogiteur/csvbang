@@ -58,18 +58,19 @@ public @interface CsvFormat {
 		DEFAULT,
 		
 		/**
-		 * Format a date. The pattern is based on {@link java.text.SimpleDateFormat} pattern.
+		 * <p>Format a date. The pattern is based on {@link java.text.SimpleDateFormat} pattern.</p>
 		 * 
-		 * The type of field can be {@link java.util.Date}, {@link java.sql.Timestamp} or {@link java.util.Calendar}.
+		 * <p>The type of field can be {@link java.util.Date}, {@link java.sql.Timestamp} or {@link java.util.Calendar}.</p>
 		 * 
+		 * <p>The default locale is Locale.FRANCE and the default pattern is MM/dd/yyyy</p>
 		 * @see {@link java.text.SimpleDateFormat} used in order to format a date
 		 */
 		DATE, 
 		
 		/**
-		 * Format a number. The pattern is based on {@link java.text.DecimalFormat} pattern.
+		 * <p>Format a number. The pattern is based on {@link java.text.DecimalFormat} pattern. The pattern is required.</p>
 		 * 
-		 * The type of field can be {@link java.lang.Integer}, {@link java.lang.Long}, {@link java.lang.Float} or {@link java.lang.Double}.
+		 * <p>The type of field can be {@link java.lang.Integer}, {@link java.lang.Long}, {@link java.lang.Float} or {@link java.lang.Double}.</p>
 		 * 
 		 * @see {@link java.text.DecimalFormat} used in order to format number
 		 */
@@ -77,9 +78,25 @@ public @interface CsvFormat {
 		
 		/**
 		 * 
-		 * Format a price. The pattern is based on {@link java.text.NumberFormat} pattern.
+		 * <p>Format a price. The pattern indicates the number of digits for integer part and fraction part.</p>
 		 * 
-		 * The type of field can be {@link java.lang.Integer}, {@link java.lang.Long}, {@link java.lang.Float} or {@link java.lang.Double}.
+		 * Example.
+		 * <ul>
+		 * 	<li>pattern (0.00) : 12.356 ==> 2.36 </li>
+		 * 	<li>pattern (.00) : 12.356 ==> 12.36 </li>
+		 * 	<li>pattern (.##) : 12.356 ==> 12.36 </li>
+		 * 	<li>pattern (##.) : 12.356 ==> 12.356 </li>
+		 * 	<li>pattern (###.##) : 12.356 ==> 12.36 </li>
+		 * 	<li>pattern (000.##) : 12.356 ==> 012.36 </li>
+		 * 	<li>no pattern : 12.356 ==> 12.36 </li>
+		 * </ul>
+		 * 
+		 * <p>The locale must to set the country variable. The pattern is not required.</p>
+		 * 
+		 * <p>The type of field can be {@link java.lang.Integer}, {@link java.lang.Long}, {@link java.lang.Float} or {@link java.lang.Double}.</p>
+		 * <p>
+		 * The default local is Locale.FRANCE. No pattern defines.
+		 * </p>
 		 * 
 		 * @see {@link java.text.NumberFormat} used in order to format price
 		 */
@@ -102,10 +119,10 @@ public @interface CsvFormat {
 		 * 	<li><b>B</b>: T or F</li>
 		 * 	<li><b>b</b>: t or f</li>
 		 * 	<li><b>integer</b>: 1 or 0</li>
-		 * 	<li><b>letterYN</b>: y or n</li>
-		 * 	<li><b>LetterYN</b>: Y or N</li>
-		 * 	<li><b>letterON</b>: o or n</li>
-		 * 	<li><b>LetterON</b>: O or N</li>
+		 * 	<li><b>y/n</b>: y or n</li>
+		 * 	<li><b>Y/N</b>: Y or N</li>
+		 * 	<li><b>o/n</b>: o or n</li>
+		 * 	<li><b>O/N</b>: O or N</li>
 		 * 	<li><b>on/off</b>: on or off</li>
 		 * 	<li><b>On/Off</b>: On or Off</li>
 		 * 	<li><b>ON/OFF</b: ON or OFF</li>
@@ -113,6 +130,9 @@ public @interface CsvFormat {
 		 * 	<li><b>Litteral</b>: Yes or No in function locale</li>
 		 * 	<li><b>LITTERAL</b>: YES or NO in function locale</li>
 		 * </ul>
+		 * <p>
+		 * The default local is Locale.FRANCE and the default pattern is "boolean"
+		 * </p>
 		 */
 		BOOLEAN, 
 		
@@ -145,12 +165,13 @@ public @interface CsvFormat {
 	Class<? extends CsvFormatter> customFormatter() default Default.class;
 	
 	/**
-	 * locale. By Default Locale.French
+	 * <p>locale. By Default Locale.French</P>
 	 * 
+	 * <p>Concatenation of language, country and variant separated by _</p>
 	 * 
 	 * @return the result of {@link Locale#toString()}
 	 * 
 	 * @author Tony EMMA
 	 */
-	String locale() default "fr__";
+	String locale() default "fr_FR_";
 }

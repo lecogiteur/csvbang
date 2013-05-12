@@ -55,6 +55,7 @@ import fr.csvbang.util.ReflectionUti;
 public class ReflectionUtiTest {
 	
 	//@Test
+	//Not work with maven. Must explore
 	public void scanPackageClassTest() throws IOException{
 		Assert.assertTrue("No package defined", CsvbangUti.isCollectionEmpty(ReflectionUti.scanPackageClass(null)));
 		
