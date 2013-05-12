@@ -22,7 +22,7 @@
  */
 package fr.csvbang.configuration;
 
-import java.util.Collection;
+import java.util.List;
 
 import fr.csvbang.util.IConstantsCsvBang;
 
@@ -56,7 +56,7 @@ public class CsvBangConfiguration {
 	/**
 	 * list of fields
 	 */
-	public Collection<CsvFieldConfiguration> fields;
+	public List<CsvFieldConfiguration> fields;
 	
 	/**
 	 * Size of buffer in number of record. Negative value means no buffer.

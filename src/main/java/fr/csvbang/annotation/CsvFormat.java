@@ -51,6 +51,12 @@ public @interface CsvFormat {
 	 *
 	 */
 	public enum TYPE_FORMAT {
+		
+		/**
+		 * Default formatter. If value is null, it will be replace by an empty string. 
+		 */
+		DEFAULT,
+		
 		/**
 		 * Format a date. The pattern is based on {@link java.text.SimpleDateFormat} pattern.
 		 * 

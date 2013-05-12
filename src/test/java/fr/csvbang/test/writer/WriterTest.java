@@ -18,7 +18,7 @@ import fr.csvbang.test.util.WriterThread;
 import fr.csvbang.writer.CsvWriter;
 
 
-@RunWith(BlockJUnit4ClassRunner.class)
+//@RunWith(BlockJUnit4ClassRunner.class)
 public class WriterTest {
 
 	//@Test
@@ -84,7 +84,7 @@ public class WriterTest {
 		System.out.println(System.currentTimeMillis() - start + " ms" );
 	}
 	
-	@Test
+	//@Test
 	public void testSimpleWriter2() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
 		FactoryCsvWriter factory = new FactoryCsvWriter("fr.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony2.csv");
