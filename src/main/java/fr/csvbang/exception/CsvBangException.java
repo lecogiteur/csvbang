@@ -27,7 +27,6 @@ package fr.csvbang.exception;
  * @author Tony EMMA
  *
  */
-//TODO revoir la gestion des erreurs
 public class CsvBangException extends Exception {
 
 	/**

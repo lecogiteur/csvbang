@@ -275,7 +275,6 @@ public class ConfigurationUti {
 	 * 
 	 * @author Tony EMMA
 	 */
-	//TODO revoir les exceptions
 	private static void generateHeader(final CsvBangConfiguration conf){
 		if (conf.isDisplayHeader){
 			final StringBuilder header = new StringBuilder(1000).append(conf.startRecord);
