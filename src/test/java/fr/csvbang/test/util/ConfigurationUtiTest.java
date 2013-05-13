@@ -22,7 +22,6 @@
  */
 package fr.csvbang.test.util;
 
-import java.beans.IntrospectionException;
 import java.lang.reflect.Member;
 
 import junit.framework.Assert;
@@ -33,6 +32,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import fr.csvbang.configuration.CsvBangConfiguration;
 import fr.csvbang.configuration.CsvFieldConfiguration;
+import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.formatter.DateCsvFormatter;
 import fr.csvbang.formatter.Default;
 import fr.csvbang.test.bean.ChildSimpleConfigurationBean;
@@ -49,7 +49,7 @@ import fr.csvbang.util.IConstantsCsvBang;
 public class ConfigurationUtiTest {
 	
 	@Test
-	public void simpleConfigurationTest() throws IntrospectionException, IllegalAccessException, InstantiationException{
+	public void simpleConfigurationTest() throws CsvBangException {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(SimpleConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
@@ -109,7 +109,7 @@ public class ConfigurationUtiTest {
 	}
 	
 	@Test
-	public void childSimpleConfigurationTest() throws IntrospectionException, IllegalAccessException, InstantiationException{
+	public void childSimpleConfigurationTest() throws CsvBangException {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(ChildSimpleConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
@@ -177,7 +177,7 @@ public class ConfigurationUtiTest {
 	}
 	
 	@Test
-	public void finalConfigurationTest() throws IntrospectionException, IllegalAccessException, InstantiationException{
+	public void finalConfigurationTest() throws CsvBangException {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(FinalConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);

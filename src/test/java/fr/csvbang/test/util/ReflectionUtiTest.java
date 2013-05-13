@@ -23,7 +23,6 @@
 package fr.csvbang.test.util;
 
 import java.beans.IntrospectionException;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -56,7 +55,7 @@ public class ReflectionUtiTest {
 	
 	//@Test
 	//Not work with maven. Must explore
-	public void scanPackageClassTest() throws IOException{
+	public void scanPackageClassTest() throws CsvBangException{
 		Assert.assertTrue("No package defined", CsvbangUti.isCollectionEmpty(ReflectionUti.scanPackageClass(null)));
 		
 		Assert.assertTrue("Empty package defined", CsvbangUti.isCollectionEmpty(ReflectionUti.scanPackageClass("")));

@@ -109,9 +109,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 				try {
 					wait();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					//TODO gérer l'erreur
-					//e.printStackTrace();
+					throw new CsvBangException(String.format("Error has occurred on closing file (%). Some data cannot be written in file.", file.getAbsolutePath()), e);
 				}				
 			}
 		}
@@ -141,6 +139,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	 * @author Tony EMMA
 	 *
 	 */
+	//TODO manage Exception
 	private class TaskCallable implements Callable<Void>{
 
 		private StringBuilder result;
@@ -167,7 +166,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 				try {
 					out.getChannel().write(bb);
 				} catch (IOException e) {
-					throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath()), e);
+					throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath(), result), e);
 				}
 			}
 			int dec = writer.callbackEndWriting();

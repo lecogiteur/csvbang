@@ -170,10 +170,8 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		if (conf.isDisplayHeader && conf.header != null && conf.header.length() > 0){
 			try {
 				out.write(conf.header.getBytes(conf.charset));
-			} catch (UnsupportedEncodingException e) {
-				throw new CsvBangException(e);
-			} catch (IOException e) {
-				throw new CsvBangException(e);
+			} catch (Exception e) {
+				throw new CsvBangException(String.format("Cannot write header (%s) on file %s", conf.header, file.getAbsolutePath()), e);
 			}
 		}
 	}

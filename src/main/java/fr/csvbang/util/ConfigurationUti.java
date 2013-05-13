@@ -22,7 +22,6 @@
  */
 package fr.csvbang.util;
 
-import java.beans.IntrospectionException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -44,6 +43,7 @@ import fr.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 import fr.csvbang.annotation.CsvType;
 import fr.csvbang.configuration.CsvBangConfiguration;
 import fr.csvbang.configuration.CsvFieldConfiguration;
+import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.formatter.BooleanCsvFormatter;
 import fr.csvbang.formatter.CsvFormatter;
 import fr.csvbang.formatter.CurrencyCsvFormatter;
@@ -141,14 +141,13 @@ public class ConfigurationUti {
 	 * @param finalClass the final class
 	 * @param clazz class (can be a parent of final class
 	 * @param mapConf all configuration of each field (with configuration of class parent). KEY: name of member || VALUE: its configuration
-	 * @throws IntrospectionException if we can't retrieve getter method of field
-	 * @throws IllegalAccessException if we can't create an instance of custom formatter
-	 * @throws InstantiationException if we can't create an instance of custom formatter
 	 * 
 	 * @author Tony EMMA
+	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
+	 * 							<p>if we can't create an instance of custom formatter</p>
 	 */
 	private static void loadCsvFieldConfiguration(final Class<?> finalClass, final Class<?> clazz, 
-			final Map<String, CsvFieldConfiguration> mapConf) throws IntrospectionException, IllegalAccessException, InstantiationException{
+			final Map<String, CsvFieldConfiguration> mapConf) throws CsvBangException {
 		final List<AnnotatedElement> members = ReflectionUti.getMembers(clazz);
 		for (final AnnotatedElement member:members){
 			final CsvField csvField = ReflectionUti.getCsvFieldAnnotation(member.getDeclaredAnnotations());
@@ -210,13 +209,12 @@ public class ConfigurationUti {
 	 * Load format of a CSV field
 	 * @param member field or method of a class
 	 * @return its format
-	 * @throws IllegalAccessException if we can't create an instance of custom formatter
-	 * @throws InstantiationException if we can't create an instance of custom formatter
+	 * @throws CsvBangException if we can't create an instance of custom formatter
 	 * 
 	 * @author Tony EMMA
 	 */
 	private static CsvFormatter loadCsvFormat(final AnnotatedElement member) 
-	throws IllegalAccessException, InstantiationException{
+	throws CsvBangException{
 		final CsvFormat csvFormat = ReflectionUti.getCsvFormatAnnotation(member.getDeclaredAnnotations());
 		
 		if (csvFormat == null || csvFormat.type() == null){
@@ -251,7 +249,11 @@ public class ConfigurationUti {
 				break;
 			case CUSTOM:
 				if (csvFormat.customFormatter() != null){
-					format = csvFormat.customFormatter().newInstance();
+					try {
+						format = csvFormat.customFormatter().newInstance();
+					} catch (Exception e) {
+						throw new CsvBangException(String.format("Cannot instanciate custom formatter: %s", csvFormat.customFormatter()), e);
+					}
 					break;
 				}
 			default:
@@ -295,14 +297,12 @@ public class ConfigurationUti {
 	 * Load configuration of CSV bean (file CSV)
 	 * @param clazz a class
 	 * @return its configuration (or null if the class or parents is not annotated with CsvType)
-	 * @throws IntrospectionException if we can't retrieve getter method of field
-	 * @throws IllegalAccessException if we can't create an instance of custom formatter
-	 * @throws InstantiationException if we can't create an instance of custom formatter
+	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
+	 * 							<p>if we can't create an instance of custom formatter</p>
 	 * 
 	 * @author Tony EMMA
 	 */
-	public static final CsvBangConfiguration loadCsvBangConfiguration(final Class<?> clazz) 
-	throws IntrospectionException, IllegalAccessException, InstantiationException{
+	public static final CsvBangConfiguration loadCsvBangConfiguration(final Class<?> clazz) throws CsvBangException{
 		if (clazz == null){
 			return null;
 		}

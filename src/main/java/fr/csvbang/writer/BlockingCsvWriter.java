@@ -132,7 +132,7 @@ public class BlockingCsvWriter<T> extends AbstractWriter<T> {
 			try {
 				out.getChannel().write(bb);
 			} catch (IOException e) {
-				throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath()), e);
+				throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath(), lines), e);
 			}
 		}
 	}

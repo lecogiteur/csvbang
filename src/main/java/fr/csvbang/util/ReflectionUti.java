@@ -149,42 +149,48 @@ public class ReflectionUti {
 	 * @param resource the jar
 	 * @param pathOfPackage name of package to find
 	 * @return list of classes of package
-	 * @throws IOException if there i probleme with Jar
+	 * @throws CsvBangException if there is problems with access to Jar
 	 * 
 	 * @author Tony EMMA
 	 */
 	private static Collection<Class<?>> scanJar(final URL resource, final String pathOfPackage) 
-	throws IOException {
+	throws CsvBangException {
 
 		Collection<Class<?>> clazzs = null;
 
 		//Get the jar
-		final JarURLConnection connection = (JarURLConnection) resource.openConnection();
-		final JarFile jarFile = new JarFile(new File(connection.getJarFileURL().getFile()));   
+		JarURLConnection connection;
+		try {
+			connection = (JarURLConnection) resource.openConnection();
+			final JarFile jarFile = new JarFile(new File(connection.getJarFileURL().getFile()));   
 
-		//list of entries of Jar
-		final Enumeration<JarEntry> entries = jarFile.entries();
+			//list of entries of Jar
+			final Enumeration<JarEntry> entries = jarFile.entries();
 
-		if (entries.hasMoreElements()){
-			clazzs = new HashSet<Class<?>>();
-			final Pattern p = Pattern.compile("^" + Pattern.quote(pathOfPackage) + ".+" + Pattern.quote(CLASS_EXTENSION) + "$");
+			if (entries.hasMoreElements()){
+				clazzs = new HashSet<Class<?>>();
+				final Pattern p = Pattern.compile("^" + Pattern.quote(pathOfPackage) + ".+" + Pattern.quote(CLASS_EXTENSION) + "$");
 
-			while(entries.hasMoreElements()) {
-				final JarEntry entry = entries.nextElement();
-				final String entryName = entry.getName();
-				String className = null;
-				final Matcher m = p.matcher(entryName);
-				if(m.matches()) {
-					//if entry is a class
-					className = entryName.replace(File.separatorChar, '.').replace(CLASS_EXTENSION, "");
-					final Class<?> clazz = generateClass(className);
-					if (clazz != null){
-						clazzs.add(clazz);
+				while(entries.hasMoreElements()) {
+					final JarEntry entry = entries.nextElement();
+					final String entryName = entry.getName();
+					String className = null;
+					final Matcher m = p.matcher(entryName);
+					if(m.matches()) {
+						//if entry is a class
+						className = entryName.replace(File.separatorChar, '.').replace(CLASS_EXTENSION, "");
+						final Class<?> clazz = generateClass(className);
+						if (clazz != null){
+							clazzs.add(clazz);
+						}
 					}
 				}
 			}
-		}
 
+		} catch (IOException e) {
+			new CsvBangException(String.format("Cannot access to Jar %s", resource), e);
+		}
+		
 		return clazzs;
 	}
 
@@ -197,12 +203,12 @@ public class ReflectionUti {
 	 * @param pathOfPackage the package to find
 	 * @param packageName name of package to find
 	 * @return Get all classes of package
-	 * @throws IOException if there is problem with a jar
 	 * 
 	 * @author Tony EMMA
+	 * @throws CsvBangException if we cannot access to Jar file
 	 */
 	private static Collection<Class<?>> getClasses(final Enumeration<URL> packageUrls, final String pathOfPackage, 
-			String packageName) throws IOException{
+			String packageName) throws CsvBangException{
 		final Collection<Class<?>> clazzs = new HashSet<Class<?>>();
 
 		if (packageUrls == null) {
@@ -232,11 +238,11 @@ public class ReflectionUti {
 	 * Scan all classloader in order to find all classes of the package
 	 * @param packageName the package to find
 	 * @return all classes of the package
-	 * @throws IOException if there is problem with a jar
 	 * 
 	 * @author Tony EMMA
+	 * @throws CsvBangException if we cannot access to Jar files or resources
 	 */
-	public static Collection<Class<?>> scanPackageClass(String packageName) throws IOException {
+	public static Collection<Class<?>> scanPackageClass(String packageName) throws CsvBangException {
 		if (CsvbangUti.isStringBlank(packageName)){
 			return null;
 		}
@@ -251,7 +257,12 @@ public class ReflectionUti {
 		final String pathOfPackage = pn.replace('.', File.separatorChar);
 
 		//get package the the system classloader
-		Enumeration<URL> packageUrls = ClassLoader.getSystemClassLoader().getResources(pathOfPackage);
+		Enumeration<URL> packageUrls;
+		try {
+			packageUrls = ClassLoader.getSystemClassLoader().getResources(pathOfPackage);
+		} catch (IOException e) {
+			throw new CsvBangException(String.format("Cannot access to resource %s in system classloader.", packageName), e);
+		}
 		Collection<Class<?>> c = getClasses(packageUrls, pathOfPackage, pn);
 
 		if (CsvbangUti.isCollectionNotEmpty(c)){
@@ -262,7 +273,11 @@ public class ReflectionUti {
 		final ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
 		if (contextLoader != null){
 			//No need to get classloader parent, "getResources" do it.
-			packageUrls = contextLoader.getResources(pathOfPackage);
+			try {
+				packageUrls = contextLoader.getResources(pathOfPackage);
+			} catch (IOException e) {
+				throw new CsvBangException(String.format("Cannot access to resource %s in current thread classloader.", packageName), e);
+			}
 			c = getClasses(packageUrls, pathOfPackage, pn);
 			if (CsvbangUti.isCollectionNotEmpty(c)){
 				clazzs.addAll(c);
@@ -300,12 +315,17 @@ public class ReflectionUti {
 	 * @param c the class
 	 * @param name the name of property
 	 * @return the getter
-	 * @throws IntrospectionException if an error occurred when retrieve the getter
+	 * @throws CsvBangException if an error occurred when retrieve the getter
 	 * 
 	 * @author Tony EMMA
 	 */
-	public static final Method getGetterMethod(final Class<?> c, final String name) throws IntrospectionException{
-		final BeanInfo info = Introspector.getBeanInfo(c);
+	public static final Method getGetterMethod(final Class<?> c, final String name) throws CsvBangException{
+		BeanInfo info;
+		try {
+			info = Introspector.getBeanInfo(c);
+		} catch (IntrospectionException e) {
+			throw new CsvBangException(String.format("Cannot inspect %s", c), e);
+		}
 		for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
 			if (pd.getReadMethod() != null && pd.getName().equals(name)){
 				return pd.getReadMethod();

@@ -22,9 +22,7 @@
  */
 package fr.csvbang.factory;
 
-import java.beans.IntrospectionException;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +44,7 @@ import fr.csvbang.writer.CsvWriter;
 import fr.csvbang.writer.SimpleCsvWriter;
 
 /**
- * Factory which generate CSV write
+ * Factory which generates CSV write. This factory manages a list of class (CSV bean) and their configuration.
  * @author Tony EMMA
  *
  */
@@ -77,12 +75,9 @@ public class FactoryCsvWriter {
 	/**
 	 * Constructor
 	 * @param clazzs list of class to parse. This class must be annotated with {@link CsvType}
-	 * @throws IntrospectionException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws CsvBangException if we cannot load a CSV bean configuration
 	 */
-	//TODO revoir les exception
-	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
+	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws CsvBangException{
 		loadConfigurations(clazzs);
 		executorWriterService = Executors.newFixedThreadPool(numberOfWriterThread);
 	}
@@ -90,14 +85,9 @@ public class FactoryCsvWriter {
 	/**
 	 * Constructor
 	 * @param sPkg list of package separated by comma and contained class annotated with {@link CsvType}
-	 * @throws ClassNotFoundException
-	 * @throws IOException
-	 * @throws IntrospectionException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
 	 */
-	//TODO revoir les exceptions
-	public FactoryCsvWriter (final String sPkg) throws ClassNotFoundException, IOException, IntrospectionException, IllegalAccessException, InstantiationException{
+	public FactoryCsvWriter (final String sPkg) throws CsvBangException{
 		final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
 		if (pkgs != null){
 			for (final String pkg:pkgs){
@@ -129,7 +119,6 @@ public class FactoryCsvWriter {
 	 * 
 	 * @author Tony EMMA
 	 */
-	//TODO revoir les exceptions
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
 
@@ -160,7 +149,6 @@ public class FactoryCsvWriter {
 	 * 
 	 * @author Tony EMMA
 	 */
-	//TODO revoir les exceptions
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
 
@@ -182,8 +170,14 @@ public class FactoryCsvWriter {
 		return new SimpleCsvWriter<T>(destination, conf);
 	}
 
-	//TODO revoir les exceptions
-	public void add(final Class<?> clazz) throws IntrospectionException, IllegalAccessException, InstantiationException{
+	/**
+	 * Add a class to the factory
+	 * @param clazz class
+	 * @throws CsvBangException if we cannot load a CSV bean configuration
+	 * 
+	 * @author Tony EMMA
+	 */
+	public void add(final Class<?> clazz) throws CsvBangException{
 		if (clazz != null){
 			Collection<Class<?>> c =new ArrayList<Class<?>>(1);
 			c.add(clazz);
@@ -191,13 +185,25 @@ public class FactoryCsvWriter {
 		}
 	}
 
-	//TODO revoir les exceptions
-	public void add(final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
+	/**
+	 * Add a list of class to factory
+	 * @param clazzs classes
+	 * @throws CsvBangException if we cannot load a CSV bean configuration
+	 * 
+	 * @author Tony EMMA
+	 */
+	public void add(final Collection<Class<?>> clazzs) throws CsvBangException {
 		loadConfigurations(clazzs);
 	}
 
-	//TODO revoir les exceptions
-	public void addPackage(final String packages) throws IOException, IntrospectionException, IllegalAccessException, InstantiationException{
+	/**
+	 * Add package to the factory. The package must be separated be a comma.
+	 * @param packages packages
+	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
+	 * 
+	 * @author Tony EMMA
+	 */
+	public void addPackage(final String packages) throws CsvBangException {
 		if(CsvbangUti.isStringNotBlank(packages)){
 			final String[] pkgs = PACKAGE_SEPARATOR.split(packages);
 			if (pkgs != null){
@@ -212,19 +218,20 @@ public class FactoryCsvWriter {
 	/**
 	 * Parse class annotated with {@link CsvType} and load the configuration
 	 * @param clazzs a list of class
-	 * @throws IntrospectionException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
 	 * 
 	 * @author Tony EMMA
+	 * @throws CsvBangException if we cannot load configuration
 	 */
-	//TODO revoir les exceptions
-	private void loadConfigurations(final Collection<Class<?>> clazzs) throws IntrospectionException, IllegalAccessException, InstantiationException{
+	private void loadConfigurations(final Collection<Class<?>> clazzs) throws CsvBangException {
 		if (clazzs != null){
 			for (final Class<?> clazz:clazzs){
-				final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(clazz);
-				if (conf != null){
-					configurations.put(clazz, conf);
+				try{
+					final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(clazz);
+					if (conf != null){
+						configurations.put(clazz, conf);
+					}
+				}catch(CsvBangException e){
+					throw new CsvBangException(String.format("Cannot load configuration of class %s. Verify annotations.", clazz), e);
 				}
 			}
 		}
