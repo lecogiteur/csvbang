@@ -159,6 +159,10 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 			throw new CsvBangException("No file defined for CSV writer");
 		}
 		
+		if (!conf.isAppendToFile && file.exists()){
+			file.delete();
+		}
+		
 		if (!file.exists()){
 			try {
 				file.createNewFile();
@@ -172,7 +176,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		}
 		
 		try {
-			out = new FileOutputStream(file, conf.isAppendToFile);
+			out = new FileOutputStream(file, true);
 		} catch (FileNotFoundException e) {
 			throw new CsvBangException("Could not create file: " + file.getAbsolutePath(), e);
 		}
