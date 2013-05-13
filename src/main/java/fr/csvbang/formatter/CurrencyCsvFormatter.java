@@ -29,20 +29,39 @@ import java.util.Locale;
 import fr.csvbang.util.CsvbangUti;
 
 /**
+ * Format and parse currency value
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class CurrencyCsvFormatter implements CsvFormatter {
 	
+	/**
+	 * Currency format.
+	 * 
+	 * @since 0.0.1
+	 * 
+	 */
 	private NumberFormat format;
 	
+	/**
+	 * Pattern of currency
+	 * 
+	 * @since 0.0.1
+	 */
 	private String pattern;
 	
+	/**
+	 * Locale of currency
+	 * 
+	 * @since 0.0.1
+	 */
 	private Locale locale;
 
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
+	 * 
+	 * @since 0.0.1
 	 */
 	public void init() {
 		if (locale == null){
@@ -78,8 +97,25 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * The pattern indicates the number of digits for integer part and fraction part.</p>
+	 * 
+	 * Example.
+	 * <ul>
+	 * 	<li>pattern (0.00) : 12.356 ==> 2.36 </li>
+	 * 	<li>pattern (.00) : 12.356 ==> 12.36 </li>
+	 * 	<li>pattern (.##) : 12.356 ==> 12.36 </li>
+	 * 	<li>pattern (##.) : 12.356 ==> 12.356 </li>
+	 * 	<li>pattern (###.##) : 12.356 ==> 12.36 </li>
+	 * 	<li>pattern (000.##) : 12.356 ==> 012.36 </li>
+	 * 	<li>no pattern : 12.356 ==> 12.36 </li>
+	 * </ul>
+	 * 
+	 * <p>The pattern is not required.</p>
+	 * 
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
 	 * @see {@link NumberFormat} format class 
+	 * @since 0.0.1
 	 */
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
@@ -88,6 +124,8 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setLocal(java.util.Locale)
+	 * 
+	 * @since 0.0.1
 	 */
 	public void setLocal(Locale locale) {
 		this.locale = locale;
@@ -96,6 +134,8 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#format(java.lang.Object, java.lang.String)
+	 * 
+	 * @since 0.0.1
 	 */
 	public String format(Object o, String defaultIfNull) {
 		if (o == null){

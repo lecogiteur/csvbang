@@ -54,22 +54,26 @@ import fr.csvbang.exception.CsvBangException;
 /**
  * Utility class on reflection
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class ReflectionUti {
 
 	/**
 	 * Extension file for class java
+	 * @since 0.0.1
 	 */
 	private static final String CLASS_EXTENSION = ".class";
 
 	/**
 	 * Pattern in order to verify if string is a Java file
+	 * @since 0.0.1
 	 */
 	private static final Pattern CLASS_FILE = Pattern.compile("^.*" + Pattern.quote(CLASS_EXTENSION) + "$");
 
 	/**
 	 * keyword for JAR protocol
+	 * @since 0.0.1
 	 */
 	private static final String JAR_PROTOCOL = "jar";
 
@@ -78,8 +82,7 @@ public class ReflectionUti {
 	 * Generate a class from the type name
 	 * @param className the name of the non-base type class to find
 	 * @return the class
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static Class<?> generateClass(final String className){
 		try {
@@ -103,8 +106,7 @@ public class ReflectionUti {
 	 * @param directory directory of package
 	 * @param packageName name of package to find
 	 * @return list of class of package
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static Collection<Class<?>> scanSimplePackage(final File directory, final String packageName) {
 
@@ -150,8 +152,7 @@ public class ReflectionUti {
 	 * @param pathOfPackage name of package to find
 	 * @return list of classes of package
 	 * @throws CsvBangException if there is problems with access to Jar
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static Collection<Class<?>> scanJar(final URL resource, final String pathOfPackage) 
 	throws CsvBangException {
@@ -203,9 +204,8 @@ public class ReflectionUti {
 	 * @param pathOfPackage the package to find
 	 * @param packageName name of package to find
 	 * @return Get all classes of package
-	 * 
-	 * @author Tony EMMA
 	 * @throws CsvBangException if we cannot access to Jar file
+	 * @since 0.0.1
 	 */
 	private static Collection<Class<?>> getClasses(final Enumeration<URL> packageUrls, final String pathOfPackage, 
 			String packageName) throws CsvBangException{
@@ -238,9 +238,8 @@ public class ReflectionUti {
 	 * Scan all classloader in order to find all classes of the package
 	 * @param packageName the package to find
 	 * @return all classes of the package
-	 * 
-	 * @author Tony EMMA
 	 * @throws CsvBangException if we cannot access to Jar files or resources
+	 * @since 0.0.1
 	 */
 	public static Collection<Class<?>> scanPackageClass(String packageName) throws CsvBangException {
 		if (CsvbangUti.isStringBlank(packageName)){
@@ -293,8 +292,7 @@ public class ReflectionUti {
 	 * @param bean the bean
 	 * @return the value
 	 * @throws CsvBangException if can't retrieve the value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final Object getValue(final AnnotatedElement m, final Object bean) throws CsvBangException{
 		Object v = null;
@@ -316,8 +314,7 @@ public class ReflectionUti {
 	 * @param name the name of property
 	 * @return the getter
 	 * @throws CsvBangException if an error occurred when retrieve the getter
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final Method getGetterMethod(final Class<?> c, final String name) throws CsvBangException{
 		BeanInfo info;
@@ -338,8 +335,7 @@ public class ReflectionUti {
 	 * Retrieve the CsvType annotation
 	 * @param annotations the list of annotation
 	 * @return the CsvType annotation or null if not exists
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static CsvType getCsvTypeAnnotation(final Annotation[] annotations){
 		if (annotations == null || annotations.length == 0){
@@ -357,8 +353,7 @@ public class ReflectionUti {
 	 * Retrieve the CsvField annotation
 	 * @param annotations  the list of annotation
 	 * @return the CsvField annotation or null if not exists
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static CsvField getCsvFieldAnnotation(final Annotation[] annotations){
 		if (annotations == null || annotations.length == 0){
@@ -376,8 +371,7 @@ public class ReflectionUti {
 	 * Retrieve the CsvFormat annotation
 	 * @param annotations  the list of annotation
 	 * @return the CsvFormat annotation or null if not exists
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static CsvFormat getCsvFormatAnnotation(final Annotation[] annotations){
 		if (annotations == null || annotations.length == 0){
@@ -396,8 +390,7 @@ public class ReflectionUti {
 	 * 
 	 * @param clazz a class
 	 * @return methods and all field declared on the class (not on its parent) 
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static List<AnnotatedElement> getMembers(final Class<?> clazz){
 		final List<AnnotatedElement> members = new ArrayList<AnnotatedElement>();

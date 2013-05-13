@@ -26,18 +26,29 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 
 /**
+ * Format and parse number. This class is based on {@link DecimalFormat}.
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class NumberCsvFormatter implements CsvFormatter {
 	
+	/**
+	 * Number format
+	 * @since 0.0.1
+	 */
 	private DecimalFormat format;
 	
+	/**
+	 * the pattern of number
+	 * @since 0.0.1
+	 */
 	private String pattern;
 
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
+	 * @since 0.0.1
 	 */
 	public void init() {
 		format = new DecimalFormat(pattern);
@@ -46,6 +57,8 @@ public class NumberCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
+	 * @see {@link DecimalFormat} for set the number pattern
+	 * @since 0.0.1
 	 */
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
@@ -54,6 +67,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setLocal(java.util.Locale)
+	 * @since 0.0.1
 	 */
 	public void setLocal(Locale locale) {
 		//do nothing
@@ -62,6 +76,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#format(java.lang.Object, java.lang.String)
+	 * @since 0.0.1
 	 */
 	public String format(Object o, String defaultIfNull) {
 		if (o == null){

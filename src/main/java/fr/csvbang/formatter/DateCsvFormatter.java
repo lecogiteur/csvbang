@@ -29,20 +29,35 @@ import java.util.Locale;
 import fr.csvbang.util.CsvbangUti;
 
 /**
+ * Format and parse date value. This class and pattern are based on {@link SimpleDateFormat}
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class DateCsvFormatter implements CsvFormatter {
 	
+	/**
+	 * Date format
+	 * @since 0.0.1
+	 */
 	private SimpleDateFormat format;
 	
+	/**
+	 * Pattern of date
+	 * @since 0.0.1
+	 */
 	private String pattern;
 	
+	/**
+	 * the locale of date
+	 * @since 0.0.1
+	 */
 	private Locale locale;
 
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
+	 * @since 0.0.1
 	 */
 	public void init() {
 		if (locale == null){
@@ -56,7 +71,12 @@ public class DateCsvFormatter implements CsvFormatter {
 
 	/**
 	 * {@inheritDoc}
+	 * The pattern is required
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
+	 * 
+	 * @see {@link SimpleDateFormat} for set a pattern
+	 * 
+	 * @since 0.0.1
 	 */
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
@@ -65,6 +85,7 @@ public class DateCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setLocal(java.util.Locale)
+	 * @since 0.0.1
 	 */
 	public void setLocal(Locale locale) {
 		this.locale = locale;
@@ -73,6 +94,7 @@ public class DateCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#format(java.lang.Object, java.lang.String)
+	 * @since 0.0.1
 	 */
 	public String format(Object o, final String defaultIfNull) {
 		if (o == null){

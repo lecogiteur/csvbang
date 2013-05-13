@@ -27,19 +27,40 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
+ * Format boolean value
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class BooleanCsvFormatter implements CsvFormatter {
 	
+	/**
+	 * simple boolean translation
+	 * @since 0.0.1
+	 */
 	private static final Map<String, String[]> simplemap = new HashMap<String, String[]>();
 	
+	/**
+	 * Literal boolean translation (lower case)
+	 * @since 0.0.1
+	 */
 	private static final Map<Locale, String[]> LocaleMapLitteral = new HashMap<Locale, String[]>();
 	
+	/**
+	 * Literal boolean translation 
+	 * @since 0.0.1
+	 */
 	private static final Map<Locale, String[]> LocaleMaplitteral = new HashMap<Locale, String[]>();
 	
+	/**
+	 * Literal boolean translation (upper case)
+	 * @since 0.0.1
+	 */
 	private static final Map<Locale, String[]> LocaleMapLITTERAL = new HashMap<Locale, String[]>();
 	
+	/**
+	 * Reverse translation
+	 * @since 0.0.1
+	 */
 	private static final Map<String, Integer> revert = new HashMap<String, Integer>();
 	
 	static{
@@ -83,15 +104,28 @@ public class BooleanCsvFormatter implements CsvFormatter {
 		revert.put("off", 1);
 	}
 	
+	/**
+	 * Pattern used for translation
+	 * @since 0.0.1
+	 */
 	private String pattern;
 	
+	/**
+	 * Locale used for literal translation
+	 * @since 0.0.1
+	 */
 	private Locale locale;
 	
+	/**
+	 * the translation used
+	 * @since 0.0.1
+	 */
 	private String[] destination;
 
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#init()
+	 * @since 0.0.1
 	 */
 	public void init() {
 		if ("litteral".equals(pattern)){
@@ -119,8 +153,32 @@ public class BooleanCsvFormatter implements CsvFormatter {
 	}
 
 	/**
+	 * 
 	 * {@inheritDoc}
+	 * List of pattern:
+	 * <ul>
+	 * 	<li><b>boolean</b>: true or false</li>
+	 * 	<li><b>Boolean</b>: True or False</li>
+	 * 	<li><b>BOOLEAN</b>: TRUE or FALSE</li>
+	 * 	<li><b>B</b>: T or F</li>
+	 * 	<li><b>b</b>: t or f</li>
+	 * 	<li><b>integer</b>: 1 or 0</li>
+	 * 	<li><b>y/n</b>: y or n</li>
+	 * 	<li><b>Y/N</b>: Y or N</li>
+	 * 	<li><b>o/n</b>: o or n</li>
+	 * 	<li><b>O/N</b>: O or N</li>
+	 * 	<li><b>on/off</b>: on or off</li>
+	 * 	<li><b>On/Off</b>: On or Off</li>
+	 * 	<li><b>ON/OFF</b: ON or OFF</li>
+	 * 	<li><b>litteral</b>: yes or no in function locale</li>
+	 * 	<li><b>Litteral</b>: Yes or No in function locale</li>
+	 * 	<li><b>LITTERAL</b>: YES or NO in function locale</li>
+	 * </ul>
+	 * <p>
+	 * 	The default pattern is "boolean"
+	 * </p>
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
+	 * @since 0.0.1
 	 */
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
@@ -129,6 +187,7 @@ public class BooleanCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setLocal(java.util.Locale)
+	 * @since 0.0.1
 	 */
 	public void setLocal(Locale locale) {
 		this.locale = locale;
@@ -137,6 +196,7 @@ public class BooleanCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#format(java.lang.Object, java.lang.String)
+	 * @since 0.0.1
 	 */
 	public String format(Object o, String defaultIfNull) {
 		if (o == null){

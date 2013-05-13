@@ -25,17 +25,19 @@ package fr.csvbang.exception;
 /**
  * Exception from Csv file.
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class CsvBangException extends Exception {
 
 	/**
-	 * erial version UID
+	 * Serial version UID
+	 * @since 0.0.1
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor
+	 * @since 0.0.1
 	 */
 	public CsvBangException() {
 		super();
@@ -45,6 +47,7 @@ public class CsvBangException extends Exception {
 	 * Constructor
 	 * @param message message of exception
 	 * @param cause cause of exception
+	 * @since 0.0.1
 	 */
 	public CsvBangException(String message, Throwable cause) {
 		super(message, cause);
@@ -53,6 +56,7 @@ public class CsvBangException extends Exception {
 	/**
 	 * Constructor
 	 * @param message message of exception
+	 * @since 0.0.1
 	 */
 	public CsvBangException(String message) {
 		super(message);
@@ -61,6 +65,7 @@ public class CsvBangException extends Exception {
 	/**
 	 * Constructor
 	 * @param cause cause of exception
+	 * @since 0.0.1
 	 */
 	public CsvBangException(Throwable cause) {
 		super(cause);

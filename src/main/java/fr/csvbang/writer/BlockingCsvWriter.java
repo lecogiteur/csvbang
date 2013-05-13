@@ -36,19 +36,23 @@ import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.util.CsvbangUti;
 
 /**
+ * Writer by block
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class BlockingCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
 	 * the buffer
+	 * @since 0.0.1
+	 * 
 	 */
 	private BlockingQueue<CharSequence> buffer;
 
 	/**
 	 * Constructor
 	 * @param file CSV file
+	 * @since 0.0.1
 	 */
 	public BlockingCsvWriter(final File file, final CsvBangConfiguration conf) {
 		super(file, conf);
@@ -59,6 +63,7 @@ public class BlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * Constructor
 	 * @param file path of CSV file
+	 * @since 0.0.1
 	 */
 	public BlockingCsvWriter(final String file, final CsvBangConfiguration conf) {
 		super(file, conf);
@@ -70,6 +75,7 @@ public class BlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.util.Collection)
+	 * @since 0.0.1
 	 */
 	public void write(final Collection<T> lines) throws CsvBangException {
 		if (CsvbangUti.isCollectionEmpty(lines)){
@@ -88,6 +94,7 @@ public class BlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#close()
+	 * @since 0.0.1
 	 */
 	public void close() throws CsvBangException {
 		emptyQueue();
@@ -103,9 +110,8 @@ public class BlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * Empty the buffer
 	 * 
-	 * @throws CsvBangException
-	 * 
-	 * @author Tony EMMA
+	 * @throws CsvBangException if a problem has occurred when write in file 
+	 * @since 0.0.1
 	 */
 	private void emptyQueue() throws CsvBangException{
 		if (out == null){

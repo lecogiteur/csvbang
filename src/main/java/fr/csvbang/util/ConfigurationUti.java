@@ -52,7 +52,9 @@ import fr.csvbang.formatter.Default;
 import fr.csvbang.formatter.NumberCsvFormatter;
 
 /**
+ * Utility class in order to load and parse configuration of a CSV bean
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class ConfigurationUti {
@@ -60,12 +62,14 @@ public class ConfigurationUti {
 
 	
 	/**
-	 * Pattern in order to split local
+	 * Pattern in order to split locale
+	 * @since 0.0.1
 	 */
 	private static final Pattern LOCALE_SEPARATOR = Pattern.compile("_"); 
 	
 	/**
 	 * Default Format
+	 * @since 0.0.1
 	 */
 	private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
 	
@@ -77,8 +81,7 @@ public class ConfigurationUti {
 	 * @param value the actual value
 	 * @param defaultValue the default value
 	 * @return the value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static String getParameterValue(final String oldValue, final String value, final String defaultValue){
 		if (defaultValue.equals(value)){
@@ -93,8 +96,7 @@ public class ConfigurationUti {
 	 * @param value the actual value
 	 * @param defaultValue the default value
 	 * @return the value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static int getParameterValue(final int oldValue, final int value, final int defaultValue){
 		if (defaultValue == value){
@@ -109,8 +111,7 @@ public class ConfigurationUti {
 	 * @param value the actual value
 	 * @param defaultValue the default value
 	 * @return the value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static char getParameterValue(final char oldValue, final char value, final char defaultValue){
 		if (defaultValue == value){
@@ -125,8 +126,7 @@ public class ConfigurationUti {
 	 * @param value the actual value
 	 * @param defaultValue the default value
 	 * @return the value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static boolean getParameterValue(final boolean oldValue, final boolean value, final boolean defaultValue){
 		if (defaultValue == value){
@@ -142,9 +142,10 @@ public class ConfigurationUti {
 	 * @param clazz class (can be a parent of final class
 	 * @param mapConf all configuration of each field (with configuration of class parent). KEY: name of member || VALUE: its configuration
 	 * 
-	 * @author Tony EMMA
+
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
+	 * @since 0.0.1
 	 */
 	private static void loadCsvFieldConfiguration(final Class<?> finalClass, final Class<?> clazz, 
 			final Map<String, CsvFieldConfiguration> mapConf) throws CsvBangException {
@@ -210,8 +211,7 @@ public class ConfigurationUti {
 	 * @param member field or method of a class
 	 * @return its format
 	 * @throws CsvBangException if we can't create an instance of custom formatter
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static CsvFormatter loadCsvFormat(final AnnotatedElement member) 
 	throws CsvBangException{
@@ -272,8 +272,7 @@ public class ConfigurationUti {
 	/**
 	 * Generate header of file if necessary
 	 * @param conf a general configuration
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private static void generateHeader(final CsvBangConfiguration conf){
 		if (conf.isDisplayHeader){
@@ -298,8 +297,7 @@ public class ConfigurationUti {
 	 * @return its configuration (or null if the class or parents is not annotated with CsvType)
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final CsvBangConfiguration loadCsvBangConfiguration(final Class<?> clazz) throws CsvBangException{
 		if (clazz == null){

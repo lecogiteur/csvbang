@@ -28,6 +28,7 @@ import java.util.Collection;
  * 
  * General Utility class
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class CsvbangUti {
@@ -36,8 +37,7 @@ public class CsvbangUti {
 	 * Verify if a String is blank (null, empty or white space)
 	 * @param s a String
 	 * @return true if the String is blank
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean isStringBlank(final String s){
 		return !isStringNotBlank(s);
@@ -47,8 +47,7 @@ public class CsvbangUti {
 	 * Verify if a String is not blank (null, empty or white space)
 	 * @param s a String
 	 * @return true if the String is not blank
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean isStringNotBlank(final String s){
 		if (s == null || "".equals(s)){
@@ -68,8 +67,7 @@ public class CsvbangUti {
 	 * Verify if a collection is empty
 	 * @param c a collection
 	 * @return True if collection is empty
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean isCollectionEmpty(final Collection<?> c){
 		return c == null || c.size() == 0;
@@ -79,8 +77,7 @@ public class CsvbangUti {
 	 * Verify if a collection is not empty
 	 * @param c a collection
 	 * @return True if collection is not empty
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean isCollectionNotEmpty(final Collection<?> c){
 		return c != null && c.size() > 0;

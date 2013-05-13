@@ -39,23 +39,36 @@ import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.util.CsvbangUti;
 
 /**
+ * asynchronous and blocking writer
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
 	 * the buffer
+	 * 
+	 * @author Tony EMMA
 	 */
 	private BlockingQueue<CharSequence> buffer;
 
+	/**
+	 * service which manage thread.
+	 * @since 0.0.1
+	 */
 	private ExecutorService executor;
 	
+	/**
+	 * Number of thread
+	 * @since 0.0.1
+	 */
 	private AtomicInteger atomic = new AtomicInteger(0);
 
 	/**
 	 * Constructor
 	 * @param file CSV file
+	 * @since 0.0.1
 	 */
 	public AsynchronousBlockingCsvWriter(final File file, final CsvBangConfiguration conf, final ExecutorService serviceExecutor) {
 		super(file, conf);
@@ -67,6 +80,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * Constructor
 	 * @param file path of CSV file
+	 * @since 0.0.1
 	 */
 	public AsynchronousBlockingCsvWriter(final String file, final CsvBangConfiguration conf, final ExecutorService serviceExecutor) {
 		super(file, conf);
@@ -79,6 +93,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.util.Collection)
+	 * @since 0.0.1
 	 */
 	public void write(final Collection<T> lines) throws CsvBangException {
 		if (CsvbangUti.isCollectionEmpty(lines)){
@@ -97,6 +112,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#close()
+	 * @since 0.0.1
 	 */
 	public void close() throws CsvBangException {
 		emptyQueue();
@@ -123,8 +139,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	 * Empty the buffer
 	 * 
 	 * @throws CsvBangException
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private void emptyQueue() throws CsvBangException{
 		if (out == null){
@@ -146,8 +161,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
 	 * Call back method when terminate to write a block of record in file
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public int callbackEndWriting(){
 		return atomic.decrementAndGet();
@@ -157,20 +171,40 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	 * 
 	 * Task which write in file
 	 * @author Tony EMMA
+	 * @version 0.0.1
 	 *
 	 */
 	//TODO Manage exception
 	private class TaskBlockingCallable implements Callable<Void>{
 
+		/**
+		 * lines to insert
+		 * @since 0.0.1
+		 */
 		private Collection<CharSequence> lines;
 
+		/**
+		 * instance of writer
+		 * @since 0.0.1
+		 */
 		private AsynchronousBlockingCsvWriter<?> writer;
 		
+		/**
+		 * Constructor
+		 * @param lines lines to insert
+		 * @param writer instance of writer
+		 * @since 0.0.1
+		 */
 		public TaskBlockingCallable(Collection<CharSequence> lines, AsynchronousBlockingCsvWriter<?> writer){
 			this.writer = writer;
 			this.lines = lines;
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 * @see java.util.concurrent.Callable#call()
+		 * @since 0.0.1
+		 */
 		public Void call() throws Exception {
 			final StringBuilder sLines = new StringBuilder(buffer.size() * defaultLineSize);
 			for (final CharSequence s:lines){

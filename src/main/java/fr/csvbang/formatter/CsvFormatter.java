@@ -28,14 +28,14 @@ import java.util.Locale;
 /**
  * Format a value. One instance of this class is created by field
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public interface CsvFormatter {
 	
 	/**
-	 * Initialize the 
+	 * Initialize the formatter
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	void init();
 	
@@ -43,7 +43,7 @@ public interface CsvFormatter {
 	 * set pattern linked to this formatter
 	 * @param pattern the pattern
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	void setPattern(final String pattern);
 	
@@ -51,7 +51,7 @@ public interface CsvFormatter {
 	 * Locale to set
 	 * @param locale the locale
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	void setLocal(final Locale locale);
 	
@@ -61,7 +61,7 @@ public interface CsvFormatter {
 	 * @param defaultIfNull String if value is null defined in {@link fr.csvbang.annotation.CsvField}
 	 * @return the value formatted
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	String format(final Object o, final String defaultIfNull);
 

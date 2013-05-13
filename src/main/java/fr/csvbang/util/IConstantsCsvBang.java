@@ -23,7 +23,9 @@
 package fr.csvbang.util;
 
 /**
+ * Constants
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public interface IConstantsCsvBang {
@@ -32,36 +34,31 @@ public interface IConstantsCsvBang {
 	
 	/**
 	 * Delimiter between fields. By default {@value ,}
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_DELIMITER = ",";
 	
 	/**
 	 * Charset of file. By default {@value UTF-8}
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
 	/**
 	 * String to put at the start of record. By default nothing
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_START_RECORD = "";
 	
 	/**
 	 * String to put at the end of record. By default the character {@value \n}
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_END_RECORD = "\n";
 	
 	/**
 	 * Size of buffer in number of record. Negative value means no buffer.
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final int DEFAULT_BLOCKING_SIZE = -1;
 	
@@ -70,8 +67,7 @@ public interface IConstantsCsvBang {
 	 * You can define the number of thread dedicate to write file in {@link fr.csvbang.factory.FactoryCsvWriter}. 
 	 * By default the number of processor divide by 3.
 	 * If you create several files in the same time, the thread will be share for each files.
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_ASYNCHRONOUS_WRITE = false;
 	
@@ -79,32 +75,31 @@ public interface IConstantsCsvBang {
 	 * Display the header on the first line. By default {@value false}.
 	 * The header is generated with the name of field. If no name is defined for a field, 
 	 * we take the property name or method name
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_HEADER = false;
 	
 	/**
 	 * Character in order to quote value. By default, no quote defined.
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_QUOTE_CHARACTER = "";
 	
 	/**
 	 * Character in order to escape the quote character. By default {@value \}
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final char DEFAULT_QUOTE_ESCAPE_CHARACTER = '\\';
 	
 	/**
 	 * Default file name for a CSV bean. By default, no static file name is defined
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_FILE_NAME = "";
 	
 	/**
 	 * Default value in order to append csv data to a file or must create a ne file. By default create a new file.
+	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_APPEND_FILE = false;
 	
@@ -117,28 +112,26 @@ public interface IConstantsCsvBang {
 	 * If no position is required you can set a negative position. If you want to override a {@link CsvField} annotation in sub class, you
 	 * must set a negative value other than -1
 	 * </p>
+	 * @since 0.0.1
 	 */
 	public static final int DEFAULT_FIELD_POSITION = -1;
 	
 	/**
 	 * Name of field in CSV file. If no name is defined, the name of member (field or method) is selected.
 	 * By default no name is defined.
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_FIELD_NAME = "";
 	
 	/**
 	 * Default value if the value is null. By default, it's an empty string
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_FIELD_NULL_VALUE = "";
 	
 	/**
 	 * Delete field if the value is null. Delete field only for the current record. By default false.
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_FIELD_DELETE_IF_NULL = false; 
 

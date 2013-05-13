@@ -29,7 +29,7 @@ import fr.csvbang.exception.CsvBangException;
 /**
  * Writer of CSV file
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public interface CsvWriter<T> {
 	
@@ -39,8 +39,7 @@ public interface CsvWriter<T> {
 	 * Create CSV file and write header.</p>
 	 * <p>Not necessary to open writer. To the first, write the writer if it's not opened, will be opened.</p>
 	 * @throws CsvBangException if a problem occurred during creation of file
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void open() throws CsvBangException;
 	
@@ -48,8 +47,7 @@ public interface CsvWriter<T> {
 	/**
 	 * Verify if writer is opened
 	 * @return True if already open
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public boolean isOpen();
 	
@@ -57,8 +55,7 @@ public interface CsvWriter<T> {
 	 * Write a line in file
 	 * @param line a line
 	 * @throws CsvBangException if a problem occurred during writing file
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void write(T line) throws CsvBangException;
 	
@@ -66,8 +63,7 @@ public interface CsvWriter<T> {
 	 * Write lines in file
 	 * @param lines lines
 	 * @throws CsvBangException if a problem occurred during writing file
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void write(T[] lines) throws CsvBangException;
 	
@@ -75,16 +71,14 @@ public interface CsvWriter<T> {
 	 * Write lines in file
 	 * @param lines lines
 	 * @throws CsvBangException if a problem occurred during writing file
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void write(Collection<T> lines) throws CsvBangException;
 	
 	/**
 	 * Close file and write footer
 	 * @throws CsvBangException if a problem occurred during closing file
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void close() throws CsvBangException;
 	

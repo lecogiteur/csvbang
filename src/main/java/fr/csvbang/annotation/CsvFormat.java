@@ -37,7 +37,7 @@ import fr.csvbang.formatter.Default;
 /**
  * Annotation in order to format value of a field
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 @Target(value={ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -47,7 +47,7 @@ public @interface CsvFormat {
 
 	/**
 	 * Type of format
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 *
 	 */
 	public enum TYPE_FORMAT {
@@ -149,7 +149,7 @@ public @interface CsvFormat {
 	 * Pattern in function type.
 	 * @return the pattern
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	String pattern() default "";
 	
@@ -160,7 +160,7 @@ public @interface CsvFormat {
 	 * 
 	 * @see {@link CsvFormatter} custom formatter must implement {@link CsvFormatter}
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	Class<? extends CsvFormatter> customFormatter() default Default.class;
 	
@@ -171,7 +171,7 @@ public @interface CsvFormat {
 	 * 
 	 * @return the result of {@link Locale#toString()}
 	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	String locale() default "fr_FR_";
 }

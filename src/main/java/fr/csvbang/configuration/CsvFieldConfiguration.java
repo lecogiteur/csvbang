@@ -30,37 +30,43 @@ import fr.csvbang.util.IConstantsCsvBang;
 /**
  * Configuration of field
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class CsvFieldConfiguration {
 	
 	/**
 	 * Name of field. Used in order to generate header.
+	 * @since 0.0.1
 	 */
 	public String name = IConstantsCsvBang.DEFAULT_FIELD_NAME;
 	
 	/**
 	 * Position of field. Negative value means that field have no position
+	 * @since 0.0.1
 	 */
 	public int position = IConstantsCsvBang.DEFAULT_FIELD_POSITION;
 	
 	/**
 	 * property or method of bean
+	 * @since 0.0.1
 	 */
 	public AnnotatedElement memberBean;
 	
 	/**
 	 * String which replace null value
+	 * @since 0.0.1
 	 */
 	public String nullReplaceString = IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE;
 	
 	/**
 	 * Delete field if the value is null. Delete field only for the current record. By default false.
+	 * @since 0.0.1
 	 */
 	public boolean isDeleteFieldIfNull = IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL;
 	
 	/**
 	 * Format value
+	 * @since 0.0.1
 	 */
 	public CsvFormatter format;
 }

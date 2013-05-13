@@ -33,14 +33,16 @@ import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.util.CsvbangUti;
 
 /**
+ * Simple writer
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 
 	/**
 	 * Constructor
 	 * @param file CSV file
+	 * @since 0.0.1
 	 */
 	public SimpleCsvWriter(final File file, final CsvBangConfiguration conf) {
 		super(file, conf);
@@ -49,6 +51,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * Constructor
 	 * @param file path of CSV file
+	 * @since 0.0.1
 	 */
 	public SimpleCsvWriter(final String file, final CsvBangConfiguration conf) {
 		super(file, conf);
@@ -57,6 +60,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.util.Collection)
+	 * @since 0.0.1
 	 */
 	public void write(final Collection<T> lines) throws CsvBangException {
 		if (CsvbangUti.isCollectionEmpty(lines)){
@@ -97,6 +101,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#close()
+	 * @since 0.0.1
 	 */
 	public void close() throws CsvBangException {
 		try {

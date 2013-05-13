@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,43 +40,50 @@ import fr.csvbang.util.ReflectionUti;
  * Abstract writer
  * 
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	
 	
 	/**
 	 * Character
+	 * @since 0.0.1
 	 */
 	private String sQuote;
 	
 	/**
 	 * True if we must add quote character
+	 * @since 0.0.1
 	 */
 	private boolean addQuote;
 	
 	/**
 	 * Length of delimiter
+	 * @since 0.0.1
 	 */
 	private int delimiterLength = 0;
 	
 	/**
 	 * File Writer
+	 * @since 0.0.1
 	 */
 	protected FileOutputStream out;
 	
 	/**
 	 * Csv File
+	 * @since 0.0.1
 	 */
 	protected File file;
 	
 	/**
 	 * Configuration
+	 * @since 0.0.1
 	 */
 	protected final CsvBangConfiguration conf;
 
 	/**
 	 * Line size
+	 * @since 0.0.1
 	 */
 	protected int defaultLineSize = 100;
 	
@@ -85,6 +91,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	/**
 	 * Constructor
 	 * @param conf configuration
+	 * @since 0.0.1
 	 */
 	public AbstractWriter(final CsvBangConfiguration conf) {
 		super();
@@ -102,6 +109,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * Constructor
 	 * @param file CSV file
 	 * @param conf configuration
+	 * @since 0.0.1
 	 */
 	public AbstractWriter(final File file, final CsvBangConfiguration conf) {
 		this(conf);
@@ -112,6 +120,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * Constructor
 	 * @param file CSV file
 	 * @param conf configuration
+	 * @since 0.0.1
 	 */
 	public AbstractWriter(final String file, final CsvBangConfiguration conf) {
 		this(conf);
@@ -124,6 +133,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#open()
+	 * @since 0.0.1
 	 */
 	public synchronized void open() throws CsvBangException {
 		if (out != null){
@@ -179,6 +189,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#isOpen()
+	 * @since 0.0.1
 	 */
 	public boolean isOpen() {
 		return out != null;
@@ -187,6 +198,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object)
+	 * @since 0.0.1
 	 */
 	public void write(final T line) throws CsvBangException {
 		if (line == null){
@@ -198,6 +210,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.writer.CsvWriter#write(java.lang.Object[])
+	 * @since 0.0.1
 	 */
 	public void write(final T[] lines) throws CsvBangException {
 		if (lines == null || lines.length > 0){
@@ -211,8 +224,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @param line a line
 	 * @return a serialized line
 	 * @throws CsvBangException if a problem when retrieve a value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	protected StringBuilder writeLine(final Object line) throws CsvBangException{
 		if (line == null){
@@ -254,8 +266,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	/**
 	 * Quote a value
 	 * @param s value
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private void quote(final StringBuilder s){
 		int index = s.indexOf(sQuote);
@@ -273,8 +284,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @param f configuration of field
 	 * @param s line
 	 * @param v value of field
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private void addField(final CsvFieldConfiguration f, final StringBuilder s, final Object v){
 		
@@ -303,8 +313,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @param f configuration of field
 	 * @param s line
 	 * @param c the collection
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	private void saveCollection(final CsvFieldConfiguration f, final StringBuilder s, final Collection<?> c){
 		for (final Object o:c){

@@ -46,28 +46,32 @@ import fr.csvbang.writer.SimpleCsvWriter;
 /**
  * Factory which generates CSV write. This factory manages a list of class (CSV bean) and their configuration.
  * @author Tony EMMA
- *
+ * @version 0.0.1
  */
 public class FactoryCsvWriter {
 
 	/**
 	 * Pattern in order to split a list of package
+	 * @since 0.0.1
 	 */
 	private static final Pattern PACKAGE_SEPARATOR = Pattern.compile("\\s*,\\s*");
 	
 	/**
 	 * Number of thread used for all asynchronous writer
+	 * @since 0.0.1
 	 */
 	private int numberOfWriterThread = Math.max(1, Math.round(Runtime.getRuntime().availableProcessors() / 3));
 	
 	/**
 	 * Service which manages writing Thread. 
+	 * @since 0.0.1
 	 */
 	private ExecutorService executorWriterService;
 
 
 	/**
 	 * List of CSV bean with their configuration
+	 * @since 0.0.1
 	 */
 	private final Map<Class<?>, CsvBangConfiguration> configurations = new HashMap<Class<?>, CsvBangConfiguration>();
 
@@ -76,6 +80,7 @@ public class FactoryCsvWriter {
 	 * Constructor
 	 * @param clazzs list of class to parse. This class must be annotated with {@link CsvType}
 	 * @throws CsvBangException if we cannot load a CSV bean configuration
+	 * @since 0.0.1
 	 */
 	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws CsvBangException{
 		loadConfigurations(clazzs);
@@ -86,6 +91,7 @@ public class FactoryCsvWriter {
 	 * Constructor
 	 * @param sPkg list of package separated by comma and contained class annotated with {@link CsvType}
 	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
+	 * @since 0.0.1
 	 */
 	public FactoryCsvWriter (final String sPkg) throws CsvBangException{
 		final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
@@ -101,8 +107,7 @@ public class FactoryCsvWriter {
 	/**
 	 * Set the number of thread in order to write files. Used only if you want to write asynchronous. By default the number of processor divide by 3.
 	 * @param number number of thread
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void setNumberOfWriterThread(int number){
 		this.numberOfWriterThread = number;
@@ -116,8 +121,7 @@ public class FactoryCsvWriter {
 	 * @param destination path of file  for destination
 	 * @return the CSV writer
 	 * @throws CsvBangException if an error occurred
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
@@ -146,8 +150,7 @@ public class FactoryCsvWriter {
 	 * @param destination path of file  for destination
 	 * @return the CSV writer
 	 * @throws CsvBangException if an error occurred
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination) throws CsvBangException{
 		final CsvBangConfiguration conf = configurations.get(clazz);
@@ -174,8 +177,7 @@ public class FactoryCsvWriter {
 	 * Add a class to the factory
 	 * @param clazz class
 	 * @throws CsvBangException if we cannot load a CSV bean configuration
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void add(final Class<?> clazz) throws CsvBangException{
 		if (clazz != null){
@@ -189,8 +191,7 @@ public class FactoryCsvWriter {
 	 * Add a list of class to factory
 	 * @param clazzs classes
 	 * @throws CsvBangException if we cannot load a CSV bean configuration
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void add(final Collection<Class<?>> clazzs) throws CsvBangException {
 		loadConfigurations(clazzs);
@@ -200,8 +201,7 @@ public class FactoryCsvWriter {
 	 * Add package to the factory. The package must be separated be a comma.
 	 * @param packages packages
 	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	public void addPackage(final String packages) throws CsvBangException {
 		if(CsvbangUti.isStringNotBlank(packages)){
@@ -219,8 +219,8 @@ public class FactoryCsvWriter {
 	 * Parse class annotated with {@link CsvType} and load the configuration
 	 * @param clazzs a list of class
 	 * 
-	 * @author Tony EMMA
 	 * @throws CsvBangException if we cannot load configuration
+	 * @since 0.0.1
 	 */
 	private void loadConfigurations(final Collection<Class<?>> clazzs) throws CsvBangException {
 		if (clazzs != null){

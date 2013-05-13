@@ -25,24 +25,46 @@ package fr.csvbang.formatter;
 import java.util.Locale;
 
 /**
+ * Default formatter
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 public class Default implements CsvFormatter {
 
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.formatter.CsvFormatter#init()
+	 * @since 0.0.1
+	 */
 	public void init() {
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
+	 * @since 0.0.1
+	 */
 	public void setPattern(String pattern) {
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.formatter.CsvFormatter#setLocal(java.util.Locale)
+	 * @since 0.0.1
+	 */
 	public void setLocal(Locale locale) {
 		
 	}
 
-	public String format(Object o, final String defaultIfNull) {
+	/**
+	 * {@inheritDoc}
+	 * @see fr.csvbang.formatter.CsvFormatter#format(java.lang.Object, java.lang.String)
+	 * @since 0.0.1
+	 */
+	public String format(final Object o, final String defaultIfNull) {
 		if (o == null){
 			return defaultIfNull;
 		}

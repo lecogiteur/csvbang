@@ -35,6 +35,7 @@ import fr.csvbang.util.IConstantsCsvBang;
 /**
  * Annotation in order to define a CSV field
  * @author Tony EMMA
+ * @version 0.0.1
  *
  */
 @Target(value={ElementType.FIELD, ElementType.METHOD})
@@ -47,8 +48,7 @@ public @interface CsvField {
 	 * Name of field in CSV file. If no name is defined, the name of member (field or method) is selected.
 	 * By default no name is defined.
 	 * @return name
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	String name() default IConstantsCsvBang.DEFAULT_FIELD_NAME;
 	
@@ -62,24 +62,24 @@ public @interface CsvField {
 	 * must set a negative value other than -1
 	 * </p>
 	 * @return the position of field
+	 * @since 0.0.1
 	 * 
-	 * @author Tony EMMA
 	 */
 	int position() default IConstantsCsvBang.DEFAULT_FIELD_POSITION;
 	
 	/**
 	 * Default value if the value is null. By default, it's an empty string
 	 * @return default value.
+	 * @since 0.0.1
 	 * 
-	 * @author Tony EMMA
 	 */
 	String defaultIfNull() default IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE;
 	
 	/**
 	 * Delete field if the value is null. Delete field only for the current record. By default false.
 	 * @return True if we must delete field.
+	 * @since 0.0.1
 	 * 
-	 * @author Tony EMMA
 	 */
 	boolean deleteIfNull() default IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL; 
 }
