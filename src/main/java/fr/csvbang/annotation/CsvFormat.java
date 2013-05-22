@@ -53,17 +53,17 @@ public @interface CsvFormat {
 	public enum TYPE_FORMAT {
 		
 		/**
-		 * Default formatter. If value is null, it will be replace by an empty string. 
+		 * Default formatter. If value is null, it will be replace by an empty string. {@link java.util.Date java.util.Date}
 		 */
 		DEFAULT,
 		
 		/**
 		 * <p>Format a date. The pattern is based on {@link java.text.SimpleDateFormat} pattern.</p>
 		 * 
-		 * <p>The type of field can be {@link java.util.Date}, {@link java.sql.Timestamp} or {@link java.util.Calendar}.</p>
+		 * <p>The type of field can be {@link java.util.Date java.util.Date}, {@link java.sql.Timestamp} or {@link java.util.Calendar}.</p>
 		 * 
 		 * <p>The default locale is Locale.FRANCE and the default pattern is MM/dd/yyyy</p>
-		 * @see {@link java.text.SimpleDateFormat} used in order to format a date
+		 * @see java.text.SimpleDateFormat
 		 */
 		DATE, 
 		
@@ -72,7 +72,7 @@ public @interface CsvFormat {
 		 * 
 		 * <p>The type of field can be {@link java.lang.Integer}, {@link java.lang.Long}, {@link java.lang.Float} or {@link java.lang.Double}.</p>
 		 * 
-		 * @see {@link java.text.DecimalFormat} used in order to format number
+		 * @see java.text.DecimalFormat
 		 */
 		NUMBER, 
 		
@@ -98,7 +98,7 @@ public @interface CsvFormat {
 		 * The default local is Locale.FRANCE. No pattern defines.
 		 * </p>
 		 * 
-		 * @see {@link java.text.NumberFormat} used in order to format price
+		 * @see java.text.NumberFormat
 		 */
 		CURRENCY, 
 		
@@ -158,7 +158,7 @@ public @interface CsvFormat {
 	 * 
 	 * @return custom formatter
 	 * 
-	 * @see {@link CsvFormatter} custom formatter must implement {@link CsvFormatter}
+	 * @see CsvFormatter
 	 * 
 	 * @since 0.0.1
 	 */

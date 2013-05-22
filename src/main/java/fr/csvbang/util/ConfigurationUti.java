@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import fr.csvbang.annotation.CsvField;
@@ -59,7 +60,10 @@ import fr.csvbang.formatter.NumberCsvFormatter;
  */
 public class ConfigurationUti {
 	
-
+	/**
+	 * The logger
+	 */
+	private static final Logger LOGGER = Logger.getLogger(ConfigurationUti.class.getName());
 	
 	/**
 	 * Pattern in order to split locale
@@ -165,7 +169,7 @@ public class ConfigurationUti {
 					if (m != null){
 						getter = m;
 					}else{
-						//TODO log
+						LOGGER.warning(String.format("No way in order to access to %s in class %s. You must define a getter method or change the modifier of field.", f.getName(), finalClass));
 						continue;
 					}
 				}

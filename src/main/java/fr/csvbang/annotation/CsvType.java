@@ -44,57 +44,56 @@ import fr.csvbang.util.IConstantsCsvBang;
 public @interface CsvType {
 	
 	/**
-	 * Delimiter between fields. By default {@value ,}
+	 * Delimiter between fields. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_DELIMITER}
 	 * @return delimiter
 	 * @since 0.0.1
 	 */
 	String delimiter() default IConstantsCsvBang.DEFAULT_DELIMITER;
 	
 	/**
-	 * Charset of file. By default {@value UTF-8}
+	 * Charset of file. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_CHARSET_NAME}
 	 * @return Charset
 	 * @since 0.0.1
 	 */
 	String charsetName() default IConstantsCsvBang.DEFAULT_CHARSET_NAME;
 
 	/**
-	 * String to put at the start of record. By default nothing
+	 * String to put at the start of record. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_START_RECORD}
 	 * @return the start of record
 	 * @since 0.0.1
 	 */
 	String startRecord() default IConstantsCsvBang.DEFAULT_START_RECORD;
 	
 	/**
-	 * String to put at the end of record. By default the character {@value \n}
+	 * String to put at the end of record. By default the character {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_END_RECORD}
 	 * @return end of record
 	 * @since 0.0.1
 	 */
 	String endRecord() default IConstantsCsvBang.DEFAULT_END_RECORD;
 	
 	/**
-	 * Size of buffer in number of record. Negative value means no buffer.
+	 * Size of buffer in number of record. Negative value means no buffer. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_BLOCKING_SIZE}
 	 * @return the size in number of record
 	 * @since 0.0.1
 	 */
 	int blocksize() default IConstantsCsvBang.DEFAULT_BLOCKING_SIZE;
 	
 	/**
-	 * True if you want to write file asynchronously. 
-	 * You can define the number of thread dedicate to write file in {@link fr.csvbang.factory.FactoryCsvWriter}. 
-	 * By default the number of processor divide by 3.
-	 * If you create several files in the same time, the thread will be share for each files.
+	 * True if you want to write file asynchronously. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_ASYNCHRONOUS_WRITE}.
+	 * <p>You can define the number of thread dedicate to write file in {@link fr.csvbang.factory.FactoryCsvWriter}. 
+	 * By default the number of thread is the number of processor divide by 3.
+	 * If you create several files in the same time, the thread will be share for each files.</p>
 	 * @return True if you want to write asynchronously 
 	 * @since 0.0.1
 	 */
 	boolean asynchronousWriter() default IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE;
 	
 	/**
-	 * Display the header on the first line. By default {@value false}.
+	 * Display the header on the first line. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_HEADER}.
 	 * The header is generated with the name of field. If no name is defined for a field, 
 	 * we take the property name or method name
 	 * @return True or false
-	 * 
-	 * @author Tony EMMA
+	 * @since 0.0.1
 	 */
 	boolean header() default IConstantsCsvBang.DEFAULT_HEADER;
 	
@@ -106,7 +105,7 @@ public @interface CsvType {
 	String quoteCharacter() default IConstantsCsvBang.DEFAULT_QUOTE_CHARACTER;
 	
 	/**
-	 * Character in order to escape the quote character. By default {@value \}
+	 * Character in order to escape the quote character. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_QUOTE_ESCAPE_CHARACTER}
 	 * @return character
 	 * @since 0.0.1
 	 */
@@ -118,15 +117,16 @@ public @interface CsvType {
 	 * <p>It is possible to mix configuration. For example you can define dynamically 
 	 * the directory with the factory and a static file name with this annotation.</p>
 	 * <p>If a file is defined by factory, it overrides the file created by the annotation</p>
+	 * <p>By default no static filename defined</p>
 	 * @return the file name
-	 * @see {@link fr.csvbang.factory.FactoryCsvWriter} Factory of CSV writer
+	 * @see fr.csvbang.factory.FactoryCsvWriter
 	 * @since 0.0.1
 	 */
 	String fileName() default IConstantsCsvBang.DEFAULT_FILE_NAME;
 	
 	/**
 	 * <p>True if you want to append csv data to a file (if it exist). If the file doesn't exist, it create a new file.</p>
-	 * <p>False, if you already want to create a new file. By default, it's false.</p>
+	 * <p>False, if you already want to create a new file. By default, it's {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_APPEND_FILE}.</p>
 	 * @return True if you want to append csv data to a file.
 	 * @since 0.0.1
 	 */

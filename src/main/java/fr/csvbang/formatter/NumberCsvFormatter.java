@@ -57,7 +57,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 	/**
 	 * {@inheritDoc}
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
-	 * @see {@link DecimalFormat} for set the number pattern
+	 * @see java.text.DecimalFormat
 	 * @since 0.0.1
 	 */
 	public void setPattern(String pattern) {

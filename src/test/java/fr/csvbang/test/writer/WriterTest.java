@@ -7,10 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
-
 import fr.csvbang.exception.CsvBangException;
 import fr.csvbang.factory.FactoryCsvWriter;
 import fr.csvbang.test.bean.BeanChildCsv;

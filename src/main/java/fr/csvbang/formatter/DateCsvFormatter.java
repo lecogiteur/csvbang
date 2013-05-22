@@ -74,7 +74,7 @@ public class DateCsvFormatter implements CsvFormatter {
 	 * The pattern is required
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
 	 * 
-	 * @see {@link SimpleDateFormat} for set a pattern
+	 * @see java.text.SimpleDateFormat#applyPattern(java.lang.String)
 	 * 
 	 * @since 0.0.1
 	 */

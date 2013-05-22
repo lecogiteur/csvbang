@@ -35,13 +35,13 @@ import fr.csvbang.util.IConstantsCsvBang;
 public class CsvBangConfiguration {
 	
 	/**
-	 * Delimiter between fields. By default {@value ,}
+	 * Delimiter between fields. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_DELIMITER}
 	 * @since 0.0.1
 	 */
 	public String delimiter = IConstantsCsvBang.DEFAULT_DELIMITER;
 	
 	/**
-	 * String to put at the end of record. By default the character {@value \n}
+	 * String to put at the end of record. By default the character {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_END_RECORD}
 	 * @since 0.0.1
 	 */
 	public String endRecord = IConstantsCsvBang.DEFAULT_END_RECORD;
@@ -53,7 +53,7 @@ public class CsvBangConfiguration {
 	public String startRecord = IConstantsCsvBang.DEFAULT_START_RECORD;
 	
 	/**
-	 * Charset of file. By default {@value UTF-8}
+	 * Charset of file. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_CHARSET_NAME}
 	 * @since 0.0.1
 	 */
 	public String charset = IConstantsCsvBang.DEFAULT_CHARSET_NAME;
@@ -104,7 +104,7 @@ public class CsvBangConfiguration {
 	public Character quote;
 	
 	/**
-	 * Character in order to escape quote. By default {@value \}
+	 * Character in order to escape quote. By default {@value fr.csvbang.util.IConstantsCsvBang#DEFAULT_QUOTE_ESCAPE_CHARACTER}
 	 * @since 0.0.1
 	 */
 	public char escapeQuoteCharacter = IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER;

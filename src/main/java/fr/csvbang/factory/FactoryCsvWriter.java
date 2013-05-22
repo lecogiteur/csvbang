@@ -89,7 +89,7 @@ public class FactoryCsvWriter {
 
 	/**
 	 * Constructor
-	 * @param sPkg list of package separated by comma and contained class annotated with {@link CsvType}
+	 * @param sPkg list of package separated by comma which contains annotated classes with {@link CsvType}
 	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
 	 * @since 0.0.1
 	 */
@@ -105,7 +105,9 @@ public class FactoryCsvWriter {
 	}
 	
 	/**
-	 * Set the number of thread in order to write files. Used only if you want to write asynchronous. By default the number of processor divide by 3.
+	 * Set the number of thread in order to write files. Used only if you want to write asynchronous. 
+	 * By default the number of processor divide by 3. Be careful. if set this value during CSV generation you loose all information.
+	 * This method reset all processes. 
 	 * @param number number of thread
 	 * @since 0.0.1
 	 */
@@ -113,6 +115,11 @@ public class FactoryCsvWriter {
 		this.numberOfWriterThread = number;
 		executorWriterService = Executors.newFixedThreadPool(numberOfWriterThread);
 	}
+	
+	//TODO créer une méthode juste avec une classe
+	//TODO method isclose
+	//TODO synchronizé close
+	//TODO createCSVwriter sans file
 
 	/**
 	 * Create a writer

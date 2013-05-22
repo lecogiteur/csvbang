@@ -43,6 +43,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +60,11 @@ import fr.csvbang.exception.CsvBangException;
  *
  */
 public class ReflectionUti {
+	
+	/**
+	 * The logger
+	 */
+	private static final Logger LOGGER = Logger.getLogger(ReflectionUti.class.getName());
 
 	/**
 	 * Extension file for class java
@@ -87,16 +94,9 @@ public class ReflectionUti {
 	private static Class<?> generateClass(final String className){
 		try {
 			return Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			//TODO gérer des logs.
-			//do nothing
-		} catch (UnsatisfiedLinkError e){
-			//do nothing
-		} catch (Exception e){
-			//do nothing
-		} catch (NoClassDefFoundError e){
-			//do nothing
-		}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, String.format("Cannot scan class %s", className), e);
+		} 
 		return null;
 	}
 

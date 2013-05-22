@@ -114,7 +114,7 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	 * <p>The pattern is not required.</p>
 	 * 
 	 * @see fr.csvbang.formatter.CsvFormatter#setPattern(java.lang.String)
-	 * @see {@link NumberFormat} format class 
+	 * @see java.text.NumberFormat
 	 * @since 0.0.1
 	 */
 	public void setPattern(String pattern) {

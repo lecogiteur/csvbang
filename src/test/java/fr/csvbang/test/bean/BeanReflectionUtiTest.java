@@ -69,6 +69,7 @@ public class BeanReflectionUtiTest {
 		return "protectedMethod";
 	}
 	
+	@SuppressWarnings("unused")
 	private String privateMethod(){
 		return "privateMethod";
 	}

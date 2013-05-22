@@ -33,13 +33,13 @@ public interface IConstantsCsvBang {
 	
 	
 	/**
-	 * Delimiter between fields. By default {@value ,}
+	 * Delimiter between fields. By default {@value}.
 	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_DELIMITER = ",";
 	
 	/**
-	 * Charset of file. By default {@value UTF-8}
+	 * Charset of file. By default {@value}
 	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
@@ -51,7 +51,7 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_START_RECORD = "";
 	
 	/**
-	 * String to put at the end of record. By default the character {@value \n}
+	 * String to put at the end of record. By default the character {@value}
 	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_END_RECORD = "\n";
@@ -72,7 +72,7 @@ public interface IConstantsCsvBang {
 	public static final boolean DEFAULT_ASYNCHRONOUS_WRITE = false;
 	
 	/**
-	 * Display the header on the first line. By default {@value false}.
+	 * Display the header on the first line. By default {@value}.
 	 * The header is generated with the name of field. If no name is defined for a field, 
 	 * we take the property name or method name
 	 * @since 0.0.1
@@ -86,7 +86,7 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_QUOTE_CHARACTER = "";
 	
 	/**
-	 * Character in order to escape the quote character. By default {@value \}
+	 * Character in order to escape the quote character. By default {@value}
 	 * @since 0.0.1
 	 */
 	public static final char DEFAULT_QUOTE_ESCAPE_CHARACTER = '\\';
@@ -98,7 +98,7 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_FILE_NAME = "";
 	
 	/**
-	 * Default value in order to append csv data to a file or must create a ne file. By default create a new file.
+	 * Default value in order to append csv data to a file or must create a file. By default create a new file.
 	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_APPEND_FILE = false;
