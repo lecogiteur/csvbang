@@ -102,13 +102,13 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	 * 
 	 * Example.
 	 * <ul>
-	 * 	<li>pattern (0.00) : 12.356 ==> 2.36 </li>
-	 * 	<li>pattern (.00) : 12.356 ==> 12.36 </li>
-	 * 	<li>pattern (.##) : 12.356 ==> 12.36 </li>
-	 * 	<li>pattern (##.) : 12.356 ==> 12.356 </li>
-	 * 	<li>pattern (###.##) : 12.356 ==> 12.36 </li>
-	 * 	<li>pattern (000.##) : 12.356 ==> 012.36 </li>
-	 * 	<li>no pattern : 12.356 ==> 12.36 </li>
+	 * 	<li>pattern (0.00) : 12.356 ==> 2.36 $</li>
+	 * 	<li>pattern (.00) : 12.356 ==> 12.36 $</li>
+	 * 	<li>pattern (.##) : 12.356 ==> 12.36 $</li>
+	 * 	<li>pattern (##.) : 12.356 ==> 12.356 $</li>
+	 * 	<li>pattern (###.##) : 12.356 ==> 12.36 $</li>
+	 * 	<li>pattern (000.##) : 12.356 ==> 012.36 $</li>
+	 * 	<li>no pattern : 12.356 ==> 12.36 $</li>
 	 * </ul>
 	 * 
 	 * <p>The pattern is not required.</p>

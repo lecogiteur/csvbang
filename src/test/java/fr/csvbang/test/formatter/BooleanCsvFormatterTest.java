@@ -45,7 +45,7 @@ public class BooleanCsvFormatterTest {
 		CsvFormatter format = new BooleanCsvFormatter();
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("true", format.format(true, "default"));
 		Assert.assertEquals("false", format.format(false, "default"));
 		Assert.assertEquals("false", format.format(Boolean.FALSE, "default"));
@@ -77,7 +77,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("boolean");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("true", format.format(true, "default"));
 		Assert.assertEquals("false", format.format(false, "default"));
 		Assert.assertEquals("false", format.format(Boolean.FALSE, "default"));
@@ -106,7 +106,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("Boolean");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("True", format.format(true, "default"));
 		Assert.assertEquals("False", format.format(false, "default"));
 		Assert.assertEquals("False", format.format(Boolean.FALSE, "default"));
@@ -135,7 +135,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("BOOLEAN");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("TRUE", format.format(true, "default"));
 		Assert.assertEquals("FALSE", format.format(false, "default"));
 		Assert.assertEquals("FALSE", format.format(Boolean.FALSE, "default"));
@@ -167,7 +167,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("b");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("t", format.format(true, "default"));
 		Assert.assertEquals("f", format.format(false, "default"));
 		Assert.assertEquals("f", format.format(Boolean.FALSE, "default"));
@@ -196,7 +196,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("B");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("T", format.format(true, "default"));
 		Assert.assertEquals("F", format.format(false, "default"));
 		Assert.assertEquals("F", format.format(Boolean.FALSE, "default"));
@@ -228,7 +228,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("integer");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("1", format.format(true, "default"));
 		Assert.assertEquals("0", format.format(false, "default"));
 		Assert.assertEquals("0", format.format(Boolean.FALSE, "default"));
@@ -260,7 +260,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("o/n");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("o", format.format(true, "default"));
 		Assert.assertEquals("n", format.format(false, "default"));
 		Assert.assertEquals("n", format.format(Boolean.FALSE, "default"));
@@ -289,7 +289,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("O/N");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("O", format.format(true, "default"));
 		Assert.assertEquals("N", format.format(false, "default"));
 		Assert.assertEquals("N", format.format(Boolean.FALSE, "default"));
@@ -321,7 +321,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("y/n");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("y", format.format(true, "default"));
 		Assert.assertEquals("n", format.format(false, "default"));
 		Assert.assertEquals("n", format.format(Boolean.FALSE, "default"));
@@ -350,7 +350,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("Y/N");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("Y", format.format(true, "default"));
 		Assert.assertEquals("N", format.format(false, "default"));
 		Assert.assertEquals("N", format.format(Boolean.FALSE, "default"));
@@ -382,7 +382,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("on/off");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("on", format.format(true, "default"));
 		Assert.assertEquals("off", format.format(false, "default"));
 		Assert.assertEquals("off", format.format(Boolean.FALSE, "default"));
@@ -411,7 +411,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("On/Off");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("On", format.format(true, "default"));
 		Assert.assertEquals("Off", format.format(false, "default"));
 		Assert.assertEquals("Off", format.format(Boolean.FALSE, "default"));
@@ -440,7 +440,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("ON/OFF");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("ON", format.format(true, "default"));
 		Assert.assertEquals("OFF", format.format(false, "default"));
 		Assert.assertEquals("OFF", format.format(Boolean.FALSE, "default"));
@@ -473,7 +473,7 @@ public class BooleanCsvFormatterTest {
 		format.setLocal(Locale.ENGLISH);
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("yes", format.format(true, "default"));
 		Assert.assertEquals("no", format.format(false, "default"));
 		Assert.assertEquals("no", format.format(Boolean.FALSE, "default"));
@@ -502,7 +502,7 @@ public class BooleanCsvFormatterTest {
 		format.setPattern("Litteral");
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("Yes", format.format(true, "default"));
 		Assert.assertEquals("No", format.format(false, "default"));
 		Assert.assertEquals("No", format.format(Boolean.FALSE, "default"));
@@ -532,7 +532,7 @@ public class BooleanCsvFormatterTest {
 		format.setLocal(Locale.ENGLISH);
 		format.init();
 		Assert.assertEquals("default", format.format(null, "default"));
-		Assert.assertEquals("unkowningBolean", format.format("string", "default"));
+		Assert.assertEquals("unkowningBoolean", format.format("string", "default"));
 		Assert.assertEquals("YES", format.format(true, "default"));
 		Assert.assertEquals("NO", format.format(false, "default"));
 		Assert.assertEquals("NO", format.format(Boolean.FALSE, "default"));

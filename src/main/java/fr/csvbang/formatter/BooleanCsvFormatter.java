@@ -169,7 +169,7 @@ public class BooleanCsvFormatter implements CsvFormatter {
 	 * 	<li><b>O/N</b>: O or N</li>
 	 * 	<li><b>on/off</b>: on or off</li>
 	 * 	<li><b>On/Off</b>: On or Off</li>
-	 * 	<li><b>ON/OFF</b: ON or OFF</li>
+	 * 	<li><b>ON/OFF</b>: ON or OFF</li>
 	 * 	<li><b>litteral</b>: yes or no in function locale</li>
 	 * 	<li><b>Litteral</b>: Yes or No in function locale</li>
 	 * 	<li><b>LITTERAL</b>: YES or NO in function locale</li>
@@ -204,15 +204,12 @@ public class BooleanCsvFormatter implements CsvFormatter {
 		}
 		
 		Integer index = revert.get(o.toString().toLowerCase());
-		if (index == null && o instanceof Number){
-			index = ((Number) o).intValue();
-			if (index.intValue() > 0){
-				index = 1;
-			}
+		if (index == null && o instanceof Number && ((Number) o).intValue() != 0){
+			index = 0;
 		}
 		
 		if (index == null){
-			return "unkowningBolean";
+			return "unkowningBoolean";
 		}
 		return destination[index];
 	}
