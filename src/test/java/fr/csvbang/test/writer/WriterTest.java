@@ -60,23 +60,24 @@ public class WriterTest {
 		bean.setBirthday(c);
 		bean.setId(125874);
 		bean.setName("the name");
-		String result = "125874,the name,public Name: the name," + format.format(c.getTime());
+		String result = "125874,the name,public Name: the name," + format.format(c.getTime()) +",";
 		
 		SimpleWriterBean bean2 = new SimpleWriterBean();
 		Calendar c2 = Calendar.getInstance();
 		bean2.setBirthday(c2);
 		bean2.setPrice(1287.45);
 		bean2.setName("super name");
-		result += "\nsuper name,public Name: super name," + format.format(c2.getTime()) + ",1287.45\n";
+		result += "\nsuper name,public Name: super name," + format.format(c2.getTime()) + ",1287.45";
 		
 		SimpleWriterBean bean3 = new SimpleWriterBean();
-		bean.setId(125874);
+		bean3.setId(125874);
 		bean3.setPrice(1287.45);
 		bean3.setName("super name");
-		result += "\n125874,super name,public Name: super name," + format.format(c2.getTime()) + ",1287.45\n";
+		result += "\n125874,super name,public Name: super name,no date,1287.45\n";
 		
 		writer.write(bean);
 		writer.write(bean2);
+		writer.write(bean3);
 		
 		Assert.assertEquals(result, writer.getResult());
 	
