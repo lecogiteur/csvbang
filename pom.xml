@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.csvbang</groupId>
   <artifactId>csvbang</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.1-SNAPSHOT</version>
 
   <name>Csvbang</name>
   <description>A comma-separated values ( CSV ) API, written in JAVA and thread-safe.</description>
@@ -15,11 +15,10 @@
   </parent>
 
 <scm>
-  <connection>scm:git:git://github.com/lecogiteur/csvbang.git</connection>
-  <url>scm:git:git://github.com/lecogiteur/csvbang.git</url>
-  <developerConnection>scm:git:git://github.com/lecogiteur/csvbang.git</developerConnection>
-  <tag>csvbang-0.0.1</tag>
-  </scm>
+  <connection>scm:git:git@github.com:lecogiteur/csvbang.git</connection>
+  <developerConnection>scm:git:git@github.com:lecogiteur/csvbang.git</developerConnection>
+  <url>git@github.com:lecogiteur/csvbang.git</url>
+</scm>
 
 <licenses>
    <license>
