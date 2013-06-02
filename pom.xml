@@ -38,7 +38,7 @@
           </execution>
         </executions>
       </plugin>
-			<!--plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9</version>
@@ -50,6 +50,9 @@
 						<link>http://docs.oracle.com/javase/6/docs/api/</link>
 						<link>http://docs.oracle.com/javase/6/docs/api/</link>
 					</links>
+          <header>
+              <![CDATA[<a href="https://github.com/lecogiteur/csvbang" target="_blank">Back to Csvbang Home</a>]]>
+          </header>
 				</configuration>
 				<executions>
 					<execution>
@@ -59,112 +62,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin-->
-      <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <additionalJOption>-J-Xmx2048m</additionalJOption>
-                    <failOnError>false</failOnError>
-                    <links>
-                        <link>http://download.oracle.com/javase/6/docs/api/</link>
-                    </links>
-                    <outputDirectory>${project.build.directory}/javadoc</outputDirectory>
-                    <reportOutputDirectory>${project.reporting.outputDirectory}/javadoc</reportOutputDirectory>
-                    <excludes>
-                        <exclude>*.txt</exclude>
-                        <exclude>**/*.txt</exclude>
-                    </excludes>
-                    <header>
-                        <![CDATA[
-                            <a href="https://github.com/lecogiteur/csvbang" target="_blank">Back to Csvbang Home</a>
-                        ]]>
-                    </header>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>aggregate</id>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                        <phase>site</phase>
-                    </execution>
-                    <!-- <execution>
-                        <id>attach-javadocs2</id>
-                        <phase>performRelease</phase>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution> -->
-                </executions>
-            </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-				<version>2.9</version>
 			</plugin>
-       <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.6</version>
-                <configuration>
-                    <dryRun>true</dryRun><!-- TODO turn off at some point -->
-                    <!--outputDirectory>javadoc</outputDirectory-->
-                    <path>${project.version}</path>
-                    <message>Creating site for ${project.version}</message>
-                    <!-- sets the ~/.m2/setting.xml profile -->
-                    <server>github</server>
-                    <outputDirectory>${project.build.directory}/site/javadoc</outputDirectory>
-                    <repositoryName>csvbang</repositoryName>
-        						<repositoryOwner>lecogiteur</repositoryOwner>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site</phase>
-                    </execution>
-                </executions>
- 							  <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.mylyn.github</groupId>
-                    <artifactId>org.eclipse.egit.github.core</artifactId>
-                    <version>2.0.3</version>
-                </dependency>                        
-                </dependencies>
-            </plugin>
-        <plugin>
-            <!-- Create the file to download -->
-            <groupId>com.github.github</groupId>
-            <artifactId>downloads-maven-plugin</artifactId>
-            <version>0.6</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>upload</goal>
-                    </goals>
-                    <phase>site-deploy</phase>
-                </execution>
-            </executions>
-            <configuration>
-                <description>${project.version} version of ${project.name}</description>
-                <override>true</override>
-                <includeAttached>false</includeAttached>
-            </configuration>
-            <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.mylyn.github</groupId>
-                    <artifactId>org.eclipse.egit.github.core</artifactId>
-                    <version>2.0.3</version>
-                </dependency>                        
-            </dependencies>    
-        </plugin>
    </plugins>
   </build>
 </project>
