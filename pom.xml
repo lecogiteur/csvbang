@@ -66,7 +66,7 @@
    </plugins>
   </build>
 
-  <profiles>
+  <!--profiles>
     <profile>
     <id>gitrelease</id>
     <build>
@@ -84,6 +84,7 @@
             <outputDirectory>/home/langly/Travail/Java/workspace/csvkuai/target/apidocs</outputDirectory>
             <dryRun>true</dryRun>
             <path>javadoc/${project.version}</path>
+            <branch>refs/heads/gh-pages</branch>
           </configuration>
           <executions>
             <execution>
@@ -100,7 +101,7 @@
               <version>2.0.3</version>
             </dependency>                        
            </dependencies>
-        </plugin>
+        </plugin-->
         <!--plugin>
       		<groupId>com.github.github</groupId>
       		<artifactId>downloads-maven-plugin</artifactId>
@@ -120,8 +121,8 @@
        			</execution>
       		</executions>
      		</plugin-->
-      </plugins>
+      <!--/plugins>
     </build>
     </profile>
-  </profiles>
+  </profiles-->
 </project>
