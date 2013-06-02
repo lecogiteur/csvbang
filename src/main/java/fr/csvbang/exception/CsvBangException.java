@@ -1,5 +1,5 @@
 /**
- *  fr.csvbang.exception.CsvKuaiException
+ *  fr.csvbang.exception.CsvBangException
  * 
  *  Copyright (C) 2013  Tony EMMA
  *
