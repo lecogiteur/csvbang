@@ -9,3 +9,15 @@ A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 * [Javadoc & Sources](https://github.com/lecogiteur/csvbang/wiki/Javadoc-&-Sources)
 * [Guide Utilisateur](https://github.com/lecogiteur/csvbang/wiki/Guide-utilisateur) (Français)
 * User Guide (English)
+
+**Current version:** [0.0.2](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
+
+**Maven dependency**
+
+```xml
+<dependency>
+    <groupId>com.github.lecogiteur</groupId>
+    <artifactId>csvbang</artifactId>
+    <version>0.0.2</version>
+</dependency>
+```
