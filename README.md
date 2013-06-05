@@ -15,7 +15,7 @@ A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 </dependency>
 ```
 
-**Quick start:** [list of examples](https://github.com/lecogiteur/csvbang/wiki/Ecriture-d'un-fichier#quelques-exemples)
+**Quick start:** [list of examples](https://github.com/lecogiteur/csvbang/wiki/Exemples)
 
 **Reports and Downloads:**
 * [Roadmap](https://github.com/lecogiteur/csvbang/wiki/Roadmap)
