@@ -5,7 +5,7 @@ A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 
 **Current version:** [0.0.2](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
 
-**Maven dependency**
+**Maven dependency:**
 
 ```xml
 <dependency>
@@ -15,6 +15,7 @@ A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 </dependency>
 ```
 
+**Reports and Downloads:**
 * [Roadmap](https://github.com/lecogiteur/csvbang/wiki/Roadmap)
 * [Release Notes](https://github.com/lecogiteur/csvbang/wiki/Release-Notes)
 * [Download](https://github.com/lecogiteur/csvbang/wiki/Download)
