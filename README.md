@@ -1,7 +1,7 @@
 csvbang
 =======
 
-A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
+A comma-separated values ( CSV ) API, written in JAVA using annotations and thread-safe.
 
 **Current version:** [0.0.2](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
 
