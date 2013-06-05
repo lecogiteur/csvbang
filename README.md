@@ -3,13 +3,6 @@ csvbang
 
 A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 
-* [Roadmap](https://github.com/lecogiteur/csvbang/wiki/Roadmap)
-* [Release Notes](https://github.com/lecogiteur/csvbang/wiki/Release-Notes)
-* [Download](https://github.com/lecogiteur/csvbang/wiki/Download)
-* [Javadoc & Sources](https://github.com/lecogiteur/csvbang/wiki/Javadoc-&-Sources)
-* [Guide Utilisateur](https://github.com/lecogiteur/csvbang/wiki/Guide-utilisateur) (Français)
-* User Guide (English)
-
 **Current version:** [0.0.2](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
 
 **Maven dependency**
@@ -21,3 +14,11 @@ A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
     <version>0.0.2</version>
 </dependency>
 ```
+
+* [Roadmap](https://github.com/lecogiteur/csvbang/wiki/Roadmap)
+* [Release Notes](https://github.com/lecogiteur/csvbang/wiki/Release-Notes)
+* [Download](https://github.com/lecogiteur/csvbang/wiki/Download)
+* [Javadoc & Sources](https://github.com/lecogiteur/csvbang/wiki/Javadoc-&-Sources)
+* [Guide Utilisateur](https://github.com/lecogiteur/csvbang/wiki/Guide-utilisateur) (Français)
+* User Guide (English)
+
