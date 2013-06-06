@@ -50,6 +50,7 @@ import com.github.lecogiteur.csvbang.formatter.CsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.CurrencyCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.DateCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.Default;
+import com.github.lecogiteur.csvbang.formatter.NoCarriageReturnCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.NumberCsvFormatter;
 
 
@@ -251,6 +252,9 @@ public class ConfigurationUti {
 				break;
 			case NUMBER:
 				format = new NumberCsvFormatter();
+				break;
+			case NO_CARRIAGE_RETURN:
+				format = new NoCarriageReturnCsvFormatter();
 				break;
 			case CUSTOM:
 				if (csvFormat.customFormatter() != null){

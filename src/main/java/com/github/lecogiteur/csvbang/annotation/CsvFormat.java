@@ -38,7 +38,7 @@ import com.github.lecogiteur.csvbang.formatter.Default;
 /**
  * Annotation in order to format value of a field
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.0.4
  */
 @Target(value={ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -54,9 +54,16 @@ public @interface CsvFormat {
 	public enum TYPE_FORMAT {
 		
 		/**
-		 * Default formatter. If value is null, it will be replace by an empty string. {@link java.util.Date java.util.Date}
+		 * Default formatter. If value is null, it will be replace by an empty string.
+		 * @since 0.0.1
 		 */
 		DEFAULT,
+		
+		/**
+		 * Delete all carriage return in field value and replace them by a pattern (By default a space). 
+		 * @since 0.0.1
+		 */
+		NO_CARRIAGE_RETURN,
 		
 		/**
 		 * <p>Format a date. The pattern is based on {@link java.text.SimpleDateFormat} pattern.</p>
@@ -65,6 +72,7 @@ public @interface CsvFormat {
 		 * 
 		 * <p>The default locale is Locale.FRANCE and the default pattern is MM/dd/yyyy</p>
 		 * @see java.text.SimpleDateFormat
+		 * @since 0.0.1
 		 */
 		DATE, 
 		
@@ -74,6 +82,7 @@ public @interface CsvFormat {
 		 * <p>The type of field can be {@link java.lang.Integer}, {@link java.lang.Long}, {@link java.lang.Float} or {@link java.lang.Double}.</p>
 		 * 
 		 * @see java.text.DecimalFormat
+		 * @since 0.0.1
 		 */
 		NUMBER, 
 		
@@ -100,11 +109,13 @@ public @interface CsvFormat {
 		 * </p>
 		 * 
 		 * @see java.text.NumberFormat
+		 * @since 0.0.1
 		 */
 		CURRENCY, 
 		
 		/**
 		 * No format
+		 * @since 0.0.1
 		 */
 		NONE, 
 		
@@ -134,12 +145,14 @@ public @interface CsvFormat {
 		 * <p>
 		 * The default local is Locale.FRANCE and the default pattern is "boolean"
 		 * </p>
+		 * @since 0.0.1
 		 */
 		BOOLEAN, 
 		
 		
 		/**
 		 * Custom format. The class must implement {@link CsvFormatter}
+		 * @since 0.0.1
 		 */
 		CUSTOM
 		}
