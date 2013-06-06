@@ -3,7 +3,7 @@ csvbang
 
 A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 
-**Current version:** [0.0.2](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
+**Current version:** [0.0.4](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
 
 **Maven dependency:**
 
