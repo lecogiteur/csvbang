@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
@@ -57,7 +58,7 @@ import com.github.lecogiteur.csvbang.formatter.NumberCsvFormatter;
 /**
  * Utility class in order to load and parse configuration of a CSV bean
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class ConfigurationUti {
@@ -217,7 +218,7 @@ public class ConfigurationUti {
 	 * @param member field or method of a class
 	 * @return its format
 	 * @throws CsvBangException if we can't create an instance of custom formatter
-	 * @since 0.0.1
+	 * @since 0.0.4
 	 */
 	private static CsvFormatter loadCsvFormat(final AnnotatedElement member) 
 	throws CsvBangException{
@@ -306,7 +307,7 @@ public class ConfigurationUti {
 	 * @return its configuration (or null if the class or parents is not annotated with CsvType)
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	public static final CsvBangConfiguration loadCsvBangConfiguration(final Class<?> clazz) throws CsvBangException{
 		if (clazz == null){
@@ -332,18 +333,23 @@ public class ConfigurationUti {
 		for (final Class<?> c:parents){
 			final CsvType csvType = ReflectionUti.getCsvTypeAnnotation(c.getDeclaredAnnotations());
 			if (csvType != null){
-				conf.blockingSize = getParameterValue(conf.blockingSize, csvType.blocksize(), IConstantsCsvBang.DEFAULT_BLOCKING_SIZE);
-				conf.isAsynchronousWrite = getParameterValue(conf.isAsynchronousWrite, csvType.asynchronousWriter(), IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE);
 				conf.charset = getParameterValue(conf.charset, csvType.charsetName(), IConstantsCsvBang.DEFAULT_CHARSET_NAME);
 				conf.delimiter = getParameterValue(conf.delimiter, csvType.delimiter(), IConstantsCsvBang.DEFAULT_DELIMITER);
 				conf.endRecord = getParameterValue(conf.endRecord, csvType.endRecord(), IConstantsCsvBang.DEFAULT_END_RECORD);
 				conf.startRecord = getParameterValue(conf.startRecord, csvType.startRecord(), IConstantsCsvBang.DEFAULT_START_RECORD);
 				conf.isDisplayHeader = getParameterValue(conf.isDisplayHeader, csvType.header(), IConstantsCsvBang.DEFAULT_HEADER);
 				conf.escapeQuoteCharacter = getParameterValue(conf.escapeQuoteCharacter, csvType.quoteEscapeCharacter(), IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER);
-				conf.filename = getParameterValue(conf.filename, csvType.fileName(), IConstantsCsvBang.DEFAULT_FILE_NAME);
-				conf.isAppendToFile = getParameterValue(conf.isAppendToFile, csvType.append(), IConstantsCsvBang.DEFAULT_APPEND_FILE);
 				if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
 					conf.quote = csvType.quoteCharacter().charAt(0);
+				}
+				
+				final CsvFile csvFile = ReflectionUti.getCsvFileAnnotation(c.getDeclaredAnnotations());
+				if (csvFile != null){
+					//configuration about file
+					conf.filename = getParameterValue(conf.filename, csvFile.fileName(), IConstantsCsvBang.DEFAULT_FILE_NAME);
+					conf.isAppendToFile = getParameterValue(conf.isAppendToFile, csvFile.append(), IConstantsCsvBang.DEFAULT_APPEND_FILE);
+					conf.blockingSize = getParameterValue(conf.blockingSize, csvFile.blocksize(), IConstantsCsvBang.DEFAULT_BLOCKING_SIZE);
+					conf.isAsynchronousWrite = getParameterValue(conf.isAsynchronousWrite, csvFile.asynchronousWriter(), IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE);
 				}
 			}
 			loadCsvFieldConfiguration(clazz, c, mapFieldConf);

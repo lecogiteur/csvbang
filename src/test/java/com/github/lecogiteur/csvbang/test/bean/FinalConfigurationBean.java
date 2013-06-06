@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.test.bean;
 import java.util.Calendar;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 
@@ -32,9 +33,10 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
  * @author Tony EMMA
  *
  */
-@CsvType(append=true, asynchronousWriter=true, blocksize=20, charsetName="ISO-8859-1", delimiter="||", 
-		endRecord="\nEND\n", fileName="test.csv", header=true, quoteCharacter="'", 
+@CsvType(charsetName="ISO-8859-1", delimiter="||", 
+		endRecord="\nEND\n", header=true, quoteCharacter="'", 
 		quoteEscapeCharacter='\'', startRecord="*")
+@CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test.csv")
 public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
 
 	/**

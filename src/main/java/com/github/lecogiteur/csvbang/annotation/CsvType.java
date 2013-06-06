@@ -47,7 +47,7 @@ public @interface CsvType {
 	/**
 	 * Delimiter between fields. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_DELIMITER}
 	 * @return delimiter
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	String delimiter() default IConstantsCsvBang.DEFAULT_DELIMITER;
 	

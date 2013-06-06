@@ -22,11 +22,14 @@
  */
 package com.github.lecogiteur.csvbang.test.bean;
 
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
+
 
 /**
  * @author Tony EMMA
  *
  */
+@CsvFile
 public class ChildBeanReflectionUtiTest extends BeanReflectionUtiTest {
 	
 	private String subclass = "subclass";

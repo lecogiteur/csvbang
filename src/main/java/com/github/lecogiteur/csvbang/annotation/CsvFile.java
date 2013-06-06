@@ -34,7 +34,7 @@ import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 /**
  * Defines options about writing and file
  * @author Tony EMMA
- * @version 0.0.2
+ * @version 0.1.0
  *
  */
 @Target(ElementType.TYPE)

@@ -218,6 +218,18 @@ public class ReflectionUtiTest {
 	}
 	
 	@Test
+	public void getCsvFileAnnotationTest() throws SecurityException, NoSuchFieldException{
+		Annotation[] annotations = BeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNull(ReflectionUti.getCsvFileAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFileAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getDeclaredAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFileAnnotation(annotations));
+	}
+	
+	@Test
 	public void getMembersTest(){
 		List<AnnotatedElement> members = ReflectionUti.getMembers(ChildBeanReflectionUtiTest.class);
 		List<String> memberList = new ArrayList<String>();
