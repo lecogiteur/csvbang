@@ -11,7 +11,7 @@ A comma-separated values ( CSV ) API, written in JAVA and thread-safe.
 <dependency>
     <groupId>com.github.lecogiteur</groupId>
     <artifactId>csvbang</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
