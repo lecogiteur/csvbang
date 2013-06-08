@@ -41,8 +41,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.test.bean.BeanReflectionUtiTest;
-import com.github.lecogiteur.csvbang.test.bean.ChildBeanReflectionUtiTest;
+import com.github.lecogiteur.csvbang.test.bean.reflection.BeanReflectionUtiTest;
+import com.github.lecogiteur.csvbang.test.bean.reflection.ChildBeanReflectionUtiTest;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
 

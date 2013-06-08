@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.writer;
 import java.util.Collection;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.util.Comment;
 
 
 /**
@@ -58,7 +59,7 @@ public interface CsvWriter<T> {
 	 * @throws CsvBangException if a problem occurred during writing file
 	 * @since 0.0.1
 	 */
-	public void write(T line) throws CsvBangException;
+	public void write(final T line) throws CsvBangException;
 	
 	/**
 	 * Write lines in file
@@ -66,7 +67,7 @@ public interface CsvWriter<T> {
 	 * @throws CsvBangException if a problem occurred during writing file
 	 * @since 0.0.1
 	 */
-	public void write(T[] lines) throws CsvBangException;
+	public void write(final T[] lines) throws CsvBangException;
 	
 	/**
 	 * Write lines in file
@@ -74,7 +75,41 @@ public interface CsvWriter<T> {
 	 * @throws CsvBangException if a problem occurred during writing file
 	 * @since 0.0.1
 	 */
-	public void write(Collection<T> lines) throws CsvBangException;
+	public void write(final Collection<T> lines) throws CsvBangException;
+	
+	/**
+	 * Comment
+	 * @param comment a comment
+	 * @throws CsvBangException if a problem occurred during writing file
+	 * @since 0.1.0
+	 */
+	public void comment(final Comment comment) throws CsvBangException;
+	
+	/**
+	 * comment a line in file
+	 * @param line a line
+	 * @param isComment True if the lines must be commented
+	 * @throws CsvBangException if a problem occurred during writing file
+	 * @since 0.1.0
+	 */
+	public void comment(final T line) throws CsvBangException;
+	
+	/**
+	 * comment lines in file
+	 * @param lines lines
+	 * @param isComment True if the lines must be commented
+	 * @throws CsvBangException if a problem occurred during writing file
+	 * @since 0.1.0
+	 */
+	public void comment(final T[] lines) throws CsvBangException;
+	
+	/**
+	 * comment lines in file
+	 * @param lines lines
+	 * @throws CsvBangException if a problem occurred during writing file
+	 * @since 0.1.0
+	 */
+	public void comment(final Collection<T> lines) throws CsvBangException;
 	
 	/**
 	 * Close file and write footer

@@ -61,7 +61,7 @@ public @interface CsvFormat {
 		
 		/**
 		 * Delete all carriage return in field value and replace them by a pattern (By default a space). 
-		 * @since 0.0.1
+		 * @since 0.0.4
 		 */
 		NO_CARRIAGE_RETURN,
 		

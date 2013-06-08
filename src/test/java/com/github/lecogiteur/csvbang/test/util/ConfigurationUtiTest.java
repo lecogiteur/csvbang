@@ -35,9 +35,11 @@ import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.formatter.DateCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.Default;
-import com.github.lecogiteur.csvbang.test.bean.ChildSimpleConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.FinalConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.SimpleConfigurationBean;
+import com.github.lecogiteur.csvbang.test.bean.configuration.Child2SimpleConfigurationBean;
+import com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean;
+import com.github.lecogiteur.csvbang.test.bean.configuration.Final2ConfigurationBean;
+import com.github.lecogiteur.csvbang.test.bean.configuration.FinalConfigurationBean;
+import com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
@@ -66,6 +68,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE, conf.isAsynchronousWrite);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_HEADER, conf.isDisplayHeader);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_START_RECORD, conf.startRecord);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER, conf.commentCharacter);
 
 		Assert.assertNotNull(conf.fields);
 		
@@ -126,6 +129,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE, conf.isAsynchronousWrite);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_HEADER, conf.isDisplayHeader);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_START_RECORD, conf.startRecord);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER, conf.commentCharacter);
 
 		Assert.assertNotNull(conf.fields);
 		
@@ -194,6 +198,147 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(true, conf.isAppendToFile);
 		Assert.assertEquals(true, conf.isAsynchronousWrite);
 		Assert.assertEquals("*", conf.startRecord);
+		Assert.assertEquals('%', conf.commentCharacter);
+
+		Assert.assertNotNull(conf.fields);
+		
+		Assert.assertEquals(5, conf.fields.size());
+		
+		CsvFieldConfiguration e = conf.fields.get(0);
+		Assert.assertEquals("The Name", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
+		Assert.assertEquals(5, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(1);
+		Assert.assertEquals("old", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
+		Assert.assertEquals(8, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(2);
+		Assert.assertEquals("custom", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals("0", e.nullReplaceString);
+		Assert.assertEquals(10, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(3);
+		Assert.assertEquals("date", e.name);
+		Assert.assertEquals(true, e.isDeleteFieldIfNull);
+		Assert.assertEquals("No Date", e.nullReplaceString);
+		Assert.assertEquals(-2, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(4);
+		Assert.assertEquals("TheYear", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
+		Assert.assertEquals(-2, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		
+	}
+	
+	
+	@Test
+	public void child2SimpleConfigurationTest() throws CsvBangException {
+		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Child2SimpleConfigurationBean.class);
+		
+		Assert.assertNotNull(conf);
+		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
+		Assert.assertEquals(new Character('\''), conf.quote);
+		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals("||", conf.delimiter);
+		Assert.assertEquals("\nEND\n", conf.endRecord);
+		Assert.assertEquals("test.csv", conf.filename);
+		Assert.assertEquals(true, conf.isDisplayHeader);
+		Assert.assertEquals("*date||The Name||old||customMethod||TheYear\nEND\n", conf.header);
+		Assert.assertEquals(true, conf.isAppendToFile);
+		Assert.assertEquals(true, conf.isAsynchronousWrite);
+		Assert.assertEquals("*", conf.startRecord);
+		Assert.assertEquals('%', conf.commentCharacter);
+
+		Assert.assertNotNull(conf.fields);
+		
+		Assert.assertEquals(5, conf.fields.size());
+		
+		CsvFieldConfiguration e = conf.fields.get(0);
+		Assert.assertEquals("date", e.name);
+		Assert.assertEquals(true, e.isDeleteFieldIfNull);
+		Assert.assertEquals("No Date", e.nullReplaceString);
+		Assert.assertEquals(3, e.position);
+		Assert.assertNull(e.format);
+		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(1);
+		Assert.assertEquals("The Name", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
+		Assert.assertEquals(5, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(2);
+		Assert.assertEquals("old", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
+		Assert.assertEquals(8, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(3);
+		Assert.assertEquals("customMethod", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals("0", e.nullReplaceString);
+		Assert.assertEquals(10, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		
+		e = conf.fields.get(4);
+		Assert.assertEquals("TheYear", e.name);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL, e.isDeleteFieldIfNull);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
+		Assert.assertEquals(-2, e.position);
+		Assert.assertNotNull(e.format);
+		Assert.assertTrue(e.format instanceof Default);
+		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		
+	}
+	
+	@Test
+	public void final2ConfigurationTest() throws CsvBangException {
+		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Final2ConfigurationBean.class);
+		
+		Assert.assertNotNull(conf);
+		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
+		Assert.assertEquals(new Character('\''), conf.quote);
+		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals("||", conf.delimiter);
+		Assert.assertEquals("\nEND\n", conf.endRecord);
+		Assert.assertEquals("test2.csv", conf.filename);
+		Assert.assertEquals(true, conf.isDisplayHeader);
+		Assert.assertEquals("**The Name||old||custom||date||TheYear\nEND\n", conf.header);
+		Assert.assertEquals(true, conf.isAppendToFile);
+		Assert.assertEquals(true, conf.isAsynchronousWrite);
+		Assert.assertEquals("**", conf.startRecord);
+		Assert.assertEquals('%', conf.commentCharacter);
 
 		Assert.assertNotNull(conf.fields);
 		

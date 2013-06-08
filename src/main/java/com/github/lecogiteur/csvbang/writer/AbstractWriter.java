@@ -29,10 +29,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Pattern;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.util.Comment;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
 
@@ -41,9 +43,14 @@ import com.github.lecogiteur.csvbang.util.ReflectionUti;
  * Abstract writer
  * 
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  */
 public abstract class AbstractWriter<T> implements CsvWriter<T>{
+	
+	/**
+	 * a carriage return
+	 */
+	private static final Pattern PATTERN_CARRIAGE_RETURN = Pattern.compile("\n");
 	
 	
 	/**
@@ -223,17 +230,109 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		}
 		write(Arrays.asList(lines));
 	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#write(java.util.Collection)
+	 * @since 0.1.0
+	 */
+	@Override
+	public void write(final Collection<T> lines) throws CsvBangException {
+		internalWrite(lines, false);
+	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#comment(com.github.lecogiteur.csvbang.util.Comment)
+	 * @since 0.1.0
+	 */
+	@Override
+	public void comment(final Comment comment) throws CsvBangException {
+		writeComment(Collections.singleton(comment));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#comment(java.lang.Object)
+	 * @since 0.1.0
+	 */
+	@Override
+	public void comment(final T line) throws CsvBangException {
+		if (line == null){
+			return;
+		}
+		comment(Collections.singleton(line));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#comment(T[])
+	 * @since 0.1.0
+	 */
+	@Override
+	public void comment(final T[] lines) throws CsvBangException {
+		if (lines == null || lines.length > 0){
+			return;
+		}
+		comment(Arrays.asList(lines));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#comment(java.util.Collection)
+	 * @since 0.1.0
+	 */
+	@Override
+	public void comment(final Collection<T> lines) throws CsvBangException {
+		internalWrite(lines, true);
+	}
+	
+	/**
+	 * manage writing lines
+	 * @param lines lines to write
+	 * @param isComment True if lines must be commented
+	 * @throws CsvBangException if a problem occurs when line
+	 * @since 0.1.0
+	 */
+	protected abstract void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException;
+	
+	/**
+	 * Write a comment
+	 * @param line a line
+	 * @return a comment
+	 * @throws CsvBangException if a problem when retrieve a value
+	 * @since 0.1.0
+	 * 
+	 */
+	protected StringBuilder writeComment(final Object line) throws CsvBangException{
+		if (line == null){
+			return null;
+		}
+		
+		//if it's a comment
+		if (line instanceof Comment){
+			return generateComment((Comment) line);
+		}
+		
+		return generateComment(writeLine(line));
+	}
+	
 	/**
 	 * Write a line
 	 * @param line a line
 	 * @return a serialized line
 	 * @throws CsvBangException if a problem when retrieve a value
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	protected StringBuilder writeLine(final Object line) throws CsvBangException{
 		if (line == null){
 			return null;
+		}
+		
+		//if it's a comment
+		if (line instanceof Comment){
+			return generateComment((Comment) line);
 		}
 		
 		//start line
@@ -324,6 +423,38 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		for (final Object o:c){
 			addField(f, s, o);
 		}
+	}
+	
+	/**
+	 * Generate the comment
+	 * @param comment the comment
+	 * @return the comment
+	 * @since 0.1.0
+	 */
+	private StringBuilder generateComment(final Comment comment){
+		final String cmt = comment.getComment();
+		return generateComment(cmt);
+	}
+	
+	/**
+	 * Generate the comment
+	 * @param comment the comment
+	 * @return the comment
+	 * @since 0.1.0
+	 */
+	private StringBuilder generateComment(final CharSequence comment){
+		if (comment == null){
+			return null;
+		}
+		
+		final StringBuilder c = new StringBuilder(comment.length() + 10).append("\n");
+		
+		final String[] lines = PATTERN_CARRIAGE_RETURN.split(comment);
+		
+		for (final String line:lines){
+			c.append(conf.commentCharacter).append(line).append("\n");
+		}
+		return c;
 	}
 
 }

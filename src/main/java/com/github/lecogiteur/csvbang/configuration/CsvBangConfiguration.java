@@ -23,6 +23,7 @@
 package com.github.lecogiteur.csvbang.configuration;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
@@ -30,7 +31,7 @@ import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 /**
  * General configuration
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class CsvBangConfiguration {
@@ -124,4 +125,39 @@ public class CsvBangConfiguration {
 	 * @since 0.0.1
 	 */
 	public boolean isAppendToFile = IConstantsCsvBang.DEFAULT_APPEND_FILE;
+	
+	/**
+	 * Define the character in order to comment a line or data. Each comments will be write on a new line. 
+	 * If a field value has carriage return, a comment character will be added after the carriage return.
+	 * By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_COMMENT_CHARACTER}
+	 * @return comment character
+	 * @since 0.1.0
+	 * @see Comment
+	 */
+	public char commentCharacter = IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
+	
+	
+	/**
+	 * A comment line
+	 * @since 0.1.0
+	 * 
+	 */
+	public String commentLine;
+	
+	
+	/**
+	 * Pattern of comment
+	 * @since 0.1.0
+	 * 
+	 */
+	public Pattern commentPattern;
+	
+	/**
+	 * Initialize the configuration
+	 * @since 0.1.0
+	 */
+	public void init(){
+		commentPattern = Pattern.compile(Pattern.quote(commentCharacter + ""));
+		commentLine = "\n" + commentCharacter;
+	}
 }

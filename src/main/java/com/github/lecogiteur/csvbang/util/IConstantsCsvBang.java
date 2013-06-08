@@ -25,7 +25,7 @@ package com.github.lecogiteur.csvbang.util;
 /**
  * Constants
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public interface IConstantsCsvBang {
@@ -133,6 +133,12 @@ public interface IConstantsCsvBang {
 	 * Delete field if the value is null. Delete field only for the current record. By default false.
 	 * @since 0.0.1
 	 */
-	public static final boolean DEFAULT_FIELD_DELETE_IF_NULL = false; 
+	public static final boolean DEFAULT_FIELD_DELETE_IF_NULL = false;
+	
+	/**
+	 * The default character in order to comment a record or data
+	 * @since 0.1.0
+	 */
+	public static final char DEFAULT_COMMENT_CHARACTER = '#';
 
 }

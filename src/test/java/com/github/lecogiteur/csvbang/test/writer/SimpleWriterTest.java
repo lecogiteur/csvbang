@@ -37,13 +37,6 @@ public class SimpleWriterTest<T> extends AbstractWriter<T> {
 	public SimpleWriterTest(CsvBangConfiguration conf) {
 		super(conf);
 	}
-
-	@Override
-	public void write(Collection<T> lines) throws CsvBangException {
-		for(T line:lines){
-			result.append(writeLine(line));
-		}
-	}
 	
 	public String getResult(){
 		return result.toString();
@@ -51,6 +44,14 @@ public class SimpleWriterTest<T> extends AbstractWriter<T> {
 
 	@Override
 	public void close() throws CsvBangException {
+	}
+
+	@Override
+	protected void internalWrite(Collection<?> lines, boolean isComment)
+			throws CsvBangException {
+		for(Object line:lines){
+			result.append(isComment?writeComment(line):writeLine(line));
+		}
 	}
 
 }

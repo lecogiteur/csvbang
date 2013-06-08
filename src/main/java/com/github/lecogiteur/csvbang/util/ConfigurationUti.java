@@ -339,6 +339,7 @@ public class ConfigurationUti {
 				conf.startRecord = getParameterValue(conf.startRecord, csvType.startRecord(), IConstantsCsvBang.DEFAULT_START_RECORD);
 				conf.isDisplayHeader = getParameterValue(conf.isDisplayHeader, csvType.header(), IConstantsCsvBang.DEFAULT_HEADER);
 				conf.escapeQuoteCharacter = getParameterValue(conf.escapeQuoteCharacter, csvType.quoteEscapeCharacter(), IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER);
+				conf.commentCharacter = getParameterValue(conf.commentCharacter, csvType.commentCharacter(), IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER);
 				if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
 					conf.quote = csvType.quoteCharacter().charAt(0);
 				}

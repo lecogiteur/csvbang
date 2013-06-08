@@ -83,10 +83,11 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#write(java.util.Collection)
-	 * @since 0.0.1
+	 * @see com.github.lecogiteur.csvbang.writer.AbstractWriter#internalWrite(java.util.Collection, boolean)
+	 * @since 0.1.0
 	 */
-	public void write(final Collection<T> lines) throws CsvBangException {
+	@Override
+	protected void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException {
 		if (CsvbangUti.isCollectionEmpty(lines)){
 			return;
 		}
@@ -99,7 +100,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 		//Génère le block
 		final StringBuilder result = new StringBuilder(lines.size() * defaultLineSize);
 		for (final Object line:lines){
-			final StringBuilder sLine = writeLine(line);
+			final StringBuilder sLine = isComment?writeComment(line):writeLine(line);
 			if (sLine != null){
 				result.append(sLine);
 			}

@@ -94,4 +94,14 @@ public @interface CsvType {
 	 * @since 0.0.1
 	 */
 	char quoteEscapeCharacter() default IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER;
+	
+	/**
+	 * Define the character in order to comment a line or data. Each comments will be write on a new line. 
+	 * If a field value has carriage return, a comment character will be added after the carriage return.
+	 * By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_COMMENT_CHARACTER}
+	 * @return comment character
+	 * @since 0.1.0
+	 * @see Comment
+	 */
+	char commentCharacter() default IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
 }
