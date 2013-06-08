@@ -136,13 +136,11 @@ public class CsvBangConfiguration {
 	 */
 	public char commentCharacter = IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
 	
-	
 	/**
-	 * A comment line
+	 * Start string for comment
 	 * @since 0.1.0
-	 * 
 	 */
-	public String commentLine;
+	public String startComment = "";
 	
 	
 	/**
@@ -158,6 +156,9 @@ public class CsvBangConfiguration {
 	 */
 	public void init(){
 		commentPattern = Pattern.compile(Pattern.quote(commentCharacter + ""));
-		commentLine = "\n" + commentCharacter;
+			
+		if (endRecord.charAt(endRecord.length() - 1) != '\n'){
+			startComment = "\n";
+		}
 	}
 }

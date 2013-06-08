@@ -249,7 +249,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void comment(final Comment comment) throws CsvBangException {
-		writeComment(Collections.singleton(comment));
+		internalWrite(Collections.singleton(comment), true);
 	}
 
 	/**
@@ -447,7 +447,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 			return null;
 		}
 		
-		final StringBuilder c = new StringBuilder(comment.length() + 10).append("\n");
+		final StringBuilder c = new StringBuilder(comment.length() + 10).append(conf.startComment);
 		
 		final String[] lines = PATTERN_CARRIAGE_RETURN.split(comment);
 		

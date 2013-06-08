@@ -34,6 +34,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.test.bean.writer.SimpleWriterBean;
+import com.github.lecogiteur.csvbang.util.Comment;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
 
 
@@ -134,6 +135,47 @@ public class WriterTest {
 		
 		writer.write(bean);
 		writer.comment(bean2);
+		writer.write(bean3);
+		
+		Assert.assertEquals(result, writer.getResult());
+	
+	}
+	
+	@Test
+	public void simple4Test() throws CsvBangException{
+		SimpleWriterTest<SimpleWriterBean> writer = getSimpleWriter();
+		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
+		
+		SimpleWriterBean bean = new SimpleWriterBean();
+		Calendar c = Calendar.getInstance();
+		bean.setBirthday(c);
+		bean.setId(125874);
+		bean.setName("the name");
+		String result = "125874,the name,public Name: the name," + format.format(c.getTime()) +",";
+		
+		Comment comment1 = new Comment("my comment");
+		result += "\n#my comment";
+		
+		SimpleWriterBean bean2 = new SimpleWriterBean();
+		Calendar c2 = Calendar.getInstance();
+		bean2.setBirthday(c2);
+		bean2.setPrice(1287.45);
+		bean2.setName("super name");
+		result += "\nsuper name,public Name: super name," + format.format(c2.getTime()) + ",1287.45";
+		
+		Comment comment2 = new Comment("\nmy comment line 1\r\nmy line 2\n my line 3 \n");
+		result += "\n#\n#my comment line 1\r\n#my line 2\n# my line 3 ";
+		
+		SimpleWriterBean bean3 = new SimpleWriterBean();
+		bean3.setId(125874);
+		bean3.setPrice(1287.45);
+		bean3.setName("super name");
+		result += "\n125874,super name,public Name: super name,no date,1287.45\n";
+		
+		writer.write(bean);
+		writer.comment(comment1);
+		writer.write(bean2);
+		writer.comment(comment2);
 		writer.write(bean3);
 		
 		Assert.assertEquals(result, writer.getResult());
