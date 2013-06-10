@@ -130,15 +130,14 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_FIELD_NULL_VALUE = "";
 	
 	/**
-	 * Delete field if the value is null. Delete field only for the current record. By default false.
+	 * Delete field if the value is null. Delete field only for the current record. By default {@value}.
 	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_FIELD_DELETE_IF_NULL = false;
 	
 	/**
-	 * The default character in order to comment a record or data
+	 * The default character {@value} in order to comment a record or data.
 	 * @since 0.1.0
 	 */
 	public static final char DEFAULT_COMMENT_CHARACTER = '#';
-
 }

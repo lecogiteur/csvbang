@@ -24,6 +24,8 @@ package com.github.lecogiteur.csvbang.test.bean.configuration;
 
 import java.util.Calendar;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
@@ -45,6 +47,7 @@ public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#getName()
 	 */
 	@Override
+	@CsvComment(direction=DIRECTION.AFTER_RECORD)
 	@CsvField(name="The Name", position=5)
 	public String getName() {
 		// TODO Auto-generated method stub

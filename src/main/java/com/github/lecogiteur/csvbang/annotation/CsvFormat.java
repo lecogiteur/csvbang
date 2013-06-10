@@ -157,6 +157,10 @@ public @interface CsvFormat {
 		CUSTOM
 		}
 	
+	/**
+	 * Type of format. By default NONE
+	 * @return the type of format.
+	 */
 	TYPE_FORMAT type() default TYPE_FORMAT.NONE;
 	
 	/**

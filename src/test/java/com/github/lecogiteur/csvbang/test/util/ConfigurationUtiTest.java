@@ -22,7 +22,10 @@
  */
 package com.github.lecogiteur.csvbang.test.util;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -69,6 +72,22 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_HEADER, conf.isDisplayHeader);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_START_RECORD, conf.startRecord);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER, conf.commentCharacter);
+		
+		
+		Assert.assertNotNull(conf.commentsBefore);
+		Assert.assertNotNull(conf.commentsAfter);
+		List<String> commentBefore = Arrays.asList(new String[]{"getDoubleComment", "getName"});
+		List<String> commentAfter = Arrays.asList(new String[]{"getMyComment"});
+		Assert.assertEquals(2, conf.commentsBefore.size());
+		Assert.assertEquals(1, conf.commentsAfter.size());
+		for(AnnotatedElement e:conf.commentsBefore){
+			Assert.assertTrue(commentBefore.contains(((Member)e).getName()));
+		}
+		for(AnnotatedElement e:conf.commentsAfter){
+			Assert.assertTrue(commentAfter.contains(((Member)e).getName()));
+		}
+		
+		
 
 		Assert.assertNotNull(conf.fields);
 		
@@ -130,6 +149,20 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_HEADER, conf.isDisplayHeader);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_START_RECORD, conf.startRecord);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER, conf.commentCharacter);
+		
+		
+		Assert.assertNotNull(conf.commentsBefore);
+		Assert.assertNotNull(conf.commentsAfter);
+		List<String> commentBefore = Arrays.asList(new String[]{"getDoubleComment", "getName"});
+		List<String> commentAfter = Arrays.asList(new String[]{"getMyComment"});
+		Assert.assertEquals(2, conf.commentsBefore.size());
+		Assert.assertEquals(1, conf.commentsAfter.size());
+		for(AnnotatedElement e:conf.commentsBefore){
+			Assert.assertTrue(commentBefore.contains(((Member)e).getName()));
+		}
+		for(AnnotatedElement e:conf.commentsAfter){
+			Assert.assertTrue(commentAfter.contains(((Member)e).getName()));
+		}
 
 		Assert.assertNotNull(conf.fields);
 		
@@ -199,6 +232,20 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(true, conf.isAsynchronousWrite);
 		Assert.assertEquals("*", conf.startRecord);
 		Assert.assertEquals('%', conf.commentCharacter);
+		
+		
+		Assert.assertNotNull(conf.commentsBefore);
+		Assert.assertNotNull(conf.commentsAfter);
+		List<String> commentBefore = Arrays.asList(new String[]{"getDoubleComment", "getName"});
+		List<String> commentAfter = Arrays.asList(new String[]{"getMyComment"});
+		Assert.assertEquals(2, conf.commentsBefore.size());
+		Assert.assertEquals(1, conf.commentsAfter.size());
+		for(AnnotatedElement e:conf.commentsBefore){
+			Assert.assertTrue(commentBefore.contains(((Member)e).getName()));
+		}
+		for(AnnotatedElement e:conf.commentsAfter){
+			Assert.assertTrue(commentAfter.contains(((Member)e).getName()));
+		}
 
 		Assert.assertNotNull(conf.fields);
 		
@@ -270,6 +317,23 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(true, conf.isAsynchronousWrite);
 		Assert.assertEquals("*", conf.startRecord);
 		Assert.assertEquals('%', conf.commentCharacter);
+		
+		
+
+		Assert.assertNotNull(conf.commentsBefore);
+		Assert.assertNotNull(conf.commentsAfter);
+		List<String> commentBefore = Arrays.asList(new String[]{"getDoubleComment"});
+		List<String> commentAfter = Arrays.asList(new String[]{"getMyComment", "getName"});
+		Assert.assertEquals(1, conf.commentsBefore.size());
+		Assert.assertEquals(2, conf.commentsAfter.size());
+		for(AnnotatedElement e:conf.commentsBefore){
+			Assert.assertTrue(commentBefore.contains(((Member)e).getName()));
+		}
+		for(AnnotatedElement e:conf.commentsAfter){
+			Assert.assertTrue(commentAfter.contains(((Member)e).getName()));
+		}
+		
+		
 
 		Assert.assertNotNull(conf.fields);
 		
@@ -339,6 +403,19 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(true, conf.isAsynchronousWrite);
 		Assert.assertEquals("**", conf.startRecord);
 		Assert.assertEquals('%', conf.commentCharacter);
+		
+		Assert.assertNotNull(conf.commentsBefore);
+		Assert.assertNotNull(conf.commentsAfter);
+		List<String> commentBefore = Arrays.asList(new String[]{"getDoubleComment"});
+		List<String> commentAfter = Arrays.asList(new String[]{"getMyComment", "getName"});
+		Assert.assertEquals(1, conf.commentsBefore.size());
+		Assert.assertEquals(2, conf.commentsAfter.size());
+		for(AnnotatedElement e:conf.commentsBefore){
+			Assert.assertTrue(commentBefore.contains(((Member)e).getName()));
+		}
+		for(AnnotatedElement e:conf.commentsAfter){
+			Assert.assertTrue(commentAfter.contains(((Member)e).getName()));
+		}
 
 		Assert.assertNotNull(conf.fields);
 		

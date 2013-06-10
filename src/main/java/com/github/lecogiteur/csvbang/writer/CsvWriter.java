@@ -88,7 +88,6 @@ public interface CsvWriter<T> {
 	/**
 	 * comment a line in file
 	 * @param line a line
-	 * @param isComment True if the lines must be commented
 	 * @throws CsvBangException if a problem occurred during writing file
 	 * @since 0.1.0
 	 */
@@ -97,7 +96,6 @@ public interface CsvWriter<T> {
 	/**
 	 * comment lines in file
 	 * @param lines lines
-	 * @param isComment True if the lines must be commented
 	 * @throws CsvBangException if a problem occurred during writing file
 	 * @since 0.1.0
 	 */

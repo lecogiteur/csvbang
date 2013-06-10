@@ -23,6 +23,8 @@
  */
 package com.github.lecogiteur.csvbang.test.writer;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -33,6 +35,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.test.bean.writer.CommentWriterBean;
 import com.github.lecogiteur.csvbang.test.bean.writer.SimpleWriterBean;
 import com.github.lecogiteur.csvbang.util.Comment;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
@@ -176,6 +179,53 @@ public class WriterTest {
 		writer.comment(comment1);
 		writer.write(bean2);
 		writer.comment(comment2);
+		writer.write(bean3);
+		
+		Assert.assertEquals(result, writer.getResult());
+	
+	}
+	
+	@Test
+	public void simpleWithCommentTest() throws CsvBangException{
+
+		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(CommentWriterBean.class);
+		SimpleWriterTest<CommentWriterBean> writer = new SimpleWriterTest<CommentWriterBean>(conf);
+		
+		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
+		
+		String getMyComment = "#my comment\r\n#toto\n";
+		String getName = "#the name\n";
+		String before = "";
+		for (AnnotatedElement e: conf.commentsBefore){
+			if (!"getName".equals(((Member)e).getName())){
+				before += getName;
+			}else{
+				before += getMyComment;
+			}
+		}
+		
+		CommentWriterBean bean = new CommentWriterBean();
+		Calendar c = Calendar.getInstance();
+		bean.setBirthday(c);
+		bean.setId(125874);
+		bean.setName("the name");
+		String result = before + "125874,the name,public Name: the name," + format.format(c.getTime()) +",\n#145.15\n";
+		
+		CommentWriterBean bean2 = new CommentWriterBean();
+		Calendar c2 = Calendar.getInstance();
+		bean2.setBirthday(c2);
+		bean2.setPrice(1287.45);
+		bean2.setName("the name");
+		result += before + "the name,public Name: the name," + format.format(c2.getTime()) + ",1287.45\n#145.15\n";
+		
+		CommentWriterBean bean3 = new CommentWriterBean();
+		bean3.setId(125874);
+		bean3.setPrice(1287.45);
+		bean3.setName("the name");
+		result += before + "125874,the name,public Name: the name,no date,1287.45\n#145.15\n";
+		
+		writer.write(bean);
+		writer.write(bean2);
 		writer.write(bean3);
 		
 		Assert.assertEquals(result, writer.getResult());

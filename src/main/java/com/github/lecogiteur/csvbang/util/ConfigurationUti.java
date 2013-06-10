@@ -38,6 +38,8 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
@@ -148,20 +150,19 @@ public class ConfigurationUti {
 	 * @param finalClass the final class
 	 * @param clazz class (can be a parent of final class
 	 * @param mapConf all configuration of each field (with configuration of class parent). KEY: name of member || VALUE: its configuration
-	 * 
+	 * @param commentFields map which contains comment members. KEY: {@link CsvComment#direction()} || VALUE = [[Map with  KEY: name of member || VALUE: its getter]]
 
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	private static void loadCsvFieldConfiguration(final Class<?> finalClass, final Class<?> clazz, 
-			final Map<String, CsvFieldConfiguration> mapConf) throws CsvBangException {
+			final Map<String, CsvFieldConfiguration> mapConf, final Map<DIRECTION, Map<String, AnnotatedElement>> commentFields) 
+	throws CsvBangException {
 		final List<AnnotatedElement> members = ReflectionUti.getMembers(clazz);
 		for (final AnnotatedElement member:members){
 			final CsvField csvField = ReflectionUti.getCsvFieldAnnotation(member.getDeclaredAnnotations());
-			if (csvField == null){
-				continue;
-			}
+			final CsvComment csvComment = ReflectionUti.getCsvCommentAnnotation(member.getDeclaredAnnotations());
 			
 			//Retrieve getter of value
 			AnnotatedElement getter = member;
@@ -181,6 +182,25 @@ public class ConfigurationUti {
 			//retrieve conf
 			String internName = getter instanceof Field?"F: ":"M: ";
 			internName += ((Member)getter).getName();
+			
+			if (csvComment != null){
+				//a comment field
+				final Map<String, AnnotatedElement> commentFieldList =  commentFields.get(csvComment.direction());
+				commentFieldList.put(internName, getter);
+				DIRECTION direction = null;
+				if (DIRECTION.BEFORE_RECORD.equals(csvComment.direction())){
+					direction = DIRECTION.AFTER_RECORD;
+				}else{
+					direction = DIRECTION.BEFORE_RECORD;
+				}
+				commentFields.get(direction).remove(internName);
+			}
+			
+			if (csvField == null){
+				//No Csv Field
+				continue;
+			}
+			
 			CsvFieldConfiguration conf = mapConf.get(internName);
 			if (conf == null){
 				conf = new CsvFieldConfiguration();
@@ -278,29 +298,6 @@ public class ConfigurationUti {
 		return format;
 	}
 	
-	
-	/**
-	 * Generate header of file if necessary
-	 * @param conf a general configuration
-	 * @since 0.0.1
-	 */
-	private static void generateHeader(final CsvBangConfiguration conf){
-		if (conf.isDisplayHeader){
-			final StringBuilder header = new StringBuilder(1000).append(conf.startRecord);
-			for (final CsvFieldConfiguration field : conf.fields){
-				
-				String n = field.name;
-				if (!(n != null && n.length() > 0)){
-					n = ((Member)field.memberBean).getName();
-				}
-				header.append(n).append(conf.delimiter);
-			}
-			header.delete(header.length() - conf.delimiter.length(), header.length());
-			header.append(conf.endRecord);
-			conf.header = header.toString();
-		}
-	}
-	
 	/**
 	 * Load configuration of CSV bean (file CSV)
 	 * @param clazz a class
@@ -330,6 +327,11 @@ public class ConfigurationUti {
 		
 		final CsvBangConfiguration conf = new CsvBangConfiguration();
 		final Map<String, CsvFieldConfiguration> mapFieldConf = new HashMap<String, CsvFieldConfiguration>();
+		final Map<DIRECTION, Map<String, AnnotatedElement>> mapCommentFields = new HashMap<CsvComment.DIRECTION, Map<String,AnnotatedElement>>();
+		
+		mapCommentFields.put(DIRECTION.BEFORE_RECORD, new HashMap<String, AnnotatedElement>());
+		mapCommentFields.put(DIRECTION.AFTER_RECORD, new HashMap<String, AnnotatedElement>());
+		
 		for (final Class<?> c:parents){
 			final CsvType csvType = ReflectionUti.getCsvTypeAnnotation(c.getDeclaredAnnotations());
 			if (csvType != null){
@@ -353,7 +355,7 @@ public class ConfigurationUti {
 					conf.isAsynchronousWrite = getParameterValue(conf.isAsynchronousWrite, csvFile.asynchronousWriter(), IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE);
 				}
 			}
-			loadCsvFieldConfiguration(clazz, c, mapFieldConf);
+			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields);
 		}
 		
 		//manage order of field
@@ -374,8 +376,16 @@ public class ConfigurationUti {
 		}
 		conf.fields = new ArrayList<CsvFieldConfiguration>(orderedField.values());
 		
-		//generate header
-		generateHeader(conf);
+		//manage comment field
+		if (CsvbangUti.isCollectionNotEmpty(mapCommentFields.get(DIRECTION.BEFORE_RECORD).values())){
+			conf.commentsBefore = mapCommentFields.get(DIRECTION.BEFORE_RECORD).values();
+		}
+		
+		if (CsvbangUti.isCollectionNotEmpty(mapCommentFields.get(DIRECTION.AFTER_RECORD).values())){
+			conf.commentsAfter = mapCommentFields.get(DIRECTION.AFTER_RECORD).values();
+		}
+		
+		conf.init();
 		
 		return conf;
 	}

@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -330,14 +331,11 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 			return null;
 		}
 		
-		//if it's a comment
-		if (line instanceof Comment){
-			return generateComment((Comment) line);
-		}
 		
 		//start line
 		final StringBuilder sLine = new StringBuilder(defaultLineSize);
 		boolean isNullLine = true;
+		
 		
 		//for each field
 		for (final CsvFieldConfiguration f:conf.fields){
@@ -364,6 +362,21 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		}
 		sLine.delete(0, delimiterLength);
 		sLine.insert(0, conf.startRecord).append(conf.endRecord);
+		
+		//add comment before
+		if (conf.commentsBefore != null){
+			for (final AnnotatedElement member:conf.commentsBefore){
+				sLine.insert(0, generateComment(new Comment(ReflectionUti.getValue(member, line))));				
+			}
+		}
+		
+		//add comment after
+		if (conf.commentsAfter != null){
+			for (final AnnotatedElement member:conf.commentsAfter){
+				sLine.append(generateComment(new Comment(ReflectionUti.getValue(member, line))));				
+			}
+		}
+		
 		return sLine;
 	}
 	

@@ -22,6 +22,9 @@
  */
 package com.github.lecogiteur.csvbang.configuration;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -137,28 +140,56 @@ public class CsvBangConfiguration {
 	public char commentCharacter = IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
 	
 	/**
+	 * List of members (fields or methods) which are comment before record
+	 * @since 0.1.0
+	 */
+	public Collection<AnnotatedElement> commentsBefore;
+	
+	/**
+	 * List of members (fields or methods) which are comment after record
+	 * @since 0.1.0
+	 */
+	public Collection<AnnotatedElement> commentsAfter;
+	
+	/**
 	 * Start string for comment
 	 * @since 0.1.0
 	 */
 	public String startComment = "";
-	
-	
-	/**
-	 * Pattern of comment
-	 * @since 0.1.0
-	 * 
-	 */
-	public Pattern commentPattern;
 	
 	/**
 	 * Initialize the configuration
 	 * @since 0.1.0
 	 */
 	public void init(){
-		commentPattern = Pattern.compile(Pattern.quote(commentCharacter + ""));
 			
 		if (endRecord.charAt(endRecord.length() - 1) != '\n'){
 			startComment = "\n";
+		}
+		
+		//generate header
+		generateHeader();
+	}
+	
+	/**
+	 * Generate header of file if necessary
+	 * @param conf a general configuration
+	 * @since 0.1.0
+	 */
+	private void generateHeader(){
+		if (isDisplayHeader){
+			final StringBuilder h = new StringBuilder(1000).append(startRecord);
+			for (final CsvFieldConfiguration field : fields){
+				
+				String n = field.name;
+				if (!(n != null && n.length() > 0)){
+					n = ((Member)field.memberBean).getName();
+				}
+				h.append(n).append(delimiter);
+			}
+			h.delete(h.length() - delimiter.length(), h.length());
+			h.append(endRecord);
+			header = h.toString();
 		}
 	}
 }

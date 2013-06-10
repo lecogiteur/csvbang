@@ -25,6 +25,8 @@ package com.github.lecogiteur.csvbang.test.bean.writer;
 
 import java.util.Calendar;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -41,7 +43,7 @@ public class SimpleWriterBean {
 	
 	private String name;
 	
-	
+
 	@CsvField(position=4, defaultIfNull="no date")
 	@CsvFormat(type=TYPE_FORMAT.DATE, pattern=DATE_PATTERN)
 	private Calendar birthday;
@@ -111,4 +113,7 @@ public class SimpleWriterBean {
 		return "public Name: " + name;
 	}
 
+	public Double getMyCommentDouble(){
+		return 145.15d;
+	}
 }

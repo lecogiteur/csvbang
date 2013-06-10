@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.test.bean.reflection;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -48,6 +49,9 @@ public class BeanReflectionUtiTest {
 	protected String protectedField = "protectedField";
 
 	protected String othrProtectedField = "othrProtectedField";
+	
+	@CsvComment
+	public Integer comment;
 	
 	public String getPrivateField(){
 		return privateField;
@@ -85,4 +89,6 @@ public class BeanReflectionUtiTest {
 	public String getOther(){
 		return otherPrivateField;
 	}
+	
+	
 }
