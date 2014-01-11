@@ -29,6 +29,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 
@@ -37,8 +38,9 @@ import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
  *
  */
 @CsvType(charsetName="ISO-8859-1", delimiter="||", 
-		endRecord="\nEND\n", header=true, quoteCharacter="'", 
+		endRecord="\nEND\n", quoteCharacter="'", 
 		quoteEscapeCharacter='\'', startRecord="*", commentCharacter='%')
+@CsvHeader(header=true)
 @CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test.csv")
 public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 
@@ -50,7 +52,6 @@ public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 	@CsvComment(direction=DIRECTION.AFTER_RECORD)
 	@CsvField(name="The Name", position=5)
 	public String getName() {
-		// TODO Auto-generated method stub
 		return super.getName();
 	}
 
@@ -64,7 +65,6 @@ public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 	@CsvField(position=-1, deleteIfNull=true)
 	@CsvFormat(type=TYPE_FORMAT.NONE)
 	public Calendar getDate() {
-		// TODO Auto-generated method stub
 		return super.getDate();
 	}
 
@@ -83,7 +83,6 @@ public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 	@Override
 	@CsvField(defaultIfNull="0")
 	public double customMethod() {
-		// TODO Auto-generated method stub
 		return super.customMethod();
 	}
 	

@@ -231,4 +231,8 @@ public class WriterTest {
 		Assert.assertEquals(result, writer.getResult());
 	
 	}
+	
+	//TODO faire des tests sur les header
+	
+	
 }

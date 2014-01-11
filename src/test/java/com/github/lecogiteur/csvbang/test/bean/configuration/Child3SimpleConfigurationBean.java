@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.test.bean.ChildSimpleConfigurationBean
+ *  com.github.lecogiteur.csvbang.test.bean.configuration.Child2SimpleConfigurationBean
  * 
  *  Copyright (C) 2013  Tony EMMA
  *
@@ -24,22 +24,32 @@ package com.github.lecogiteur.csvbang.test.bean.configuration;
 
 import java.util.Calendar;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
+import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
-
 
 /**
  * @author Tony EMMA
  *
  */
-public class ChildSimpleConfigurationBean extends SimpleConfigurationBean{
+@CsvType(charsetName="ISO-8859-1", delimiter="||", 
+		endRecord="\nEND\n", quoteCharacter="'", 
+		quoteEscapeCharacter='\'', startRecord="*", commentCharacter='%')
+@CsvHeader(header=true)
+@CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test.csv")
+public class Child3SimpleConfigurationBean extends Simple3ConfigurationBean{
 
 	/**
 	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#getName()
 	 */
 	@Override
+	@CsvComment(direction=DIRECTION.AFTER_RECORD)
 	@CsvField(name="The Name", position=5)
 	public String getName() {
 		return super.getName();
@@ -75,4 +85,5 @@ public class ChildSimpleConfigurationBean extends SimpleConfigurationBean{
 	public double customMethod() {
 		return super.customMethod();
 	}
+	
 }

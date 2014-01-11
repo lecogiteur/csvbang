@@ -47,7 +47,7 @@ import com.github.lecogiteur.csvbang.util.ReflectionUti;
  * @version 0.1.0
  */
 public abstract class AbstractWriter<T> implements CsvWriter<T>{
-	
+
 	/**
 	 * a carriage return
 	 */
@@ -73,6 +73,12 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	private int delimiterLength = 0;
 	
 	/**
+	 * Custom header
+	 * @since 0.1.0
+	 */
+	private Object header;
+	
+	/**
 	 * File Writer
 	 * @since 0.0.1
 	 */
@@ -95,6 +101,11 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	protected int defaultLineSize = 100;
+	
+	/**
+	 * Custom footer
+	 */
+	protected Object footer;
 	
 	
 	/**
@@ -190,7 +201,22 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 			throw new CsvBangException("Could not create file: " + file.getAbsolutePath(), e);
 		}
 		
-		if (conf.isDisplayHeader && conf.header != null && conf.header.length() > 0){
+		//custom header define by CsvWriter#setHeader
+		if (header != null){
+			try {
+				String sHeader = header.toString();
+				if (sHeader != null){
+					//TODO set the type of return
+					sHeader += "\n";
+					out.write(sHeader.getBytes(conf.charset));
+				}
+			} catch (Exception e) {
+				throw new CsvBangException(String.format("Cannot write header (%s) on file %s", conf.header, file.getAbsolutePath()), e);
+			}
+		}
+		
+		//generated header
+		if (conf.header != null && conf.header.length() > 0){
 			try {
 				out.write(conf.header.getBytes(conf.charset));
 			} catch (Exception e) {
@@ -206,6 +232,29 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	public boolean isOpen() {
 		return out != null;
+	}
+	
+
+	
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#setHeader(java.lang.Object)
+	 * @since 0.1.0
+	 */
+	@Override
+	public void setHeader(Object header) {
+		this.header = header;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#setFooter(java.lang.Object)
+	 * @since 0.1.0
+	 */
+	@Override
+	public void setFooter(Object footer) {
+		this.footer = footer;
+		
 	}
 
 	/**
@@ -290,6 +339,34 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
+	 * @since 0.1.0
+	 */
+	@Override
+	public void close() throws CsvBangException {
+		try {
+			if (out != null){
+				//custom footer define by CsvWriter#setFooter
+				if (footer != null){
+					try {
+						String sFooter = footer.toString();
+						if (sFooter != null){
+							out.write(sFooter.getBytes(conf.charset));
+						}
+					} catch (Exception e) {
+						throw new CsvBangException(String.format("Cannot write footer (%s) on file %s", conf.header, file.getAbsolutePath()), e);
+					}
+				}
+				
+				out.close();
+			}
+		} catch (IOException e) {
+			throw new CsvBangException("An error has occured when closed file", e);
+		}
+	}
+
+	/**
 	 * manage writing lines
 	 * @param lines lines to write
 	 * @param isComment True if lines must be commented
@@ -297,6 +374,19 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	protected abstract void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException;
+	
+	
+	/**
+	 * Generate a line or a comment
+	 * @param line line or comment
+	 * @param isComment True if it's a comment
+	 * @return the generated data 
+	 * @throws CsvBangException if a problem has occurred when we generate the line or comment 
+	 * @since 0.1.0
+	 */
+	protected StringBuilder generateLine(final Object line, final boolean isComment) throws CsvBangException{
+		return isComment?writeComment(line):writeLine(line);
+	}
 	
 	/**
 	 * Write a comment
@@ -306,7 +396,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 * 
 	 */
-	protected StringBuilder writeComment(final Object line) throws CsvBangException{
+	private StringBuilder writeComment(final Object line) throws CsvBangException{
 		if (line == null){
 			return null;
 		}
@@ -326,7 +416,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @throws CsvBangException if a problem when retrieve a value
 	 * @since 0.1.0
 	 */
-	protected StringBuilder writeLine(final Object line) throws CsvBangException{
+	private StringBuilder writeLine(final Object line) throws CsvBangException{
 		if (line == null){
 			return null;
 		}

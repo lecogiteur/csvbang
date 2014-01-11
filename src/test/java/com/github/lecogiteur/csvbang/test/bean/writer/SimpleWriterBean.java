@@ -25,12 +25,10 @@ package com.github.lecogiteur.csvbang.test.bean.writer;
 
 import java.util.Calendar;
 
-import com.github.lecogiteur.csvbang.annotation.CsvComment;
-import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
-import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
+import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 
 @CsvType

@@ -23,6 +23,7 @@
 package com.github.lecogiteur.csvbang.test.bean.reflection;
 
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 
 
 /**
@@ -30,6 +31,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvFile;
  *
  */
 @CsvFile
+@CsvHeader(header=true)
 public class ChildBeanReflectionUtiTest extends BeanReflectionUtiTest {
 	
 	private String subclass = "subclass";

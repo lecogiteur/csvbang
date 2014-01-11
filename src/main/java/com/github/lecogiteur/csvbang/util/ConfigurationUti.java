@@ -43,6 +43,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
@@ -67,6 +68,7 @@ public class ConfigurationUti {
 	
 	/**
 	 * The logger
+	 * @since 0.0.1
 	 */
 	private static final Logger LOGGER = Logger.getLogger(ConfigurationUti.class.getName());
 	
@@ -339,12 +341,19 @@ public class ConfigurationUti {
 				conf.delimiter = getParameterValue(conf.delimiter, csvType.delimiter(), IConstantsCsvBang.DEFAULT_DELIMITER);
 				conf.endRecord = getParameterValue(conf.endRecord, csvType.endRecord(), IConstantsCsvBang.DEFAULT_END_RECORD);
 				conf.startRecord = getParameterValue(conf.startRecord, csvType.startRecord(), IConstantsCsvBang.DEFAULT_START_RECORD);
-				conf.isDisplayHeader = getParameterValue(conf.isDisplayHeader, csvType.header(), IConstantsCsvBang.DEFAULT_HEADER);
 				conf.escapeQuoteCharacter = getParameterValue(conf.escapeQuoteCharacter, csvType.quoteEscapeCharacter(), IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER);
 				conf.commentCharacter = getParameterValue(conf.commentCharacter, csvType.commentCharacter(), IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER);
 				if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
 					conf.quote = csvType.quoteCharacter().charAt(0);
 				}
+				
+				final CsvHeader csvHeader = ReflectionUti.getCsvHeaderAnnotation(c.getDeclaredAnnotations());
+				if (csvHeader != null){
+					conf.isDisplayHeader = csvHeader.header();
+					conf.header = getParameterValue(conf.header, csvHeader.customHeader(), IConstantsCsvBang.DEFAULT_CUSTOM_HEADER);
+				}
+				
+				
 				
 				final CsvFile csvFile = ReflectionUti.getCsvFileAnnotation(c.getDeclaredAnnotations());
 				if (csvFile != null){

@@ -31,7 +31,7 @@ import com.github.lecogiteur.csvbang.util.Comment;
 /**
  * Writer of CSV file
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  */
 public interface CsvWriter<T> {
 	
@@ -115,6 +115,20 @@ public interface CsvWriter<T> {
 	 * @since 0.0.1
 	 */
 	public void close() throws CsvBangException;
+	
+	/**
+	 * Set a custom header. The method {@link Object#toString()} will be call.
+	 * @param header a custom header
+	 * @since 0.1.0
+	 */
+	public void setHeader(Object header);
+	
+	/**
+	 * Set a custom footer. The method {@link Object#toString()} will be call.
+	 * @param footer a custom footer
+	 * @since 0.1.0
+	 */
+	public void setFooter(Object footer);
 	
 	
 	

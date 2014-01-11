@@ -52,6 +52,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
@@ -347,6 +348,24 @@ public class ReflectionUti {
 		for (final Annotation annotation:annotations){
 			if (annotation instanceof CsvType){
 				return (CsvType)annotation;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the CsvHeader annotation
+	 * @param annotations the list of annotation
+	 * @return the CsvHeader annotation or null if not exists
+	 * @since 0.1.0
+	 */
+	public static CsvHeader getCsvHeaderAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvHeader){
+				return (CsvHeader)annotation;
 			}
 		}
 		return null;

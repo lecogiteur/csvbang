@@ -102,7 +102,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 			return;
 		}
 		for (final Object line:lines){
-			final StringBuilder sLine = isComment?writeComment(line):writeLine(line);
+			final StringBuilder sLine = generateLine(line, isComment);
 			if (sLine != null){
 				while (!buffer.offer(sLine)){
 					emptyQueue();
@@ -114,7 +114,7 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	public void close() throws CsvBangException {
 		emptyQueue();
@@ -128,13 +128,9 @@ public class AsynchronousBlockingCsvWriter<T> extends AbstractWriter<T> {
 				}				
 			}
 		}
-		try {
-			if (out != null){
-				out.close();
-			}
-		} catch (IOException e) {
-			throw new CsvBangException("An error has occured when closed file", e);
-		}
+		
+		//close file
+		super.close();
 	}
 	
 	/**

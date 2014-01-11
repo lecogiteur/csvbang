@@ -26,8 +26,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Pattern;
 
+import com.github.lecogiteur.csvbang.util.Comment;
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 
@@ -164,6 +165,8 @@ public class CsvBangConfiguration {
 	public void init(){
 			
 		if (endRecord.charAt(endRecord.length() - 1) != '\n'){
+			//A comment always start on a new line
+			//TODO set the type of return
 			startComment = "\n";
 		}
 		
@@ -177,6 +180,10 @@ public class CsvBangConfiguration {
 	 * @since 0.1.0
 	 */
 	private void generateHeader(){
+		if (IConstantsCsvBang.DEFAULT_CUSTOM_HEADER.equals(header)){
+			header = null;
+		}
+		
 		if (isDisplayHeader){
 			final StringBuilder h = new StringBuilder(1000).append(startRecord);
 			for (final CsvFieldConfiguration field : fields){
@@ -189,7 +196,17 @@ public class CsvBangConfiguration {
 			}
 			h.delete(h.length() - delimiter.length(), h.length());
 			h.append(endRecord);
-			header = h.toString();
+			
+			if (CsvbangUti.isStringBlank(header)){
+				//if there is not custom header
+				header = h.toString();
+			}else{
+				header += h.toString();
+			}			
+		}
+		
+		if (CsvbangUti.isStringBlank(header)){
+			header = null;
 		}
 	}
 }

@@ -26,6 +26,7 @@ import java.util.Calendar;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 
@@ -34,8 +35,9 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
  *
  */
 @CsvType(charsetName="ISO-8859-1", delimiter="||", 
-		endRecord="\nEND\n", header=true, quoteCharacter="'", 
+		endRecord="\nEND\n", quoteCharacter="'", 
 		quoteEscapeCharacter='\'', startRecord="*", commentCharacter='%')
+@CsvHeader(header=true)
 @CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test.csv")
 public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
 
@@ -46,7 +48,6 @@ public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
 	@Override
 	@CsvField(name="custom")
 	public double customMethod() {
-		// TODO Auto-generated method stub
 		return super.customMethod();
 	}
 
@@ -57,7 +58,6 @@ public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
 	@Override
 	@CsvField(position=-2)
 	public Calendar getDate() {
-		// TODO Auto-generated method stub
 		return super.getDate();
 	}
 

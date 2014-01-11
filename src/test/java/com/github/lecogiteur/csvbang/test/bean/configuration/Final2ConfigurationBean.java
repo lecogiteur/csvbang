@@ -44,7 +44,6 @@ public class Final2ConfigurationBean extends Child2SimpleConfigurationBean {
 	@Override
 	@CsvField(name="custom")
 	public double customMethod() {
-		// TODO Auto-generated method stub
 		return super.customMethod();
 	}
 
@@ -55,7 +54,6 @@ public class Final2ConfigurationBean extends Child2SimpleConfigurationBean {
 	@Override
 	@CsvField(position=-2)
 	public Calendar getDate() {
-		// TODO Auto-generated method stub
 		return super.getDate();
 	}
 }

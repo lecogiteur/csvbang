@@ -50,7 +50,7 @@ public class SimpleWriterTest<T> extends AbstractWriter<T> {
 	protected void internalWrite(Collection<?> lines, boolean isComment)
 			throws CsvBangException {
 		for(Object line:lines){
-			result.append(isComment?writeComment(line):writeLine(line));
+			result.append(generateLine(line, isComment));
 		}
 	}
 

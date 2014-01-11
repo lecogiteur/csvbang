@@ -36,7 +36,7 @@ import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
  * A type which map a CSV file. This annotation is required in order to define a bean CSV.
  * 
  * @author Tony EMMA
- * @version 0.0.2
+ * @version 0.1.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -71,15 +71,6 @@ public @interface CsvType {
 	 * @since 0.0.1
 	 */
 	String endRecord() default IConstantsCsvBang.DEFAULT_END_RECORD;
-	
-	/**
-	 * Display the header on the first line. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_HEADER}.
-	 * The header is generated with the name of field. If no name is defined for a field, 
-	 * we take the property name or method name
-	 * @return True or false
-	 * @since 0.0.1
-	 */
-	boolean header() default IConstantsCsvBang.DEFAULT_HEADER;
 	
 	/**
 	 * Character in order to quote value. By default, no quote defined.

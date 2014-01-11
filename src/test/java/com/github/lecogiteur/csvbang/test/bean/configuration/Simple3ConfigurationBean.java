@@ -28,12 +28,14 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
-import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
+import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 
 
 @CsvType
-public class SimpleConfigurationBean {
+@CsvHeader(header=false, customHeader="a custom header\n")
+public class Simple3ConfigurationBean {
 	
 	@CsvComment
 	private String name;

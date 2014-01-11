@@ -76,7 +76,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 		final StringBuilder sLines = new StringBuilder(defaultLineSize * lines.size());
 		
 		for (final Object line:lines){
-			final StringBuilder sLine = isComment?writeComment(line):writeLine(line);
+			final StringBuilder sLine = generateLine(line, isComment);
 			if (sLine != null){
 				sLines.append(sLine);
 			}
@@ -99,21 +99,6 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 			}
 		}
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
-	 * @since 0.0.1
-	 */
-	public void close() throws CsvBangException {
-		try {
-			if (out != null){
-				out.close();
-			}
-		} catch (IOException e) {
-			throw new CsvBangException("An error has occured when closed file", e);
-		}
 	}
 
 }

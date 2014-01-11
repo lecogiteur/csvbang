@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.test.bean.ChildSimpleConfigurationBean
+ *  com.github.lecogiteur.csvbang.test.bean.configuration.Final2ConfigurationBean
  * 
  *  Copyright (C) 2013  Tony EMMA
  *
@@ -25,54 +25,37 @@ package com.github.lecogiteur.csvbang.test.bean.configuration;
 import java.util.Calendar;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
-import com.github.lecogiteur.csvbang.annotation.CsvFormat;
-import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
-
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
+import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 /**
  * @author Tony EMMA
  *
  */
-public class ChildSimpleConfigurationBean extends SimpleConfigurationBean{
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#getName()
-	 */
-	@Override
-	@CsvField(name="The Name", position=5)
-	public String getName() {
-		return super.getName();
-	}
+@CsvType(startRecord="**")
+@CsvFile(fileName="test2.csv")
+@CsvHeader(header=false, customHeader="")
+public class Final3ConfigurationBean extends Child3SimpleConfigurationBean {
 
 	
-	
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#getDate()
+	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#customMethod()
 	 */
 	@Override
-	@CsvField(position=-1, deleteIfNull=true)
-	@CsvFormat(type=TYPE_FORMAT.NONE)
-	public Calendar getDate() {
-		return super.getDate();
-	}
-
-
-
-	public boolean isOld(){
-		return old;
-	}
-
-
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#customMethod()
-	 */
-	@Override
-	@CsvField(defaultIfNull="0")
+	@CsvField(name="custom")
 	public double customMethod() {
 		return super.customMethod();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#getDate()
+	 */
+	@Override
+	@CsvField(position=-2)
+	public Calendar getDate() {
+		return super.getDate();
 	}
 }

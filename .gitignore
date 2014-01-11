@@ -1,3 +1,4 @@
+build.sh
 *.class
 
 # Package Files #
@@ -15,3 +16,4 @@ javacore.*
 
 #maven
 target/*
+/target
