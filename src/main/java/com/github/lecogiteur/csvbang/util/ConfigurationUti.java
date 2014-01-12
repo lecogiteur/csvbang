@@ -42,6 +42,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -351,6 +352,11 @@ public class ConfigurationUti {
 				if (csvHeader != null){
 					conf.isDisplayHeader = csvHeader.header();
 					conf.header = getParameterValue(conf.header, csvHeader.customHeader(), IConstantsCsvBang.DEFAULT_CUSTOM_HEADER);
+				}
+				
+				final CsvFooter csvFooter = ReflectionUti.getCsvFooterAnnotation(c.getDeclaredAnnotations());
+				if (csvFooter != null){
+					conf.footer = getParameterValue(conf.footer, csvFooter.customFooter(), IConstantsCsvBang.DEFAULT_CUSTOM_FOOTER);
 				}
 				
 				

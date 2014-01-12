@@ -27,6 +27,7 @@ import java.util.Calendar;
 import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -35,6 +36,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 
 @CsvType
 @CsvHeader(header=false, customHeader="a custom header\n")
+@CsvFooter(customFooter="the custom footer")
 public class Simple3ConfigurationBean {
 	
 	@CsvComment

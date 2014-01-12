@@ -26,6 +26,7 @@ import java.util.Calendar;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 
@@ -36,6 +37,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
 @CsvType(startRecord="**")
 @CsvFile(fileName="test2.csv")
 @CsvHeader(header=false, customHeader="")
+@CsvFooter(customFooter="")
 public class Final3ConfigurationBean extends Child3SimpleConfigurationBean {
 
 	

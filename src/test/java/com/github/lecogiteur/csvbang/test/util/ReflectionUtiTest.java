@@ -242,6 +242,18 @@ public class ReflectionUtiTest {
 	}
 	
 	@Test
+	public void getCsvFooterAnnotationTest() throws SecurityException, NoSuchFieldException{
+		Annotation[] annotations = BeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNull(ReflectionUti.getCsvFooterAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFooterAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getDeclaredAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFooterAnnotation(annotations));
+	}
+	
+	@Test
 	public void getCsvCommentAnnotationTest() throws SecurityException, NoSuchFieldException{
 		Annotation[] annotations = BeanReflectionUtiTest.class.getField("comment").getAnnotations();
 		Assert.assertNotNull(ReflectionUti.getCsvCommentAnnotation(annotations));

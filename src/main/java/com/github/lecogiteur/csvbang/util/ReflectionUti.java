@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -366,6 +367,24 @@ public class ReflectionUti {
 		for (final Annotation annotation:annotations){
 			if (annotation instanceof CsvHeader){
 				return (CsvHeader)annotation;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the CsvFooter annotation
+	 * @param annotations the list of annotation
+	 * @return the CsvFooter annotation or null if not exists
+	 * @since 0.1.0
+	 */
+	public static CsvFooter getCsvFooterAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvFooter){
+				return (CsvFooter)annotation;
 			}
 		}
 		return null;

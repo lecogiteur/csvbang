@@ -483,6 +483,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_RECORD, conf.endRecord);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FILE_NAME, conf.filename);
 		Assert.assertEquals("a custom header\n", conf.header);
+		Assert.assertEquals("the custom footer", conf.footer);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_APPEND_FILE, conf.isAppendToFile);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE, conf.isAsynchronousWrite);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_HEADER, conf.isDisplayHeader);
@@ -561,6 +562,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals("test.csv", conf.filename);
 		Assert.assertEquals(true, conf.isDisplayHeader);
 		Assert.assertEquals("a custom header\n*date||The Name||old||customMethod||TheYear\nEND\n", conf.header);
+		Assert.assertEquals("the custom footer", conf.footer);
 		Assert.assertEquals(true, conf.isAppendToFile);
 		Assert.assertEquals(true, conf.isAsynchronousWrite);
 		Assert.assertEquals("*", conf.startRecord);
@@ -647,6 +649,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals("test2.csv", conf.filename);
 		Assert.assertEquals(false, conf.isDisplayHeader);
 		Assert.assertNull(conf.header);
+		Assert.assertNull(conf.footer);
 		Assert.assertEquals(true, conf.isAppendToFile);
 		Assert.assertEquals(true, conf.isAsynchronousWrite);
 		Assert.assertEquals("**", conf.startRecord);

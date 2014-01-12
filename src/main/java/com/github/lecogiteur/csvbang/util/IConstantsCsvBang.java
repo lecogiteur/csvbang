@@ -87,6 +87,13 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_CUSTOM_HEADER = "null";
 	
 	/**
+	 * Default custom footer. By default {@value}.
+	 * @since 0.1.0
+	 * 
+	 */
+	public static final String DEFAULT_CUSTOM_FOOTER = "null";
+	
+	/**
 	 * Character in order to quote value. By default, no quote defined.
 	 * @since 0.0.1
 	 */

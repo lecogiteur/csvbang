@@ -91,7 +91,8 @@ public class CsvBangConfiguration {
 	/**
 	 * the header of CSV file generated.
 	 * The header is generated with the name of field. If no name is defined for a field, 
-	 * we take the property name or method name
+	 * we take the property name or method name.
+	 * If a custom header is defined, its value is append to variable header
 	 * @since 0.0.1
 	 * 
 	 */
@@ -102,6 +103,13 @@ public class CsvBangConfiguration {
 	 * @since 0.0.1
 	 */
 	public boolean isDisplayHeader = IConstantsCsvBang.DEFAULT_HEADER;
+	
+	/**
+	 * the footer of CSV file generated.
+	 * @since 0.0.1
+	 * 
+	 */
+	public String footer;
 	
 	/**
 	 * Character in order to quote value of field. By default, no quote defined.
@@ -172,6 +180,10 @@ public class CsvBangConfiguration {
 		
 		//generate header
 		generateHeader();
+		
+		if (IConstantsCsvBang.DEFAULT_CUSTOM_FOOTER.equals(footer) || CsvbangUti.isStringBlank(footer)){
+			footer = null;
+		}
 	}
 	
 	/**

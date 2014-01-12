@@ -347,15 +347,16 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	public void close() throws CsvBangException {
 		try {
 			if (out != null){
-				//custom footer define by CsvWriter#setFooter
+				String sFooter = conf.footer;
 				if (footer != null){
+					//custom footer define by CsvWriter#setFooter
+					sFooter = sFooter == null?footer.toString(): footer.toString() + sFooter;
+				}
+				if (sFooter != null){
 					try {
-						String sFooter = footer.toString();
-						if (sFooter != null){
-							out.write(sFooter.getBytes(conf.charset));
-						}
+						out.write(sFooter.getBytes(conf.charset));
 					} catch (Exception e) {
-						throw new CsvBangException(String.format("Cannot write footer (%s) on file %s", conf.header, file.getAbsolutePath()), e);
+						throw new CsvBangException(String.format("Cannot write footer (%s) on file %s", sFooter, file.getAbsolutePath()), e);
 					}
 				}
 				
