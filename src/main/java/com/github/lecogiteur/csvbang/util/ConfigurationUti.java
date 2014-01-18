@@ -85,8 +85,6 @@ public class ConfigurationUti {
 	 */
 	private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
 	
-	
-	
 	/**
 	 * Get value, if the value is equals to defaultValue, we return the old value, else we return the value
 	 * @param oldValue the old value
@@ -111,36 +109,6 @@ public class ConfigurationUti {
 	 * @since 0.0.1
 	 */
 	private static int getParameterValue(final int oldValue, final int value, final int defaultValue){
-		if (defaultValue == value){
-			return oldValue;
-		}
-		return value;
-	}
-	
-	/**
-	 * Get value, if the value is equals to defaultValue, we return the old value, else we return the value
-	 * @param oldValue the old value
-	 * @param value the actual value
-	 * @param defaultValue the default value
-	 * @return the value
-	 * @since 0.0.1
-	 */
-	private static char getParameterValue(final char oldValue, final char value, final char defaultValue){
-		if (defaultValue == value){
-			return oldValue;
-		}
-		return value;
-	}
-	
-	/**
-	 * Get value, if the value is equals to defaultValue, we return the old value, else we return the value
-	 * @param oldValue the old value
-	 * @param value the actual value
-	 * @param defaultValue the default value
-	 * @return the value
-	 * @since 0.0.1
-	 */
-	private static boolean getParameterValue(final boolean oldValue, final boolean value, final boolean defaultValue){
 		if (defaultValue == value){
 			return oldValue;
 		}
@@ -212,9 +180,9 @@ public class ConfigurationUti {
 			
 			
 			conf.position = getParameterValue(conf.position, csvField.position(), IConstantsCsvBang.DEFAULT_FIELD_POSITION);
-			conf.isDeleteFieldIfNull =  getParameterValue(conf.isDeleteFieldIfNull, csvField.deleteIfNull(), IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL);
+			conf.isDeleteFieldIfNull = csvField.deleteIfNull();
 			conf.memberBean = getter;
-			conf.nullReplaceString = getParameterValue(conf.nullReplaceString, csvField.defaultIfNull(), IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE);
+			conf.nullReplaceString = csvField.defaultIfNull();
 			
 			String realName = csvField.name();
 			if (CsvbangUti.isStringBlank(realName)){
@@ -335,42 +303,51 @@ public class ConfigurationUti {
 		mapCommentFields.put(DIRECTION.BEFORE_RECORD, new HashMap<String, AnnotatedElement>());
 		mapCommentFields.put(DIRECTION.AFTER_RECORD, new HashMap<String, AnnotatedElement>());
 		
+		//Load the configuration of class
+		//We read annotations from the parent to child
+		boolean hasCsvTypeDefined = false;
 		for (final Class<?> c:parents){
 			final CsvType csvType = ReflectionUti.getCsvTypeAnnotation(c.getDeclaredAnnotations());
 			if (csvType != null){
-				conf.charset = getParameterValue(conf.charset, csvType.charsetName(), IConstantsCsvBang.DEFAULT_CHARSET_NAME);
-				conf.delimiter = getParameterValue(conf.delimiter, csvType.delimiter(), IConstantsCsvBang.DEFAULT_DELIMITER);
-				conf.endRecord = getParameterValue(conf.endRecord, csvType.endRecord(), IConstantsCsvBang.DEFAULT_END_RECORD);
-				conf.startRecord = getParameterValue(conf.startRecord, csvType.startRecord(), IConstantsCsvBang.DEFAULT_START_RECORD);
-				conf.escapeQuoteCharacter = getParameterValue(conf.escapeQuoteCharacter, csvType.quoteEscapeCharacter(), IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER);
-				conf.commentCharacter = getParameterValue(conf.commentCharacter, csvType.commentCharacter(), IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER);
+				conf.charset = csvType.charsetName();
+				conf.delimiter = csvType.delimiter();
+				conf.endRecord = csvType.endRecord();
+				conf.startRecord = csvType.startRecord();
+				conf.escapeQuoteCharacter = csvType.quoteEscapeCharacter();
+				conf.commentCharacter = csvType.commentCharacter();
 				if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
 					conf.quote = csvType.quoteCharacter().charAt(0);
 				}
-				
-				final CsvHeader csvHeader = ReflectionUti.getCsvHeaderAnnotation(c.getDeclaredAnnotations());
-				if (csvHeader != null){
-					conf.isDisplayHeader = csvHeader.header();
-					conf.header = getParameterValue(conf.header, csvHeader.customHeader(), IConstantsCsvBang.DEFAULT_CUSTOM_HEADER);
-				}
-				
-				final CsvFooter csvFooter = ReflectionUti.getCsvFooterAnnotation(c.getDeclaredAnnotations());
-				if (csvFooter != null){
-					conf.footer = getParameterValue(conf.footer, csvFooter.customFooter(), IConstantsCsvBang.DEFAULT_CUSTOM_FOOTER);
-				}
-				
-				
-				
-				final CsvFile csvFile = ReflectionUti.getCsvFileAnnotation(c.getDeclaredAnnotations());
-				if (csvFile != null){
-					//configuration about file
-					conf.filename = getParameterValue(conf.filename, csvFile.fileName(), IConstantsCsvBang.DEFAULT_FILE_NAME);
-					conf.isAppendToFile = getParameterValue(conf.isAppendToFile, csvFile.append(), IConstantsCsvBang.DEFAULT_APPEND_FILE);
-					conf.blockingSize = getParameterValue(conf.blockingSize, csvFile.blocksize(), IConstantsCsvBang.DEFAULT_BLOCKING_SIZE);
-					conf.isAsynchronousWrite = getParameterValue(conf.isAsynchronousWrite, csvFile.asynchronousWriter(), IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE);
-				}
+				hasCsvTypeDefined = true;
 			}
+
+			final CsvHeader csvHeader = ReflectionUti.getCsvHeaderAnnotation(c.getDeclaredAnnotations());
+			if (csvHeader != null){
+				conf.isDisplayHeader = csvHeader.header();
+				conf.header = csvHeader.customHeader();
+			}
+
+			final CsvFooter csvFooter = ReflectionUti.getCsvFooterAnnotation(c.getDeclaredAnnotations());
+			if (csvFooter != null){
+				conf.footer = csvFooter.customFooter();
+				conf.noEndRecordOnLastRecord = csvFooter.noEndRecordOnLastRecord();
+			}
+
+			final CsvFile csvFile = ReflectionUti.getCsvFileAnnotation(c.getDeclaredAnnotations());
+			if (csvFile != null){
+				//configuration about file
+				conf.filename = csvFile.fileName();
+				conf.isAppendToFile = csvFile.append();
+				conf.blockingSize = csvFile.blocksize();
+				conf.isAsynchronousWrite = csvFile.asynchronousWriter();
+			}
+			
 			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields);
+		}
+		
+		if (!hasCsvTypeDefined){
+			//The CsvType is required
+			return null;
 		}
 		
 		//manage order of field

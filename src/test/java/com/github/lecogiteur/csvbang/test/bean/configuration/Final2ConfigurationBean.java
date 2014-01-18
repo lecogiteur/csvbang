@@ -32,17 +32,19 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
  * @author Tony EMMA
  *
  */
-@CsvType(startRecord="**")
-@CsvFile(fileName="test2.csv")
+@CsvType(charsetName="ISO-8859-1", delimiter="||", 
+endRecord="\nEND\n", quoteCharacter="'", 
+quoteEscapeCharacter='\'', commentCharacter='%', startRecord="**")
+@CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test2.csv")
 public class Final2ConfigurationBean extends Child2SimpleConfigurationBean {
 
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#customMethod()
 	 */
 	@Override
-	@CsvField(name="custom")
+	@CsvField(name="custom", defaultIfNull="0")
 	public double customMethod() {
 		return super.customMethod();
 	}
@@ -52,7 +54,7 @@ public class Final2ConfigurationBean extends Child2SimpleConfigurationBean {
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#getDate()
 	 */
 	@Override
-	@CsvField(position=-2)
+	@CsvField(position=-2, deleteIfNull=true, defaultIfNull="No Date")
 	public Calendar getDate() {
 		return super.getDate();
 	}

@@ -51,7 +51,7 @@ public @interface CsvHeader {
 	 * @return True or false
 	 * @since 0.1.0
 	 */
-	boolean header();
+	boolean header() default IConstantsCsvBang.DEFAULT_HEADER;
 	
 	
 	/**

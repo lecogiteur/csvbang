@@ -36,6 +36,8 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.test.bean.writer.CommentWriterBean;
+import com.github.lecogiteur.csvbang.test.bean.writer.NoEndRecordWithCommentWriterBean;
+import com.github.lecogiteur.csvbang.test.bean.writer.NoEndRecordWriterBean;
 import com.github.lecogiteur.csvbang.test.bean.writer.SimpleWriterBean;
 import com.github.lecogiteur.csvbang.util.Comment;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
@@ -232,7 +234,81 @@ public class WriterTest {
 	
 	}
 	
-	//TODO faire des tests sur les header
+	//@Test
+	public void noEndRecordTest() throws CsvBangException{
+
+		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoEndRecordWriterBean.class);
+		SimpleWriterTest<NoEndRecordWriterBean> writer = new SimpleWriterTest<NoEndRecordWriterBean>(conf);
+		
+		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
+		
+		NoEndRecordWriterBean bean = new NoEndRecordWriterBean();
+		Calendar c = Calendar.getInstance();
+		bean.setBirthday(c);
+		bean.setId(125874);
+		bean.setName("the name");
+		String result = "125874,the name,public Name: the name," + format.format(c.getTime()) +",";
+		
+		NoEndRecordWriterBean bean2 = new NoEndRecordWriterBean();
+		Calendar c2 = Calendar.getInstance();
+		bean2.setBirthday(c2);
+		bean2.setPrice(1287.45);
+		bean2.setName("super name");
+		result += "\n#super name,public Name: super name," + format.format(c2.getTime()) + ",1287.45";
+		
+		NoEndRecordWriterBean bean3 = new NoEndRecordWriterBean();
+		bean3.setId(125874);
+		bean3.setPrice(1287.45);
+		bean3.setName("super name");
+		result += "\n125874,super name,public Name: super name,no date,1287.45";
+		
+		writer.write(bean);
+		writer.comment(bean2);
+		writer.write(bean3);
+		
+		Assert.assertEquals(result, writer.getResult());
+	
+	}
+	
+	//@Test
+	//TODO vérifier que cela fonctionne et l'ajouter dans la doc
+	//Choix doit t on dans ce cas considérer la chaine de fin d'enregistrement lorsque c'est un commentaire
+	public void noEndRecordWithCommentTest() throws CsvBangException{
+
+		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoEndRecordWithCommentWriterBean.class);
+		SimpleWriterTest<NoEndRecordWithCommentWriterBean> writer = new SimpleWriterTest<NoEndRecordWithCommentWriterBean>(conf);
+		
+		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
+		
+		NoEndRecordWithCommentWriterBean bean = new NoEndRecordWithCommentWriterBean();
+		Calendar c = Calendar.getInstance();
+		bean.setBirthday(c);
+		bean.setId(125874);
+		bean.setName("the name");
+		String result = "125874,the name,public Name: the name," + format.format(c.getTime()) +",\n#a comment";
+		
+		NoEndRecordWithCommentWriterBean bean2 = new NoEndRecordWithCommentWriterBean();
+		Calendar c2 = Calendar.getInstance();
+		bean2.setBirthday(c2);
+		bean2.setPrice(1287.45);
+		bean2.setName("super name");
+		result += "\n#super name,public Name: super name," + format.format(c2.getTime()) + ",1287.45\n#a comment";
+		
+		NoEndRecordWithCommentWriterBean bean3 = new NoEndRecordWithCommentWriterBean();
+		bean3.setId(125874);
+		bean3.setPrice(1287.45);
+		bean3.setName("super name");
+		result += "\n125874,super name,public Name: super name,no date,1287.45\n#a comment";
+		
+		writer.write(bean);
+		writer.comment(bean2);
+		writer.write(bean3);
+		
+		Assert.assertEquals(result, writer.getResult());
+	
+	}
+	
+	//TODO faire des tests sur les header, méthode close
 	
 	
 }

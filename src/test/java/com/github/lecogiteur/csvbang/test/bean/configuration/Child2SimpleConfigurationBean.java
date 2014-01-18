@@ -28,6 +28,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -41,6 +42,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 		endRecord="\nEND\n", quoteCharacter="'", 
 		quoteEscapeCharacter='\'', startRecord="*", commentCharacter='%')
 @CsvHeader(header=true)
+@CsvFooter(noEndRecordOnLastRecord=true)
 @CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test.csv")
 public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 
@@ -62,7 +64,7 @@ public class Child2SimpleConfigurationBean extends SimpleConfigurationBean{
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#getDate()
 	 */
 	@Override
-	@CsvField(position=-1, deleteIfNull=true)
+	@CsvField(position=-1, deleteIfNull=true, defaultIfNull="No Date")
 	@CsvFormat(type=TYPE_FORMAT.NONE)
 	public Calendar getDate() {
 		return super.getDate();

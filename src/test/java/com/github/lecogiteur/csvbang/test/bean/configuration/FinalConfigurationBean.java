@@ -46,7 +46,7 @@ public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#customMethod()
 	 */
 	@Override
-	@CsvField(name="custom")
+	@CsvField(defaultIfNull="0", name="custom")
 	public double customMethod() {
 		return super.customMethod();
 	}
@@ -56,7 +56,7 @@ public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#getDate()
 	 */
 	@Override
-	@CsvField(position=-2)
+	@CsvField(position=-2, defaultIfNull="No Date", deleteIfNull=true)
 	public Calendar getDate() {
 		return super.getDate();
 	}

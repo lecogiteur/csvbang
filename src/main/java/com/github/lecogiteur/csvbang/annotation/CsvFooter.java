@@ -1,7 +1,7 @@
 /**
  *  com.github.lecogiteur.csvbang.annotation.CsvFooter
  * 
- *  Copyright (C) 2013  Tony EMMA
+ *  Copyright (C) 2013-2014  Tony EMMA
  *
  *  This file is part of Csvbang.
  *  
@@ -50,4 +50,11 @@ public @interface CsvFooter {
 	 * @since 0.1.0
 	 */
 	String customFooter() default IConstantsCsvBang.DEFAULT_CUSTOM_FOOTER;
+	
+	/**
+	 * If you want to put (or not) the end record characters on the last record. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_NO_END_RECORD}.
+	 * @return true if you don't want the end record on the last record
+	 * @since 0.1.0
+	 */
+	boolean noEndRecordOnLastRecord() default IConstantsCsvBang.DEFAULT_NO_END_RECORD;
 }

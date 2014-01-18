@@ -28,6 +28,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -40,7 +41,8 @@ import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 @CsvType(charsetName="ISO-8859-1", delimiter="||", 
 		endRecord="\nEND\n", quoteCharacter="'", 
 		quoteEscapeCharacter='\'', startRecord="*", commentCharacter='%')
-@CsvHeader(header=true)
+@CsvHeader(header=true, customHeader="a custom header\n")
+@CsvFooter(customFooter="the custom footer", noEndRecordOnLastRecord=true)
 @CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test.csv")
 public class Child3SimpleConfigurationBean extends Simple3ConfigurationBean{
 

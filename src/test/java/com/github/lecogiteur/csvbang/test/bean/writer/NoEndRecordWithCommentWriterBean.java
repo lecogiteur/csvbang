@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.test.bean.BeanChildCsv
+ *  com.github.lecogiteur.csvbang.test.bean.writer.NoEndRecordWriterBean
  * 
  * 
  *  Copyright (C) 2013  Tony EMMA
@@ -21,48 +21,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Csvbang. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.lecogiteur.csvbang.test.bean;
+package com.github.lecogiteur.csvbang.test.bean.writer;
 
-import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvFooter;
+import com.github.lecogiteur.csvbang.annotation.CsvType;
 
+
+@CsvType
 @CsvFooter(noEndRecordOnLastRecord=true)
-public class BeanChildCsv extends BeanCsv {
+public class NoEndRecordWithCommentWriterBean extends SimpleWriterBean{
 	
 	
-	private String date;
-	
-	private String dudu;
-
-	/**
-	 * @return the date
-	 */
-	public String getDate() {
-		return date;
+	@CsvComment(direction=DIRECTION.AFTER_RECORD)
+	public String getAComment(){
+		return "a comment";
 	}
-
-	/**
-	 * @param date the date to set
-	 */
-	public void setDate(String date) {
-		this.date = date;
-	}
-
-	/**
-	 * @return the dudu
-	 */
-	@CsvField(name="dudu")
-	public String getDudu() {
-		return dudu;
-	}
-
-	/**
-	 * @param dudu the dudu to set
-	 */
-	public void setDudu(String dudu) {
-		this.dudu = dudu;
-	}
-	
-	
-
 }

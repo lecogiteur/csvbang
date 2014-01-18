@@ -31,7 +31,6 @@ package com.github.lecogiteur.csvbang.util;
 public interface IConstantsCsvBang {
 
 	
-	
 	/**
 	 * Delimiter between fields. By default {@value}.
 	 * @since 0.0.1
@@ -92,6 +91,12 @@ public interface IConstantsCsvBang {
 	 * 
 	 */
 	public static final String DEFAULT_CUSTOM_FOOTER = "null";
+	
+	/**
+	 * Put or not the end record characters on the last record. By default {@value}.
+	 * @since 0.1.0
+	 */
+	public static final boolean DEFAULT_NO_END_RECORD = false;
 	
 	/**
 	 * Character in order to quote value. By default, no quote defined.

@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -347,20 +348,51 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	public void close() throws CsvBangException {
 		try {
 			if (out != null){
-				String sFooter = conf.footer;
-				if (footer != null){
-					//custom footer define by CsvWriter#setFooter
-					sFooter = sFooter == null?footer.toString(): footer.toString() + sFooter;
-				}
-				if (sFooter != null){
-					try {
-						out.write(sFooter.getBytes(conf.charset));
-					} catch (Exception e) {
-						throw new CsvBangException(String.format("Cannot write footer (%s) on file %s", sFooter, file.getAbsolutePath()), e);
+				synchronized (this) {
+					if (out != null){
+						if (conf.noEndRecordOnLastRecord){
+							try {
+								out.flush();
+								final long nbBytes = file.length();
+								final int sizeEndRecord = conf.endRecord.length();
+								if (nbBytes > sizeEndRecord){
+									//create an acces random file in order to access to the end of file
+									final RandomAccessFile raf = new RandomAccessFile(file, "rw");
+									
+									//verify if it's the end of file is equals to the end record
+									byte[] endBytes = new byte[sizeEndRecord];
+									raf.seek(nbBytes - sizeEndRecord);
+									raf.read(endBytes);
+									final String endString = new String(endBytes);
+									if (conf.endRecord.equals(endString)){
+										//delete the last end record
+										raf.setLength(nbBytes - sizeEndRecord);
+									}
+									raf.close();
+								}
+							} catch (Exception e) {
+								throw new CsvBangException(String.format("Cannot delete the last end record characters on file %s", file.getAbsolutePath()), e);
+							}
+						}
+
+						String sFooter = conf.footer;
+						if (footer != null){
+							//custom footer define by CsvWriter#setFooter
+							sFooter = sFooter == null?footer.toString(): footer.toString() + sFooter;
+						}
+						if (sFooter != null){
+							try {
+								out.write(sFooter.getBytes(conf.charset));
+							} catch (Exception e) {
+								throw new CsvBangException(String.format("Cannot write footer (%s) on file %s", sFooter, file.getAbsolutePath()), e);
+							}
+						}
+
+						out.flush();
+						out.close();
+						out = null;
 					}
 				}
-				
-				out.close();
 			}
 		} catch (IOException e) {
 			throw new CsvBangException("An error has occured when closed file", e);
@@ -556,7 +588,11 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		final String[] lines = PATTERN_CARRIAGE_RETURN.split(comment);
 		
 		for (final String line:lines){
-			c.append(conf.commentCharacter).append(line).append("\n");
+			//TODO manage return character
+			if (!conf.patternCommentCharacter.matcher(line).matches()){
+				c.append(conf.commentCharacter);
+			}
+			c.append(line).append("\n");
 		}
 		return c;
 	}

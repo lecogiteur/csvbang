@@ -52,7 +52,7 @@ public class ChildSimpleConfigurationBean extends SimpleConfigurationBean{
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean#getDate()
 	 */
 	@Override
-	@CsvField(position=-1, deleteIfNull=true)
+	@CsvField(position=-1, defaultIfNull="No Date", deleteIfNull=true)
 	@CsvFormat(type=TYPE_FORMAT.NONE)
 	public Calendar getDate() {
 		return super.getDate();

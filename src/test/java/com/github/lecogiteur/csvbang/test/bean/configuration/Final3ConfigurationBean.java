@@ -29,15 +29,18 @@ import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
+import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 /**
  * @author Tony EMMA
  *
  */
-@CsvType(startRecord="**")
-@CsvFile(fileName="test2.csv")
+@CsvType(startRecord="**", delimiter=IConstantsCsvBang.DEFAULT_DELIMITER, charsetName="ISO-8859-1", 
+endRecord="\nEND\n", quoteCharacter="'", 
+quoteEscapeCharacter='\'', commentCharacter='%')
+@CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test2.csv")
 @CsvHeader(header=false, customHeader="")
-@CsvFooter(customFooter="")
+@CsvFooter(customFooter="", noEndRecordOnLastRecord=false)
 public class Final3ConfigurationBean extends Child3SimpleConfigurationBean {
 
 	
@@ -46,7 +49,7 @@ public class Final3ConfigurationBean extends Child3SimpleConfigurationBean {
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#customMethod()
 	 */
 	@Override
-	@CsvField(name="custom")
+	@CsvField(defaultIfNull="0", name="custom")
 	public double customMethod() {
 		return super.customMethod();
 	}
@@ -56,7 +59,7 @@ public class Final3ConfigurationBean extends Child3SimpleConfigurationBean {
 	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#getDate()
 	 */
 	@Override
-	@CsvField(position=-2)
+	@CsvField(position=-2, deleteIfNull=true)
 	public Calendar getDate() {
 		return super.getDate();
 	}

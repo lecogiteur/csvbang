@@ -26,6 +26,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.github.lecogiteur.csvbang.util.Comment;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
@@ -142,11 +143,18 @@ public class CsvBangConfiguration {
 	 * Define the character in order to comment a line or data. Each comments will be write on a new line. 
 	 * If a field value has carriage return, a comment character will be added after the carriage return.
 	 * By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_COMMENT_CHARACTER}
-	 * @return comment character
 	 * @since 0.1.0
 	 * @see Comment
 	 */
 	public char commentCharacter = IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
+	
+	/**
+	 * Define Pattern with the comment character
+	 * @since 0.1.0
+	 * @see Comment
+	 * 
+	 */
+	public Pattern patternCommentCharacter = null;
 	
 	/**
 	 * List of members (fields or methods) which are comment before record
@@ -167,6 +175,13 @@ public class CsvBangConfiguration {
 	public String startComment = "";
 	
 	/**
+	 * Put or not the end record characters on the last record. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_NO_END_RECORD}.
+	 * 
+	 * @since 0.0.1
+	 */
+	public boolean noEndRecordOnLastRecord = IConstantsCsvBang.DEFAULT_NO_END_RECORD;
+	
+	/**
 	 * Initialize the configuration
 	 * @since 0.1.0
 	 */
@@ -177,6 +192,8 @@ public class CsvBangConfiguration {
 			//TODO set the type of return
 			startComment = "\n";
 		}
+		
+		patternCommentCharacter = Pattern.compile("^" + Pattern.quote(commentCharacter + "") + ".*$");
 		
 		//generate header
 		generateHeader();
