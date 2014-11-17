@@ -26,6 +26,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -149,25 +150,26 @@ public class FileName implements Cloneable{
 					switch (c) {
 					case 'n':
 						formatByOffset.put(pattern.length(), TYPE_FORMAT.NUMBER);
+						order.add(pattern.length());
 						break;
 					case 'd':
 						formatByOffset.put(pattern.length(), TYPE_FORMAT.DATE);
+						order.add(pattern.length());
 						containsDate = true;
 						break;
 					default:
 						pattern.append("%").append(c);
 						continue;
 					}
-					order.add(pattern.length());
 					continue;
 				}
 				pattern.append(c);
 			}
 		}
-		
+		Collections.reverse(order);
 		offsetOrdered = new int[order.size()];
-		for (int i = order.size() -1, j=0; i>0; i--, j++){
-			offsetOrdered[j] = order.get(i);
+		for(int i=0; i<order.size(); i++){
+			offsetOrdered[i] = order.get(i);
 		}
 		
 		if (CsvbangUti.isStringNotBlank(datePattern)){

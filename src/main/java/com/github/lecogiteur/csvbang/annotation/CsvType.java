@@ -73,7 +73,7 @@ public @interface CsvType {
 	 * @return end of record
 	 * @since 0.0.1
 	 */
-	String endRecord();
+	String endRecord() default IConstantsCsvBang.DEFAULT_END_RECORD;
 	
 	/**
 	 * Character in order to quote value. By default, no quote defined.
@@ -105,5 +105,5 @@ public @interface CsvType {
 	 * @since 0.1.0
 	 * @see com.github.lecogiteur.csvbang.util.EndLineType
 	 */
-	EndLineType defaultEndLineCharacter();
+	EndLineType defaultEndLineCharacter() default EndLineType.LINE_FEED;
 }

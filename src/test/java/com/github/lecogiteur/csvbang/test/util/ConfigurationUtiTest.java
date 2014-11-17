@@ -24,6 +24,7 @@ package com.github.lecogiteur.csvbang.test.util;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,13 +62,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(SimpleConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_BLOCKING_SIZE, conf.blockingSize);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_BLOCKING_SIZE, conf.blockSize);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER, conf.escapeQuoteCharacter);
 		Assert.assertNull(conf.quote);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET_NAME, conf.charset);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET, conf.charset);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_DELIMITER, conf.delimiter);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_RECORD, conf.endRecord);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FILE_NAME, conf.filename);
+		Assert.assertEquals("out-1.csv", conf.fileName.getNewFileName(false));
 		Assert.assertNull(conf.header);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_APPEND_FILE, conf.isAppendToFile);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE, conf.isAsynchronousWrite);
@@ -139,13 +140,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(ChildSimpleConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_BLOCKING_SIZE, conf.blockingSize);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_BLOCKING_SIZE, conf.blockSize);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER, conf.escapeQuoteCharacter);
 		Assert.assertNull(conf.quote);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET_NAME, conf.charset);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET, conf.charset);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_DELIMITER, conf.delimiter);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_RECORD, conf.endRecord);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FILE_NAME, conf.filename);
+		Assert.assertEquals("out-1.csv", conf.fileName.getNewFileName(false));
 		Assert.assertNull(conf.header);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_APPEND_FILE, conf.isAppendToFile);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE, conf.isAsynchronousWrite);
@@ -223,13 +224,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(FinalConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals(20, conf.blockSize);
 		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
 		Assert.assertEquals(new Character('\''), conf.quote);
-		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals(Charset.forName("ISO-8859-1"), conf.charset);
 		Assert.assertEquals("||", conf.delimiter);
 		Assert.assertEquals("\nEND\n", conf.endRecord);
-		Assert.assertEquals("test.csv", conf.filename);
+		Assert.assertEquals("test.csv", conf.fileName.getNewFileName(false));
 		Assert.assertEquals(true, conf.isDisplayHeader);
 		Assert.assertEquals("*The Name||old||custom||date||TheYear\nEND\n", conf.header);
 		Assert.assertEquals(true, conf.isAppendToFile);
@@ -309,13 +310,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Child2SimpleConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals(20, conf.blockSize);
 		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
 		Assert.assertEquals(new Character('\''), conf.quote);
-		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals(Charset.forName("ISO-8859-1"), conf.charset);
 		Assert.assertEquals("||", conf.delimiter);
 		Assert.assertEquals("\nEND\n", conf.endRecord);
-		Assert.assertEquals("test.csv", conf.filename);
+		Assert.assertEquals("test.csv", conf.fileName.getNewFileName(false));
 		Assert.assertEquals(true, conf.isDisplayHeader);
 		Assert.assertEquals("*date||The Name||old||customMethod||TheYear\nEND\n", conf.header);
 		Assert.assertEquals(true, conf.isAppendToFile);
@@ -396,13 +397,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Final2ConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals(20, conf.blockSize);
 		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
 		Assert.assertEquals(new Character('\''), conf.quote);
-		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals(Charset.forName("ISO-8859-1"), conf.charset);
 		Assert.assertEquals("||", conf.delimiter);
 		Assert.assertEquals("\nEND\n", conf.endRecord);
-		Assert.assertEquals("test2.csv", conf.filename);
+		Assert.assertEquals("test2.csv", conf.fileName.getNewFileName(false));
 		Assert.assertEquals(true, conf.isDisplayHeader);
 		Assert.assertEquals("**The Name||old||custom||date||TheYear\nEND\n", conf.header);
 		Assert.assertEquals(true, conf.isAppendToFile);
@@ -480,13 +481,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Simple3ConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_BLOCKING_SIZE, conf.blockingSize);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_BLOCKING_SIZE, conf.blockSize);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER, conf.escapeQuoteCharacter);
 		Assert.assertNull(conf.quote);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET_NAME, conf.charset);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET, conf.charset);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_DELIMITER, conf.delimiter);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_RECORD, conf.endRecord);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FILE_NAME, conf.filename);
+		Assert.assertEquals("out-1.csv", conf.fileName.getNewFileName(false));
 		Assert.assertEquals("a custom header\n", conf.header);
 		Assert.assertEquals("the custom footer", conf.footer);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_APPEND_FILE, conf.isAppendToFile);
@@ -559,13 +560,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Child3SimpleConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals(20, conf.blockSize);
 		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
 		Assert.assertEquals(new Character('\''), conf.quote);
-		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals(Charset.forName("ISO-8859-1"), conf.charset);
 		Assert.assertEquals("||", conf.delimiter);
 		Assert.assertEquals("\nEND\n", conf.endRecord);
-		Assert.assertEquals("test.csv", conf.filename);
+		Assert.assertEquals("test.csv", conf.fileName.getNewFileName(false));
 		Assert.assertEquals(true, conf.isDisplayHeader);
 		Assert.assertEquals("a custom header\n*date||The Name||old||customMethod||TheYear\nEND\n", conf.header);
 		Assert.assertEquals("the custom footer", conf.footer);
@@ -647,13 +648,13 @@ public class ConfigurationUtiTest {
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(Final3ConfigurationBean.class);
 		
 		Assert.assertNotNull(conf);
-		Assert.assertEquals(20, conf.blockingSize);
+		Assert.assertEquals(20, conf.blockSize);
 		Assert.assertEquals('\'', conf.escapeQuoteCharacter);
 		Assert.assertEquals(new Character('\''), conf.quote);
-		Assert.assertEquals("ISO-8859-1", conf.charset);
+		Assert.assertEquals(Charset.forName("ISO-8859-1"), conf.charset);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_DELIMITER, conf.delimiter);
 		Assert.assertEquals("\nEND\n", conf.endRecord);
-		Assert.assertEquals("test2.csv", conf.filename);
+		Assert.assertEquals("test2.csv", conf.fileName.getNewFileName(false));
 		Assert.assertEquals(false, conf.isDisplayHeader);
 		Assert.assertNull(conf.header);
 		Assert.assertNull(conf.footer);

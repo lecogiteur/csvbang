@@ -329,10 +329,7 @@ public class ConfigurationUti {
 					conf.quote = csvType.quoteCharacter().charAt(0);
 				}
 				hasCsvTypeDefined = true;
-				if (conf.defaultEndLineCharacter == null){
-					conf.defaultEndLineCharacter = IConstantsCsvBang.DEFAULT_END_LINE;
-				}
-				if (conf.endRecord == null){
+				if (IConstantsCsvBang.DEFAULT_END_RECORD.equals(conf.endRecord)){
 					conf.endRecord = conf.defaultEndLineCharacter.toString();
 				}
 			}

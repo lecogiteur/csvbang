@@ -67,7 +67,7 @@ public interface IConstantsCsvBang {
 	 * String to put at the end of record. By default the character {@value}
 	 * @since 0.0.1
 	 */
-	public static final String DEFAULT_END_RECORD = EndLineType.CARRIAGE_RETURN.toString();
+	public static final String DEFAULT_END_RECORD = "\n";
 	
 	/**
 	 * Size of buffer in number of record. Negative value means no buffer.
