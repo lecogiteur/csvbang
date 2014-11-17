@@ -29,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.github.lecogiteur.csvbang.util.EndLineType;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 
@@ -43,6 +44,8 @@ import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 @Inherited
 @Documented
 public @interface CsvType {
+	
+	static final EndLineType end = IConstantsCsvBang.DEFAULT_END_LINE;
 	
 	/**
 	 * Delimiter between fields. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_DELIMITER}
@@ -70,7 +73,7 @@ public @interface CsvType {
 	 * @return end of record
 	 * @since 0.0.1
 	 */
-	String endRecord() default IConstantsCsvBang.DEFAULT_END_RECORD;
+	String endRecord();
 	
 	/**
 	 * Character in order to quote value. By default, no quote defined.
@@ -95,4 +98,12 @@ public @interface CsvType {
 	 * @see Comment
 	 */
 	char commentCharacter() default IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
+	
+	/**
+	 * Define the end line character used for comment, header, footer or end record (if not defined).
+	 * @return the type of end line character. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_END_LINE}
+	 * @since 0.1.0
+	 * @see com.github.lecogiteur.csvbang.util.EndLineType
+	 */
+	EndLineType defaultEndLineCharacter();
 }

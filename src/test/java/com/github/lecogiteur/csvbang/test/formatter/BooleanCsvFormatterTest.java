@@ -40,7 +40,12 @@ import junit.framework.Assert;
  */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class BooleanCsvFormatterTest {
-	
+	@Test
+	public void boolea(){
+		double d;
+		d = 0/0.0;
+		System.out.println("dfsdf" + d);
+	}
 	@Test
 	public void booleanFormatNoPatternTest(){
 		CsvFormatter format = new BooleanCsvFormatter();

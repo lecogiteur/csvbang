@@ -22,65 +22,49 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
+import com.github.lecogiteur.csvbang.file.CsvFileContext;
+import com.github.lecogiteur.csvbang.pool.CsvFilePool;
+import com.github.lecogiteur.csvbang.pool.CsvbangExecutorService;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
 /**
  * asynchronous writer
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
 	 * Service which manage thread
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
-	private ExecutorService executor;
-	
-	/**
-	 * Number of thread
-	 * @since 0.0.1
-	 */
-	private AtomicInteger atomic = new AtomicInteger(0);
+	private CsvbangExecutorService executor;
 
 	/**
 	 * Constructor
 	 * @param file CSV file
-	 * @since 0.0.1
+	 * @throws CsvBangException 
+	 * @since 0.1.0
 	 */
-	public AsynchronousCsvWriter(final File file, final CsvBangConfiguration conf, final ExecutorService serviceExecutor) {
-		super(file, conf);
-		this.file = file;
-		if (file != null){
-			this.executor = serviceExecutor;
-		}
+	/**
+	 * @param pool
+	 * @param conf
+	 * @param serviceExecutor
+	 * @throws CsvBangException
+	 * @since 0.1.0
+	 */
+	public AsynchronousCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf, final CsvbangExecutorService serviceExecutor) throws CsvBangException {
+		super(pool, conf);
 	}
 	
-	/**
-	 * Constructor
-	 * @param file path of CSV file
-	 * @since 0.0.1
-	 */
-	public AsynchronousCsvWriter(final String file, final CsvBangConfiguration conf, final ExecutorService serviceExecutor) {
-		super(file, conf);
-		if (file != null){
-			this.executor = serviceExecutor;
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.writer.AbstractWriter#internalWrite(java.util.Collection, boolean)
@@ -92,25 +76,28 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 			return;
 		}
 
-		if (out == null){
-			//if not open
-			open();
-		}
-		
-		//Génère le block
-		final StringBuilder result = new StringBuilder(lines.size() * defaultLineSize);
-		for (final Object line:lines){
-			final StringBuilder sLine = generateLine(line, isComment);
-			if (sLine != null){
-				result.append(sLine);
-			}
-		}
-		
-		// increment counter of task
-		atomic.incrementAndGet();
-		
 		//Submit the writing to the executor
-		executor.submit(new TaskCallable(result, this));
+		executor.submit(this.hashCode(), new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				//generate content to add to file
+				final StringBuilder result = new StringBuilder(lines.size() * defaultLineSize);
+				for (final Object line:lines){
+					final StringBuilder sLine = generateLine(line, isComment);
+					if (sLine != null){
+						result.append(sLine);
+					}
+				}
+				
+				//get a file in order to write
+				final CsvFileContext file = filePool.getFile(isComment?0:lines.size(), result.length());
+
+				//write data
+				file.write(result.toString());
+
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -118,97 +105,15 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
 	 * @since 0.1.0
 	 */
-	public void close() throws CsvBangException {
-		while (atomic.get() != 0){
-			//wait end of file write
-			synchronized (this) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					throw new CsvBangException(String.format("Error has occurred on closing file (%). Some data cannot be written in file.", file.getAbsolutePath()), e);
-				}				
+	public void close() throws CsvBangIOException {
+		try {
+			if (executor.awaitGroupTermination(this.hashCode())){
+				//close file
+				super.close();
 			}
+		} catch (CsvBangException e) {
+			throw new CsvBangIOException(String.format("Error has occurred on closing file."), e);
 		}
 
-		//close file
-		super.close();
 	}
-	
-	
-	
-	/**
-	 * Call back method when terminate to write a block of record in file
-	 * @since 0.0.1
-	 */
-	public int callbackEndWriting(){
-		return atomic.decrementAndGet();
-	}
-	
-	/**
-	 * 
-	 * Task which write in file
-	 * @author Tony EMMA
-	 * @version 0.0.1
-	 *
-	 */
-	//TODO manage Exception
-	private class TaskCallable implements Callable<Void>{
-
-		/**
-		 * Lines to insert
-		 * @since 0.0.1
-		 */
-		private StringBuilder result;
-
-		/**
-		 * instance of writer
-		 * @since 0.0.1
-		 */
-		private AsynchronousCsvWriter<?> writer;
-		
-		/**
-		 * Constructor
-		 * @param s Lines to insert
-		 * @param writer instance of writer
-		 * @since 0.0.1
-		 */
-		public TaskCallable(StringBuilder s, AsynchronousCsvWriter<?> writer){
-			result = s;
-			this.writer = writer;
-		}
-		
-		/**
-		 * {@inheritDoc}
-		 * @see java.util.concurrent.Callable#call()
-		 * @since 0.0.1
-		 */
-		public Void call() throws Exception {
-			if (result.length() > 0){
-				byte[] bTab = null;
-				try {
-					bTab = result.toString().getBytes(conf.charset);
-				} catch (UnsupportedEncodingException e) {
-					throw new CsvBangException(String.format("The charset for [%s] is not supported: %s", 
-							file.getAbsolutePath(), conf.charset), e);
-				}
-				final ByteBuffer bb = ByteBuffer.allocateDirect(bTab.length);
-				bb.put(bTab);
-				bb.flip();
-				try {
-					out.getChannel().write(bb);
-				} catch (IOException e) {
-					throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath(), result), e);
-				}
-			}
-			int dec = writer.callbackEndWriting();
-			if (dec == 0){
-				synchronized (writer) {
-					writer.notify();				
-				}
-			}
-			return null;
-		}
-		
-	}
-
 }

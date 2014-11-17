@@ -22,11 +22,6 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +31,9 @@ import java.util.regex.Pattern;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
+import com.github.lecogiteur.csvbang.file.CsvFileContext;
+import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.util.Comment;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
@@ -72,24 +70,12 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	private int delimiterLength = 0;
-	
+
 	/**
-	 * Custom header
+	 * Pool of file
 	 * @since 0.1.0
 	 */
-	private Object header;
-	
-	/**
-	 * File Writer
-	 * @since 0.0.1
-	 */
-	protected FileOutputStream out;
-	
-	/**
-	 * Csv File
-	 * @since 0.0.1
-	 */
-	protected File file;
+	protected final CsvFilePool filePool;
 	
 	/**
 	 * Configuration
@@ -104,18 +90,14 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	protected int defaultLineSize = 100;
 	
 	/**
-	 * Custom footer
-	 */
-	protected Object footer;
-	
-	
-	/**
 	 * Constructor
+	 * @param file CSV file
 	 * @param conf configuration
+	 * @throws CsvBangException if an error occurred during the initialization of file pool
 	 * @since 0.0.1
 	 */
-	public AbstractWriter(final CsvBangConfiguration conf) {
-		super();
+	public AbstractWriter(final CsvFilePool pool, final CsvBangConfiguration conf) throws CsvBangException {
+		this.filePool = pool;
 		this.conf = conf;
 		this.addQuote = this.conf.quote != null;
 		if (addQuote){
@@ -126,102 +108,18 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		defaultLineSize = 20 * this.conf.fields.size();
 	}
 	
-	/**
-	 * Constructor
-	 * @param file CSV file
-	 * @param conf configuration
-	 * @since 0.0.1
-	 */
-	public AbstractWriter(final File file, final CsvBangConfiguration conf) {
-		this(conf);
-		this.file = file;
-	}
-	
-	/**
-	 * Constructor
-	 * @param file CSV file
-	 * @param conf configuration
-	 * @since 0.0.1
-	 */
-	public AbstractWriter(final String file, final CsvBangConfiguration conf) {
-		this(conf);
-		if (CsvbangUti.isStringNotBlank(file)){
-			this.file = new File(file);
-		}
-	}
-	
 	
 	/**
 	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#open()
 	 * @since 0.0.1
 	 */
-	public synchronized void open() throws CsvBangException {
-		if (out != null){
-			//already open
-			return;
-		}
+	public void open() throws CsvBangException {				
+		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		
-		
-		//complete file name with annotation configuration
-		if (CsvbangUti.isStringNotBlank(conf.filename)){
-			if (file != null && file.exists() && file.isDirectory()){
-				//if file defined by factory is a directory
-				file = new File(file, conf.filename);
-			}else if (file == null){
-				//if no file is defined is
-				file = new File(conf.filename);
-			}
-		}
-		
-		
-		
-		if (file == null){
-			throw new CsvBangException("No file defined for CSV writer");
-		}
-		
-		if (!conf.isAppendToFile && file.exists()){
-			file.delete();
-		}
-		
-		if (!file.exists()){
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				throw new CsvBangException("Could not create file: " + file.getAbsolutePath(), e);
-			}
-		}else if (!file.isFile()){
-			throw new CsvBangException(String.format("%s is not a file. ", file.getAbsolutePath()));
-		}else if (!file.canWrite()){
-			throw new CsvBangException(String.format("Could not write in file: %s ", file.getAbsolutePath()));	
-		}
-		
-		try {
-			out = new FileOutputStream(file, true);
-		} catch (FileNotFoundException e) {
-			throw new CsvBangException("Could not create file: " + file.getAbsolutePath(), e);
-		}
-		
-		//custom header define by CsvWriter#setHeader
-		if (header != null){
-			try {
-				String sHeader = header.toString();
-				if (sHeader != null){
-					//TODO set the type of return
-					sHeader += "\n";
-					out.write(sHeader.getBytes(conf.charset));
-				}
-			} catch (Exception e) {
-				throw new CsvBangException(String.format("Cannot write header (%s) on file %s", conf.header, file.getAbsolutePath()), e);
-			}
-		}
-		
-		//generated header
-		if (conf.header != null && conf.header.length() > 0){
-			try {
-				out.write(conf.header.getBytes(conf.charset));
-			} catch (Exception e) {
-				throw new CsvBangException(String.format("Cannot write header (%s) on file %s", conf.header, file.getAbsolutePath()), e);
+		if (CsvbangUti.isCollectionNotEmpty(files)){
+			for (final CsvFileContext file:files){
+				file.open();
 			}
 		}
 	}
@@ -231,8 +129,17 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#isOpen()
 	 * @since 0.0.1
 	 */
-	public boolean isOpen() {
-		return out != null;
+	public boolean isOpen() {				
+		final Collection<CsvFileContext> files = filePool.getAllFiles();
+		
+		if (CsvbangUti.isCollectionNotEmpty(files)){
+			for (final CsvFileContext file:files){
+				if (!file.isOpen()){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 
@@ -243,8 +150,11 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void setHeader(Object header) {
-		this.header = header;
+	public void setHeader(Object header) throws CsvBangException {
+		if (isOpen()){
+			throw new CsvBangException("We can't set the custom header. Some CSV files are already open.");
+		}
+		filePool.setCustomHeader(header);
 	}
 
 	/**
@@ -253,9 +163,11 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void setFooter(Object footer) {
-		this.footer = footer;
-		
+	public void setFooter(Object footer) throws CsvBangException {
+		if (isOpen()){
+			throw new CsvBangException("We can't set the custom footer. Some CSV files are already open.");
+		}
+		filePool.setCustomFooter(footer);
 	}
 
 	/**
@@ -345,57 +257,12 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void close() throws CsvBangException {
-		try {
-			if (out != null){
-				synchronized (this) {
-					if (out != null){
-						if (conf.noEndRecordOnLastRecord){
-							try {
-								out.flush();
-								final long nbBytes = file.length();
-								final int sizeEndRecord = conf.endRecord.length();
-								if (nbBytes > sizeEndRecord){
-									//create an acces random file in order to access to the end of file
-									final RandomAccessFile raf = new RandomAccessFile(file, "rw");
-									
-									//verify if it's the end of file is equals to the end record
-									byte[] endBytes = new byte[sizeEndRecord];
-									raf.seek(nbBytes - sizeEndRecord);
-									raf.read(endBytes);
-									final String endString = new String(endBytes);
-									if (conf.endRecord.equals(endString)){
-										//delete the last end record
-										raf.setLength(nbBytes - sizeEndRecord);
-									}
-									raf.close();
-								}
-							} catch (Exception e) {
-								throw new CsvBangException(String.format("Cannot delete the last end record characters on file %s", file.getAbsolutePath()), e);
-							}
-						}
-
-						String sFooter = conf.footer;
-						if (footer != null){
-							//custom footer define by CsvWriter#setFooter
-							sFooter = sFooter == null?footer.toString(): footer.toString() + sFooter;
-						}
-						if (sFooter != null){
-							try {
-								out.write(sFooter.getBytes(conf.charset));
-							} catch (Exception e) {
-								throw new CsvBangException(String.format("Cannot write footer (%s) on file %s", sFooter, file.getAbsolutePath()), e);
-							}
-						}
-
-						out.flush();
-						out.close();
-						out = null;
-					}
-				}
+	public void close() throws CsvBangIOException {
+		final Collection<CsvFileContext> files = filePool.getAllFiles();
+		if (CsvbangUti.isCollectionNotEmpty(files)){
+			for (final CsvFileContext file:files){
+				file.close();
 			}
-		} catch (IOException e) {
-			throw new CsvBangException("An error has occured when closed file", e);
 		}
 	}
 
@@ -588,11 +455,10 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		final String[] lines = PATTERN_CARRIAGE_RETURN.split(comment);
 		
 		for (final String line:lines){
-			//TODO manage return character
 			if (!conf.patternCommentCharacter.matcher(line).matches()){
 				c.append(conf.commentCharacter);
 			}
-			c.append(line).append("\n");
+			c.append(line).append(conf.defaultEndLineCharacter);
 		}
 		return c;
 	}

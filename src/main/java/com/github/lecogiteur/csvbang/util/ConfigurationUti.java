@@ -27,6 +27,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,12 +46,13 @@ import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
-import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.file.FileName;
 import com.github.lecogiteur.csvbang.formatter.BooleanCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.CsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.CurrencyCsvFormatter;
@@ -309,16 +312,29 @@ public class ConfigurationUti {
 		for (final Class<?> c:parents){
 			final CsvType csvType = ReflectionUti.getCsvTypeAnnotation(c.getDeclaredAnnotations());
 			if (csvType != null){
-				conf.charset = csvType.charsetName();
+				try{
+					conf.charset = Charset.forName(csvType.charsetName());
+				}catch(IllegalCharsetNameException e1){
+					throw new CsvBangException(String.format("The charset [%s] for CSV file is undefined for the class %s. See https://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html", csvType.charsetName(), c));
+				}catch(IllegalArgumentException e2){
+					throw new CsvBangException(String.format("The charset [%s] for CSV file is undefined for the class %s. See https://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html", csvType.charsetName(), c));
+				}
 				conf.delimiter = csvType.delimiter();
 				conf.endRecord = csvType.endRecord();
 				conf.startRecord = csvType.startRecord();
 				conf.escapeQuoteCharacter = csvType.quoteEscapeCharacter();
 				conf.commentCharacter = csvType.commentCharacter();
+				conf.defaultEndLineCharacter = csvType.defaultEndLineCharacter();
 				if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
 					conf.quote = csvType.quoteCharacter().charAt(0);
 				}
 				hasCsvTypeDefined = true;
+				if (conf.defaultEndLineCharacter == null){
+					conf.defaultEndLineCharacter = IConstantsCsvBang.DEFAULT_END_LINE;
+				}
+				if (conf.endRecord == null){
+					conf.endRecord = conf.defaultEndLineCharacter.toString();
+				}
 			}
 
 			final CsvHeader csvHeader = ReflectionUti.getCsvHeaderAnnotation(c.getDeclaredAnnotations());
@@ -336,10 +352,15 @@ public class ConfigurationUti {
 			final CsvFile csvFile = ReflectionUti.getCsvFileAnnotation(c.getDeclaredAnnotations());
 			if (csvFile != null){
 				//configuration about file
-				conf.filename = csvFile.fileName();
+				conf.fileName = new FileName(csvFile.fileName(), csvFile.datePattern());
 				conf.isAppendToFile = csvFile.append();
-				conf.blockingSize = csvFile.blocksize();
+				conf.blockSize = csvFile.blocksize();
 				conf.isAsynchronousWrite = csvFile.asynchronousWriter();
+				conf.maxFile = csvFile.maxFileNumber();
+				conf.maxFileSize = csvFile.maxFileSize();
+				conf.maxRecordByFile = csvFile.maxRecordByFile();
+				conf.isFileByFile = csvFile.fileByFile();
+				
 			}
 			
 			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields);
@@ -363,7 +384,7 @@ public class ConfigurationUti {
 		}
 		
 		if (orderedField.size() == 0){
-			//TODO mettre des logs
+			LOGGER.warning(String.format("No field defined for class:", clazz));
 			return null;
 		}
 		conf.fields = new ArrayList<CsvFieldConfiguration>(orderedField.values());

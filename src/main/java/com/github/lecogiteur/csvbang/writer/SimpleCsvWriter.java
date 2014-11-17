@@ -22,14 +22,11 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
@@ -43,19 +40,11 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 	/**
 	 * Constructor
 	 * @param file CSV file
+	 * @throws CsvBangException 
 	 * @since 0.0.1
 	 */
-	public SimpleCsvWriter(final File file, final CsvBangConfiguration conf) {
-		super(file, conf);
-	}
-	
-	/**
-	 * Constructor
-	 * @param file path of CSV file
-	 * @since 0.0.1
-	 */
-	public SimpleCsvWriter(final String file, final CsvBangConfiguration conf) {
-		super(file, conf);
+	public SimpleCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf) throws CsvBangException {
+		super(pool, conf);
 	}
 	
 	
@@ -69,10 +58,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 		if (CsvbangUti.isCollectionEmpty(lines)){
 			return;
 		}
-		if (out == null){
-			//if not open
-			open();
-		}
+		
 		final StringBuilder sLines = new StringBuilder(defaultLineSize * lines.size());
 		
 		for (final Object line:lines){
@@ -82,23 +68,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 			}
 		}
 		
-		if (sLines.length() > 0){
-			byte[] bTab = null;
-			try {
-				bTab = sLines.toString().getBytes(conf.charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new CsvBangException(String.format("The charset for [%s] is not supported: %s", file.getAbsolutePath(), conf.charset), e);
-			}
-			final ByteBuffer bb = ByteBuffer.allocateDirect(bTab.length);
-			bb.put(bTab);
-			bb.flip();
-			try {
-				out.getChannel().write(bb);
-			} catch (IOException e) {
-				throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath(), sLines), e);
-			}
-		}
-
+		filePool.getFile(isComment?0:lines.size(), sLines.length()).write(sLines.toString());
 	}
 
 }

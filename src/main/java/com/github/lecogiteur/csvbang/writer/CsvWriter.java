@@ -22,9 +22,11 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.nio.channels.Channel;
 import java.util.Collection;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.util.Comment;
 
 
@@ -33,7 +35,7 @@ import com.github.lecogiteur.csvbang.util.Comment;
  * @author Tony EMMA
  * @version 0.1.0
  */
-public interface CsvWriter<T> {
+public interface CsvWriter<T> extends Channel{
 	
 	
 	/**
@@ -51,6 +53,7 @@ public interface CsvWriter<T> {
 	 * @return True if already open
 	 * @since 0.0.1
 	 */
+	@Override
 	public boolean isOpen();
 	
 	/**
@@ -111,24 +114,27 @@ public interface CsvWriter<T> {
 	
 	/**
 	 * Close file and write footer
-	 * @throws CsvBangException if a problem occurred during closing file
+	 * @throws CsvBangIOException if a problem occurred during closing file
 	 * @since 0.0.1
 	 */
-	public void close() throws CsvBangException;
+	@Override
+	public void close() throws CsvBangIOException;
 	
 	/**
 	 * Set a custom header. The method {@link Object#toString()} will be call.
 	 * @param header a custom header
+	 * @throws CsvBangException if the files are already open. You can't set the header after the CSV file are open.
 	 * @since 0.1.0
 	 */
-	public void setHeader(Object header);
+	public void setHeader(Object header) throws CsvBangException;
 	
 	/**
 	 * Set a custom footer. The method {@link Object#toString()} will be call.
 	 * @param footer a custom footer
+	 * @throws CsvBangException if the files are already open. You can't set the footer after the CSV file are open.
 	 * @since 0.1.0
 	 */
-	public void setFooter(Object footer);
+	public void setFooter(Object footer) throws CsvBangException;
 	
 	
 	

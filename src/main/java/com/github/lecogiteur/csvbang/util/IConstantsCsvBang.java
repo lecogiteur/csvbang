@@ -22,6 +22,8 @@
  */
 package com.github.lecogiteur.csvbang.util;
 
+import java.nio.charset.Charset;
+
 /**
  * Constants
  * @author Tony EMMA
@@ -42,6 +44,12 @@ public interface IConstantsCsvBang {
 	 * @since 0.0.1
 	 */
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
+	
+	/**
+	 * Charset of file. By default {@value}
+	 * @since 0.0.1
+	 */
+	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	/**
 	 * String to put at the start of record. By default nothing
@@ -50,10 +58,16 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_START_RECORD = "";
 	
 	/**
+	 * The default end line characters. By default {@value}.
+	 * @since 0.1.0
+	 */
+	public static final EndLineType DEFAULT_END_LINE = EndLineType.CARRIAGE_RETURN;
+	
+	/**
 	 * String to put at the end of record. By default the character {@value}
 	 * @since 0.0.1
 	 */
-	public static final String DEFAULT_END_RECORD = "\n";
+	public static final String DEFAULT_END_RECORD = EndLineType.CARRIAGE_RETURN.toString();
 	
 	/**
 	 * Size of buffer in number of record. Negative value means no buffer.
@@ -111,10 +125,10 @@ public interface IConstantsCsvBang {
 	public static final char DEFAULT_QUOTE_ESCAPE_CHARACTER = '\\';
 	
 	/**
-	 * Default file name for a CSV bean. By default, no static file name is defined
+	 * Default file name for a CSV bean. By default {@value}
 	 * @since 0.0.1
 	 */
-	public static final String DEFAULT_FILE_NAME = "";
+	public static final String DEFAULT_FILE_NAME = "out-%n.csv";
 	
 	/**
 	 * Default value in order to append csv data to a file or must create a file. By default create a new file.
@@ -159,4 +173,40 @@ public interface IConstantsCsvBang {
 	 * @since 0.1.0
 	 */
 	public static final char DEFAULT_COMMENT_CHARACTER = '#';
+	
+	/**
+	 * The default max number of record in a file. By default {@value}.
+	 * If the max number of record is negative, no max number of record is defined.
+	 * @since 0.1.0
+	 */
+	public static final int DEFAULT_FILE_MAX_RECORD = -1;
+	
+	/**
+	 * The default max size of file. By default {@value}.
+	 * If the max size is negative, no max size is defined.
+	 * @since 0.1.0
+	 */
+	public static final int DEFAULT_FILE_MAX_SIZE = -1;
+	
+	/**
+	 * The default max number of file. By default {@value}.
+	 * If the max is negative, no max is defined.
+	 * @since 0.1.0
+	 */
+	public static final int DEFAULT_MAX_NUMBER_FILE = -1;
+	
+
+	/**
+	 * Default date pattern to use in file name. By default {@value}.
+	 * @since 0.1.0
+	 */
+	public static final String DEFAULT_FILE_NAME_DATE_PATTERN = "yyyyMMdd";
+	
+	/**
+	 * If CsvBang must process file one by one or multiple file. This option is active only if a max number of files in pool is defined.
+	 * By default, it's value is {@value}.
+	 * @since 0.1.0
+	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#maxFile
+	 */
+	public static final boolean DEFAULT_PROCESS_FILE_BY_FILE = true;
 }

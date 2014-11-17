@@ -26,22 +26,23 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import com.github.lecogiteur.csvbang.util.CsvBangDateFormat;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
 /**
  * Format and parse date value. This class and pattern are based on {@link SimpleDateFormat}
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class DateCsvFormatter implements CsvFormatter {
 	
 	/**
 	 * Date format
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
-	private SimpleDateFormat format;
+	private CsvBangDateFormat format;
 	
 	/**
 	 * Pattern of date
@@ -67,7 +68,7 @@ public class DateCsvFormatter implements CsvFormatter {
 		if (CsvbangUti.isStringBlank(pattern)){
 			pattern = "MM/dd/yyyy";
 		}
-		format = new SimpleDateFormat(pattern, locale);
+		format = new CsvBangDateFormat(pattern, locale);
 	}
 
 	/**
@@ -102,9 +103,9 @@ public class DateCsvFormatter implements CsvFormatter {
 			return defaultIfNull;
 		}
 		if (o instanceof Calendar){
-			return format.format(((Calendar)o).getTime());
+			return format.get().format(((Calendar)o).getTime());
 		}
-		return format.format(o);
+		return format.get().format(o);
 	}
 
 }
