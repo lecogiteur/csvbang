@@ -102,7 +102,7 @@ public @interface CsvFile {
 	
 	/**
 	 * <p>Max records by file. If the max number of record is negative, no max number of record is defined. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_MAX_RECORD}.</p>
-	 * 
+	 * <p>There is no warranty that all full files in pool have the maximum records defined. But we sure that no file exceed the maximum of records.</p>
 	 * @return the maximum of records in a file.
 	 * @since 0.1.0
 	 */
@@ -111,6 +111,7 @@ public @interface CsvFile {
 	/**
 	 * <p>The max size of file. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_MAX_SIZE}.</p>
 	 * <p>If the max size is negative, no max size is defined. The size is defined in byte. </p>
+	 * <p>There is no warranty that all full files in pool have the maximum size defined. But we sure that no file exceed the maximum size.</p>
 	 * @return the number of bytes about a CSV file
 	 * @since 0.1.0
 	 */

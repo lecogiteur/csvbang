@@ -47,7 +47,7 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 	
 	private final FileName fileName;
 	
-	private AtomicReference<WrapperCsvFileContext> reference = new AtomicReference<WrapperCsvFileContext>();
+	private AtomicReference<WrapperCsvFileContext> reference = new AtomicReference<WrapperCsvFileContext>(new WrapperCsvFileContext());
 	
 	private Set<CsvFileContext> list = new HashSet<CsvFileContext>();
 	
@@ -80,14 +80,14 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 			newData.nbByte = data.nbByte + nbByte;
 			newData.nbRecord = data.nbRecord + nbRecord;
 
-			if (isAllowedToModification(newData.nbRecord, newData.nbByte)){
+			if (newData.file != null && isAllowedToModification(newData.nbRecord, newData.nbByte)){
 				//if we can modify it, we return it
 				if (reference.compareAndSet(data, newData)){
 					return newData.file;
 				}
 				//hoops, not lucky another thread already changes data [lenght, nbRecord] about file, we must retry
 				continue;
-			}else if (list.size() < conf.maxFile && isAllowedToModification(nbRecord, nbByte)){
+			}else if ((conf.maxFile < 0 || list.size() < conf.maxFile) && isAllowedToModification(nbRecord, nbByte)){
 				//can't modify this file. This file is full
 				newData.nbByte = nbByte;
 				newData.nbRecord = nbRecord;

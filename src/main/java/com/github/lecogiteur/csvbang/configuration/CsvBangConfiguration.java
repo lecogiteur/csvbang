@@ -208,11 +208,11 @@ public class CsvBangConfiguration {
 	
 	/**
 	 * If CsvBang must process file one by one or multiple file. This option is active only if a max number of files in pool is defined.
-	 * By default, it's value is {@value}.
+	 * By default, it's value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}.
 	 * @since 0.1.0
 	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#maxFile
 	 */
-	public boolean isFileByFile = true;
+	public boolean isFileByFile = IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
 	
 	/**
 	 * The pattern of date to use in file name. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_NAME_DATE_PATTERN}

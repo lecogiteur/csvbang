@@ -92,7 +92,7 @@ public class MultiCsvFilePool implements CsvFilePool {
 			
 			if (file == null){
 			    //if no file in pool we verify if we can create a new file
-				final long index = nbFiles.incrementAndGet();
+				final long index = nbFiles.getAndIncrement();
 				
 				if (index < conf.maxFile){
 					//new file

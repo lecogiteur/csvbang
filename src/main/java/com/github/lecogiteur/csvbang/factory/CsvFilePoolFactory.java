@@ -32,10 +32,10 @@ import com.github.lecogiteur.csvbang.pool.MultiCsvFilePool;
 import com.github.lecogiteur.csvbang.pool.OneByOneCsvFilePool;
 import com.github.lecogiteur.csvbang.pool.SimpleCsvFilePool;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
-import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 /**
- * File pool factory
+ * File pool factory. A file pool is used in order to delivery a CSV file 
+ * to CsvBang for processing the writing and reading
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
