@@ -452,6 +452,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		
 		final StringBuilder c = new StringBuilder(comment.length() + 10).append(conf.startComment);
 		
+		//TODO revoir le pattern avec le saut de ligne par défaut
 		final String[] lines = PATTERN_CARRIAGE_RETURN.split(comment);
 		
 		for (final String line:lines){

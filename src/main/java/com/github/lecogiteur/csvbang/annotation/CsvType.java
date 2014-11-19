@@ -45,8 +45,6 @@ import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 @Documented
 public @interface CsvType {
 	
-	static final EndLineType end = IConstantsCsvBang.DEFAULT_END_LINE;
-	
 	/**
 	 * Delimiter between fields. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_DELIMITER}
 	 * @return delimiter

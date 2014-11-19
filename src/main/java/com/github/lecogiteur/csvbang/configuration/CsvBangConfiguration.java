@@ -234,7 +234,7 @@ public class CsvBangConfiguration {
 	 */
 	public void init() throws CsvBangException{
 			
-		if (endRecord.endsWith(defaultEndLineCharacter.toString())){
+		if (!endRecord.endsWith(defaultEndLineCharacter.toString())){
 			//A comment always start on a new line
 			startComment = defaultEndLineCharacter.toString();
 		}
