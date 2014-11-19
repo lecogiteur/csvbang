@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.exception;
 import java.io.IOException;
 
 /**
+ * Exception throwing when some problems of I/O have occurred
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
@@ -37,7 +38,7 @@ public class CsvBangIOException extends IOException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 * Constructor
 	 * @since 0.1.0
 	 */
 	public CsvBangIOException() {
@@ -45,8 +46,9 @@ public class CsvBangIOException extends IOException {
 	}
 
 	/**
-	 * @param message
-	 * @param cause
+	 * Constructor
+	 * @param message message of exception
+	 * @param cause cause of exception
 	 * @since 0.1.0
 	 */
 	public CsvBangIOException(String message, Throwable cause) {
@@ -54,7 +56,8 @@ public class CsvBangIOException extends IOException {
 	}
 
 	/**
-	 * @param message
+	 * Constructor
+	 * @param message message of exception
 	 * @since 0.1.0
 	 */
 	public CsvBangIOException(String message) {
@@ -62,7 +65,8 @@ public class CsvBangIOException extends IOException {
 	}
 
 	/**
-	 * @param cause
+	 * Constructor
+	 * @param cause cause of exception
 	 * @since 0.1.0
 	 */
 	public CsvBangIOException(Throwable cause) {
