@@ -45,9 +45,18 @@ import com.github.lecogiteur.csvbang.writer.SimpleCsvWriter;
 
 
 /**
- * Factory which generates CSV write. This factory manages a list of class (CSV bean) and their configuration.
+ * <p>Factory which generates CSV write. This factory manages a list of class (CSV bean) and their configuration.</p>
+ * <p>
+ * The factory creates a writer in function of configuration. Writers are thread-safe and can manage different strategies of multi-threading.
+ * In fact, it exists two strategies of multi-threading:
+ * <ul>
+ * 	<li>parallelism</li>
+ *  <li>distributed</li>
+ * </ul> 
+ * The factory selects the best writer in function your strategy. 
+ * </p>
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 0.0.1
  */
 public class FactoryCsvWriter {
 
@@ -103,11 +112,13 @@ public class FactoryCsvWriter {
 	 * @since 0.0.1
 	 */
 	public FactoryCsvWriter (final String sPkg) throws CsvBangException{
-		final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
-		if (pkgs != null){
-			for (final String pkg:pkgs){
-				final Collection<Class<?>> clazzs = ReflectionUti.scanPackageClass(pkg);
-				loadConfigurations(clazzs);
+		if (CsvbangUti.isStringNotBlank(sPkg)){
+			final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
+			if (pkgs != null){
+				for (final String pkg:pkgs){
+					final Collection<Class<?>> clazzs = ReflectionUti.scanPackageClass(pkg);
+					loadConfigurations(clazzs);
+				}
 			}
 		}
 		executorWriterService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
