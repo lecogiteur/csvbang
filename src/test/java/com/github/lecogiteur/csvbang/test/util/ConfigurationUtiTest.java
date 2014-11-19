@@ -67,7 +67,8 @@ public class ConfigurationUtiTest {
 		Assert.assertNull(conf.quote);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_CHARSET, conf.charset);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_DELIMITER, conf.delimiter);
-		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_RECORD, conf.endRecord);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_LINE.toString(), conf.endRecord);
+		Assert.assertEquals(IConstantsCsvBang.DEFAULT_END_LINE, conf.defaultEndLineCharacter);
 		Assert.assertEquals("out-1.csv", conf.fileName.getNewFileName(false));
 		Assert.assertNull(conf.header);
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_APPEND_FILE, conf.isAppendToFile);

@@ -61,7 +61,7 @@ public interface IConstantsCsvBang {
 	 * The default end line characters. By default {@value}.
 	 * @since 0.1.0
 	 */
-	public static final EndLineType DEFAULT_END_LINE = EndLineType.CARRIAGE_RETURN;
+	public static final EndLineType DEFAULT_END_LINE = EndLineType.LINE_FEED;
 	
 	/**
 	 * String to put at the end of record. By default the character {@value}

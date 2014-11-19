@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 /**
- * Defines options about writing and file
+ * Defines options about writing, reading and file
  * @author Tony EMMA
  * @version 0.1.0
  *
@@ -47,7 +47,7 @@ public @interface CsvFile {
 	/**
 	 * Size of buffer in number of record. Negative value means no buffer. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_BLOCKING_SIZE}
 	 * @return the size in number of record
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	int blocksize() default IConstantsCsvBang.DEFAULT_BLOCKING_SIZE;
 	
@@ -57,7 +57,7 @@ public @interface CsvFile {
 	 * By default the number of thread is the number of processor divide by 3.
 	 * If you create several files in the same time, the thread will be share for each files.</p>
 	 * @return True if you want to write asynchronously 
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	boolean asynchronousWriter() default IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE;
 	
@@ -80,7 +80,7 @@ public @interface CsvFile {
 	 * @return the file name
 	 * @see com.github.lecogiteur.csvbang.factory.FactoryCsvWriter
 	 * @see datePattern of CsvFile annotation
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	String fileName() default IConstantsCsvBang.DEFAULT_FILE_NAME;
 	
