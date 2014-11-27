@@ -22,24 +22,49 @@
  */
 package com.github.lecogiteur.csvbang.file;
 
-import java.io.FileOutputStream;
-import java.nio.channels.Channel;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 
 /**
+ * Represents the state of a file
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public interface CsvFileState{
 	
+	/**
+	 * Open a file
+	 * @param customHeader the custom header
+	 * @throws CsvBangException if a problem has occurred during the opening
+	 * @since 0.1.0
+	 */
 	public void open(final Object customHeader) throws CsvBangException;
 	
+	/**
+	 * Write content into the file
+	 * @param customHeader the custom header
+	 * @param content the content to write
+	 * @throws CsvBangException if a problem has occurred during the writing
+	 * @since 0.1.0
+	 */
 	public void write(final Object customHeader, final String content) throws CsvBangException;
 	
-	public void close(final Object customFooter) throws CsvBangException;
+	/**
+	 * Close a file
+	 * @param customFooter the custom footer
+	 * @throws CsvBangException if a problem has occurred during the closing
+	 * @throws CsvBangIOException if a problem has occurred during the closing
+	 * @since 0.1.0
+	 */
+	public void close(final Object customFooter) throws CsvBangException, CsvBangIOException;
 	
+	/**
+	 * Verify if the file is already opened
+	 * @return True if the file is opened
+	 * @since 0.1.0
+	 */
 	public boolean isOpen();
 
 }

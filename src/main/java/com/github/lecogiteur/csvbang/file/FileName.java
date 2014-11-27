@@ -125,7 +125,7 @@ public class FileName implements Cloneable{
 	 * </p>
 	 * @param filename pattern of file name
 	 * @param datePattern date pattern (required if you want the date in file name). Use a {@link SimpleDateFormat}
-	 * @throws CsvBangException if no date pattern is defined
+	 * @throws CsvBangException if no date pattern is defined or if no File name
 	 * @see SimpleDateFormat
 	 * @since 0.1.0
 	 */
@@ -165,7 +165,10 @@ public class FileName implements Cloneable{
 				}
 				pattern.append(c);
 			}
+		}else{
+			throw new CsvBangException("No file name is defined.");
 		}
+		
 		Collections.reverse(order);
 		offsetOrdered = new int[order.size()];
 		for(int i=0; i<order.size(); i++){
@@ -342,7 +345,7 @@ public class FileName implements Cloneable{
 		if (pattern == null) {
 			if (other.pattern != null)
 				return false;
-		} else if (!pattern.equals(other.pattern))
+		} else if (other.pattern == null || !pattern.toString().equals(other.pattern.toString()))
 			return false;
 		return true;
 	}

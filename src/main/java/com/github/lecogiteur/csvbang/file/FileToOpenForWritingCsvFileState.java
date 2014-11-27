@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 
 /**
  * @author Tony EMMA
@@ -163,15 +164,25 @@ public class FileToOpenForWritingCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @throws CsvBangException 
 	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#close(java.lang.Object)
 	 * @since 0.1.0
 	 */
 	@Override
-	public void close(final Object customFooter) throws CsvBangException {
-		//do nothing - The file is already close because not open.
+	public void close(final Object customFooter) throws CsvBangException, CsvBangIOException {
+		synchronized (this) {
+			if (isOpen){
+				//only if file is open
+				context.close();
+			}
+			//do nothing - The file is already close because not open.
+		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#isOpen()
+	 * @since 0.1.0
+	 */
 	@Override
 	public boolean isOpen() {
 		return isOpen;

@@ -29,38 +29,80 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 
 /**
+ * Csv file context. Contains the current state of file (open, processing, close). 
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public class CsvFileContext implements Channel{
 	
+	/**
+	 * The current state of file
+	 * @since 0.1.0
+	 */
 	private volatile CsvFileState fileState;
 	
+	/**
+	 * Custom header
+	 * @since 0.1.0
+	 */
 	private final Object customHeader;
 	
+	/**
+	 * Custom footer
+	 * @since 0.1.0
+	 */
 	private final Object customFooter;
 	
 	
+	/**
+	 * Constructor
+	 * @param configuration configuration of CSV file
+	 * @param file the physical CSV file
+	 * @param customHeader the custom header
+	 * @param customFooter the custom footer
+	 * @since 0.1.0
+	 */
 	public CsvFileContext(final CsvBangConfiguration configuration, final CsvFileWrapper file, final Object customHeader, final Object customFooter){
 		fileState = new FileToOpenForWritingCsvFileState(configuration, file, this);
 		this.customHeader = customHeader;
 		this.customFooter = customFooter;
 	}
 	
+	/**
+	 * Open the CSV file.
+	 * @throws CsvBangException if problem occurred during opening
+	 * @since 0.1.0
+	 */
 	public void open() throws CsvBangException{
 		fileState.open(customHeader);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see java.nio.channels.Channel#isOpen()
+	 * @since 0.1.0
+	 */
 	@Override
 	public boolean isOpen(){
 		return fileState.isOpen();
 	}
 	
+	/**
+	 * Write some content in csv file
+	 * @param content content to write
+	 * @throws CsvBangException if problem occurred during writing
+	 * @since 0.1.0
+	 */
 	public void write(final String content) throws CsvBangException{
 		fileState.write(customHeader, content);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see java.nio.channels.Channel#close()
+	 * @since 0.1.0
+	 */
 	@Override
 	public void close() throws CsvBangIOException{
 		try{
@@ -70,6 +112,11 @@ public class CsvFileContext implements Channel{
 		}
 	}
 
+	/**
+	 * Set the state of file
+	 * @param state the state of file
+	 * @since 0.1.0
+	 */
 	void setCsvFileState(final CsvFileState state){
 		fileState = state;
 	}
