@@ -237,6 +237,7 @@ public class FileName implements Cloneable{
 	 */
 	public String getNewFileName(final  boolean mustAck){
 		final StringBuilder name = new StringBuilder(pattern);
+		final int baseDirLength = basedir == null?0:basedir.length();
 		for (final int offset:offsetOrdered){
 			final TYPE_FORMAT type = formatByOffset.get(offset);
 			Object toInsert = null;
@@ -256,7 +257,7 @@ public class FileName implements Cloneable{
 				toInsert = "";
 				break;
 			}
-			name.insert(offset, toInsert);
+			name.insert(offset + baseDirLength, toInsert);
 		}
 		
 		return name.toString();

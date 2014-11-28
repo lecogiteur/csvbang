@@ -116,6 +116,15 @@ public class FileNameTest {
 	}
 	
 	@Test
+	public void filenameWithBaseDirAndNumber() throws CsvBangException{
+		FileName name = new FileName("test-%n.csv", null);
+		name.setBaseDirectory("/tmp");
+		Assert.assertEquals("/tmp" + File.separator + "test-1.csv", name.getNewFileName(false));
+		name.setBaseDirectory("/tempo/");
+		Assert.assertEquals("/tempo" + File.separator + "test-2.csv", name.getNewFileName(false));		
+	}
+	
+	@Test
 	public void numberFileTest() throws CsvBangException{
 		FileName name = new FileName("testn-%n.csv", null);
 		Assert.assertEquals("testn-1.csv", name.getNewFileName(false));
@@ -187,7 +196,7 @@ public class FileNameTest {
 		Assert.assertEquals(0, l.size());
 	}
 	
-	static class RunFileName implements Runnable{
+	private class RunFileName implements Runnable{
 		private final ConcurrentLinkedQueue<String> queue;
 		private final Integer millis;
 		private final FileName name;
