@@ -29,12 +29,17 @@ import java.nio.channels.FileChannel;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 /**
+ * Describe the state of CSV file when it is ready for writing
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public class FileReadyForWritingCsvFileState implements CsvFileState {
 	
+	/**
+	 * The CSV file
+	 * @since 0.1.0
+	 */
 	private CsvFileWrapper csvFile;
 	
 	/**
@@ -43,16 +48,30 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 */
 	private FileChannel channel;
 	
+	/**
+	 * CSV configuration
+	 * @since 0.1.0
+	 */
 	private CsvBangConfiguration conf;
 	
+	/**
+	 * The file context
+	 * @since 0.1.0
+	 */
 	private CsvFileContext context;
 	
+	/**
+	 * Isn't file closed
+	 * @since 0.1.0
+	 */
 	private boolean isNotClosed = true;
 	
 	
 	/**
-	 * @param csvFile
-	 * @param conf
+	 * Constructor
+	 * @param csvFile the CSVfile
+	 * @param conf configuration
+	 * @param context the file context
 	 * @since 0.1.0
 	 */
 	public FileReadyForWritingCsvFileState(final CsvFileWrapper csvFile,
@@ -71,7 +90,7 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 */
 	@Override
 	public void open(final Object customHeader) throws CsvBangException {
-		//do nothing
+		//do nothing. the file is already open
 	}
 
 	/**
@@ -120,6 +139,11 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#isOpen()
+	 * @since 0.1.0
+	 */
 	@Override
 	public boolean isOpen() {
 		return true;

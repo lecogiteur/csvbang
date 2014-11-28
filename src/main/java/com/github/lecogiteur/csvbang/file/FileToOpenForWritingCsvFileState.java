@@ -32,24 +32,43 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 
 /**
+ * Describe the state of CSV file when it is ready for opening
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public class FileToOpenForWritingCsvFileState implements CsvFileState {
 	
+	/**
+	 * The configuration
+	 * @since 0.1.0
+	 */
 	private CsvBangConfiguration conf;
 	
+	/**
+	 * The CSV file
+	 * @since 0.1.0
+	 */
 	private CsvFileWrapper csvFile;
 	
+	/**
+	 * The file context
+	 * @since 0.1.0
+	 */
 	private CsvFileContext context;
 	
+	/**
+	 * True if the file is opened
+	 * @since 0.1.0
+	 */
 	private volatile boolean isOpen = false;
 	
+
 	/**
-	 * @param conf
-	 * @param csvFile
-	 * @param context
+	 * Constructor
+	 * @param conf the configuration
+	 * @param csvFile the CSV file
+	 * @param context the file context
 	 * @since 0.1.0
 	 */
 	public FileToOpenForWritingCsvFileState(final CsvBangConfiguration conf,

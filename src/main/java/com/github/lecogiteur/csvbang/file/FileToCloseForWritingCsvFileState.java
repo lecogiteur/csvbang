@@ -24,30 +24,43 @@ package com.github.lecogiteur.csvbang.file;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
 /**
+ * Describe the state of CSV file when it is ready for closing
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public class FileToCloseForWritingCsvFileState implements CsvFileState {
 	
+	/**
+	 * The CSV file
+	 * @since 0.1.0
+	 */
 	private CsvFileWrapper csvFile;
 	
+	/**
+	 * The configuration
+	 * @since 0.1.0
+	 */
 	private CsvBangConfiguration conf;
 	
+	/**
+	 * True if the file is closed
+	 * @since 0.1.0
+	 */
 	private boolean isClosed = false;
 	
 	
 
 	/**
-	 * @param csvFile
-	 * @param conf
+	 * constructor
+	 * @param csvFile the csv file
+	 * @param conf the configuration
 	 * @since 0.1.0
 	 */
 	public FileToCloseForWritingCsvFileState(CsvFileWrapper csvFile,
@@ -151,6 +164,11 @@ public class FileToCloseForWritingCsvFileState implements CsvFileState {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#isOpen()
+	 * @since 0.1.0
+	 */
 	@Override
 	public boolean isOpen() {
 		return !isClosed;
