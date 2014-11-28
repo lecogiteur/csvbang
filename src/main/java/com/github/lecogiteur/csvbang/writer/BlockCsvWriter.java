@@ -41,8 +41,22 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
  * @version 0.0.1
  */
 public class BlockCsvWriter<T> extends AbstractWriter<T> {
+	/**
+	 * Line wrapper
+	 * @author Tony EMMA
+	 * @version 0.1.0
+	 * @since 0.1.0
+	 */
 	private final class LinesWrapper{
-		private CharSequence line;
+		/**
+		 * A line
+		 * @since 0.1.0
+		 */
+		private Object line;
+		/**
+		 * True if it's a comment
+		 * @since 0.1.0
+		 */
 		private boolean isComment = false;
 	}
 	/**

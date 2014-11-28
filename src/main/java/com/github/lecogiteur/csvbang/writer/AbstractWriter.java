@@ -188,7 +188,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	public void write(final T[] lines) throws CsvBangException {
-		if (lines == null || lines.length > 0){
+		if (lines == null || lines.length == 0){
 			return;
 		}
 		write(Arrays.asList(lines));

@@ -41,7 +41,7 @@ import com.github.lecogiteur.csvbang.pool.CsvbangThreadPoolExecutor;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class CsvbangThreadPoolExecutorTest {
 
-	static class TaskTest implements Callable<Void>{
+	private class TaskTest implements Callable<Void>{
 
 		private volatile int isAlive = 0;
 		

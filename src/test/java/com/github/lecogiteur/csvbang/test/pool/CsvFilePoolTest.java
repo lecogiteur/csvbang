@@ -50,7 +50,7 @@ import com.github.lecogiteur.csvbang.pool.SimpleCsvFilePool;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class CsvFilePoolTest {
 	
-	static class Getter implements Runnable{
+	private class Getter implements Runnable{
 
 		private final Integer millis;
 		private final CsvFilePool pool;

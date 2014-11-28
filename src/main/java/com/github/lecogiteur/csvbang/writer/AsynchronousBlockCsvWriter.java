@@ -37,15 +37,29 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
 /**
- * asynchronous and blocking writer
+ * asynchronous and block writer
  * @author Tony EMMA
  * @version 0.1.0
  *
  */
 public class AsynchronousBlockCsvWriter<T> extends AbstractWriter<T> {
 	
+	/**
+	 * Line wrapper
+	 * @author Tony EMMA
+	 * @version 0.1.0
+	 * @since 0.1.0
+	 */
 	private final class LinesWrapper{
+		/**
+		 * A line
+		 * @since 0.1.0
+		 */
 		private Object line;
+		/**
+		 * True if it's a comment
+		 * @since 0.1.0
+		 */
 		private boolean isComment = false;
 	}
 	
@@ -62,10 +76,13 @@ public class AsynchronousBlockCsvWriter<T> extends AbstractWriter<T> {
 	 */
 	private CsvbangExecutorService executor;
 
+	
 	/**
 	 * Constructor
-	 * @param file CSV file
-	 * @throws CsvBangException 
+	 * @param pool the pool of file
+	 * @param conf the configuration
+	 * @param serviceExecutor service which manage thread
+	 * @throws CsvBangException if a problem occurred
 	 * @since 0.1.0
 	 */
 	public AsynchronousBlockCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf, 
@@ -121,6 +138,12 @@ public class AsynchronousBlockCsvWriter<T> extends AbstractWriter<T> {
 		}
 	}
 	
+	/**
+	 * Drain a block in order to persist it
+	 * @param isEnd True if it's the last block
+	 * @return a block of line
+	 * @since 0.1.0
+	 */
 	private Collection<LinesWrapper> drainQueue(final boolean isEnd){
 		if (isEnd || buffer.size()>conf.blockSize){
 			int i = 0;
@@ -141,7 +164,7 @@ public class AsynchronousBlockCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
 	 * Empty the buffer
-	 * @param isEnd
+	 * @param isEnd True if it's the last block
 	 * @throws CsvBangException
 	 * @since 0.1.0
 	 */
