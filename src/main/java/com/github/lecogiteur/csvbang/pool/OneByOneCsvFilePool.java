@@ -95,7 +95,7 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 				if (reference.compareAndSet(data, newData)){
 					//one thread can add a file
 					fileName.ackNewFileName();
-					list.add(data.file);
+					list.add(newData.file);
 					return newData.file;
 				}
 				//hoops, not lucky another thread already changes data [lenght, nbRecord] about file, we must retry
