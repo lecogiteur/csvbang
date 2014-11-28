@@ -45,14 +45,38 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	 */
 	private volatile CsvFileContext file;
 	
+	/**
+	 * The custom header
+	 * @since 0.1.0
+	 */
 	private volatile Object customHeader;
 	
+	/**
+	 * The custom footer
+	 * @since 0.1.0
+	 */
 	private volatile Object customFooter;
 	
+	/**
+	 * The file name generator
+	 * @since 0.1.0
+	 */
 	private FileName filename;
 	
+	/**
+	 * The configuration
+	 * @since 0.1.0
+	 */
 	private CsvBangConfiguration conf;
 
+	/**
+	 * Constructor
+	 * @param conf the configuration
+	 * @param filename The file name generator
+	 * @param customHeader The custom header
+	 * @param customFooter The custom footer
+	 * @since 0.1.0
+	 */
 	public SimpleCsvFilePool(final CsvBangConfiguration conf, final FileName filename, 
 			final Object customHeader, final Object customFooter) {
 		super();
@@ -64,6 +88,11 @@ public class SimpleCsvFilePool implements CsvFilePool {
 		this.conf = conf;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.pool.CsvFilePool#getAllFiles()
+	 * @since 0.1.0
+	 */
 	@Override
 	public Collection<CsvFileContext> getAllFiles() {
 		return Collections.singleton(file);
@@ -81,6 +110,11 @@ public class SimpleCsvFilePool implements CsvFilePool {
 		return file;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.pool.CsvFilePool#setCustomHeader(java.lang.Object)
+	 * @since 0.1.0
+	 */
 	@Override
 	public void setCustomHeader(Object customHeader) throws CsvBangException {
 		this.customHeader = customHeader;
@@ -88,6 +122,11 @@ public class SimpleCsvFilePool implements CsvFilePool {
 		this.file = new CsvFileContext(conf, w, customHeader, customFooter);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.pool.CsvFilePool#setCustomFooter(java.lang.Object)
+	 * @since 0.1.0
+	 */
 	@Override
 	public void setCustomFooter(Object customFooter) throws CsvBangException {
 		this.customFooter = customFooter;

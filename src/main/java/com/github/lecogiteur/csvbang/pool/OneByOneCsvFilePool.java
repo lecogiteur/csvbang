@@ -34,6 +34,7 @@ import com.github.lecogiteur.csvbang.file.CsvFileWrapper;
 import com.github.lecogiteur.csvbang.file.FileName;
 
 /**
+ * Implementation of pool. Managecfile by file
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
@@ -41,18 +42,50 @@ import com.github.lecogiteur.csvbang.file.FileName;
 public class OneByOneCsvFilePool implements CsvFilePool {
 	
 	
+	/**
+	 * The custom header
+	 * @since 0.1.0
+	 */
 	private volatile Object customHeader;
 	
+	/**
+	 * The custom footer
+	 * @since 0.1.0
+	 */
 	private volatile Object customFooter;
 	
+	/**
+	 * Generatro of filename
+	 * @since 0.1.0
+	 */
 	private final FileName fileName;
 	
+	/**
+	 * Current file
+	 * @since 0.1.0
+	 */
 	private AtomicReference<WrapperCsvFileContext> reference = new AtomicReference<WrapperCsvFileContext>(new WrapperCsvFileContext());
 	
+	/**
+	 * List file in pool
+	 * @since 0.1.0
+	 */
 	private Set<CsvFileContext> list = new HashSet<CsvFileContext>();
 	
+	/**
+	 * The configuration
+	 * @since 0.1.0
+	 */
 	private final CsvBangConfiguration conf;
 	
+	/**
+	 * Constructor
+	 * @param conf the configuration
+	 * @param fileName the file name
+	 * @param customHeader the custom header
+	 * @param customFooter the custom footer
+	 * @since 0.1.0
+	 */
 	public OneByOneCsvFilePool(final CsvBangConfiguration conf, final FileName fileName, 
 			final Object customHeader, final Object customFooter) {
 		this.customHeader = customHeader;
@@ -63,7 +96,7 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.pool.MultiCsvFilePool#getFile(int, int)
+	 * @see com.github.lecogiteur.csvbang.pool.CsvFilePool#getFile(int, int)
 	 * @since 0.1.0
 	 */
 	@Override
@@ -129,6 +162,11 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 		return list;
 	}
 	
+	/**
+	 * Generate new file
+	 * @return the new file
+	 * @since 0.1.0
+	 */
 	private CsvFileContext generateNewFile(){
 		final CsvFileWrapper file = new CsvFileWrapper(fileName.getNewFileName(true));
 		return new CsvFileContext(conf, file, customHeader, customFooter);

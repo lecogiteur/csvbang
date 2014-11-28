@@ -25,12 +25,28 @@ package com.github.lecogiteur.csvbang.pool;
 import com.github.lecogiteur.csvbang.file.CsvFileContext;
 
 /**
+ * Wrapper of file used in implementation of somepool
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public class WrapperCsvFileContext {
+	
+	/**
+	 * The file context
+	 * @since 0.1.0
+	 */
 	CsvFileContext file;
+	
+	/**
+	 * Number of records in file
+	 * @since 0.1.0
+	 */
 	long nbRecord = 0;
+	
+	/**
+	 * Size of file
+	 * @since 0.1.0
+	 */
 	long nbByte = 0;
 }
