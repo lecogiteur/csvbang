@@ -40,20 +40,30 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
 
 /**
+ * Implementation of Csvbang task executor
  * @author Tony EMMA
  * @version 0.1.0
  * @since 0.1.0
  */
 public class CsvbangThreadPoolExecutor extends ThreadPoolExecutor implements CsvbangExecutorService{
-
 	
 	/**
 	 * The logger
+	 * @since 0.1.0
 	 */
 	private static final Logger LOGGER = Logger.getLogger(ReflectionUti.class.getName());
 	
+	/**
+	 * List of tasks by group
+	 * @since 0.1.0
+	 */
 	private ConcurrentHashMap<Integer, Collection<Future<Void>>> groupOfTasks = new ConcurrentHashMap<Integer, Collection<Future<Void>>>();
 
+	/**
+	 * Constructor
+	 * @param nThreads number of thread in pool
+	 * @since 0.1.0
+	 */
 	public CsvbangThreadPoolExecutor(int nThreads) {
 		super(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
@@ -70,9 +80,9 @@ public class CsvbangThreadPoolExecutor extends ThreadPoolExecutor implements Csv
 	public void submit(final Integer groupId,  final Callable<Void> task){
 		//submit the task for execution
 		final Future<Void> future = super.submit(task);
-		Collection<Future<Void>> c = groupOfTasks.get(groupId);
+		Collection<Future<Void>> c = groupOfTasks.putIfAbsent(groupId, new ConcurrentLinkedQueue<Future<Void>>());
 		if (c == null){
-			c = groupOfTasks.putIfAbsent(groupId, new ConcurrentLinkedQueue<Future<Void>>());
+			c = groupOfTasks.get(groupId);
 		}
 		c.add(future);
 	}
