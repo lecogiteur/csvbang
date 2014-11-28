@@ -30,7 +30,7 @@ import com.github.lecogiteur.csvbang.file.CsvFileContext;
 /**
  * This Interface permit to implements different pool of file.
  * The pool of file can manage many files on size, number of record or another criteria.
- * The pool deliver a file to a CSV reader or writer.
+ * The pool deliver a file to a CSV reader or writer. A pool manage only one type of CSV file. A pool is created for each type.
  * 
  * @author Tony EMMA
  * @version 0.1.0

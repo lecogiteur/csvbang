@@ -41,23 +41,63 @@ import com.github.lecogiteur.csvbang.file.FileName;
  */
 public class MultiCsvFilePool implements CsvFilePool {
 	
+	/**
+	 * The configuration
+	 * @since 0.1.0
+	 */
 	private final CsvBangConfiguration conf;
 	
+	/**
+	 * The custom header for each file
+	 * @since 0.1.0
+	 */
 	private volatile Object customHeader;
 	
+	/**
+	 * The custom footer for each file
+	 * @since 0.1.0
+	 */
 	private volatile Object customFooter;
 	
+	/**
+	 * Number of files in pool
+	 * @since 0.1.0
+	 */
 	private final AtomicLong nbFiles = new AtomicLong(0);
 	
+	/**
+	 * Number of files which are full
+	 * @since 0.1.0
+	 */
 	private final AtomicLong nbFilesFull = new AtomicLong(0);
 	
+	/**
+	 * The generator of file name
+	 * @since 0.1.0
+	 */
 	private final FileName fileName; 
 	
+	/**
+	 * File which can be processed yet 
+	 * @since 0.1.0
+	 */
 	private final ConcurrentLinkedQueue<WrapperCsvFileContext> files = new ConcurrentLinkedQueue<WrapperCsvFileContext>();
 	
+	/**
+	 * All files in pool
+	 * @since 0.1.0
+	 */
 	private final ConcurrentLinkedQueue<CsvFileContext> allFiles = new ConcurrentLinkedQueue<CsvFileContext>();
 	
 
+	/**
+	 * Constructor
+	 * @param conf the configuration
+	 * @param fileName the file name generator
+	 * @param customHeader the custom header for each file
+	 * @param customFooter the custom footer for each file
+	 * @since 0.1.0
+	 */
 	public MultiCsvFilePool(final CsvBangConfiguration conf, final FileName fileName, 
 			final Object customHeader, final Object customFooter){
 		this.customFooter = customFooter;
@@ -138,6 +178,11 @@ public class MultiCsvFilePool implements CsvFilePool {
 	
 
 	
+	/**
+	 * Generate a new file
+	 * @return a new file
+	 * @since 0.1.0
+	 */
 	private WrapperCsvFileContext generateNewFile(){
 		final CsvFileWrapper file = new CsvFileWrapper(fileName.getNewFileName(false));
 		final WrapperCsvFileContext w = new WrapperCsvFileContext();
