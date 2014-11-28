@@ -29,7 +29,8 @@ import com.github.lecogiteur.csvbang.file.CsvFileContext;
 
 /**
  * This Interface permit to implements different pool of file.
- * The pool of file can manage many files on size, number of record or another criteria
+ * The pool of file can manage many files on size, number of record or another criteria.
+ * The pool deliver a file to a CSV reader or writer.
  * 
  * @author Tony EMMA
  * @version 0.1.0
@@ -38,6 +39,11 @@ import com.github.lecogiteur.csvbang.file.CsvFileContext;
 public interface CsvFilePool {
 
 	
+	/**
+	 * Get all file managed by pool
+	 * @return all files
+	 * @since 0.1.0
+	 */
 	public Collection<CsvFileContext> getAllFiles();
 	
 	/**

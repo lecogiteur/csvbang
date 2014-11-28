@@ -112,12 +112,5 @@ public class CsvbangThreadPoolExecutorTest {
 		Assert.assertEquals(-1, task4.getIsAlive());
 		Assert.assertEquals(-1, task5.getIsAlive());
 		
-		//Assert.assertTrue(service.isTerminated());
-		
-		while(!service.isTerminated()){
-			System.out.println("Test");
-			Thread.sleep(500);
-		}
-		
 	}
 }
