@@ -90,6 +90,12 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	protected int defaultLineSize = 100;
 	
 	/**
+	 * True if writer is closed
+	 * @since 0.1.0
+	 */
+	protected volatile boolean isClose = false;
+	
+	/**
 	 * Constructor
 	 * @param file CSV file
 	 * @param conf configuration
@@ -258,12 +264,23 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void close() throws CsvBangIOException {
+		isClose = true;
 		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		if (CsvbangUti.isCollectionNotEmpty(files)){
 			for (final CsvFileContext file:files){
 				file.close();
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#isClose()
+	 * @since 0.1.0
+	 */
+	@Override
+	public boolean isClose() {
+		return isClose;
 	}
 
 	/**

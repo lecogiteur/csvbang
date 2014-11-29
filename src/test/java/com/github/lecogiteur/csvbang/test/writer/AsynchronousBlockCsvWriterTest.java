@@ -52,11 +52,13 @@ public class AsynchronousBlockCsvWriterTest {
 				try {
 					w.write(samples);
 					nbWriting += samples.length;
+					
 				} catch (CsvBangException e) {
 					e.printStackTrace();
 					Assert.fail();
 				}
 			}
+			
 		}
 
 		public long getNbWriting() {
@@ -99,7 +101,6 @@ public class AsynchronousBlockCsvWriterTest {
 		t3.start();
 		
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){}
-		
 		writer.close();
 		
 		Assert.assertEquals(50000, w1.getNbWriting() +  w2.getNbWriting() + w3.getNbWriting() );

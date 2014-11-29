@@ -121,6 +121,13 @@ public interface CsvWriter<T> extends Channel{
 	public void close() throws CsvBangIOException;
 	
 	/**
+	 * Verify if writer is closed
+	 * @return True if writer is closed
+	 * @since 0.1.0
+	 */
+	public boolean isClose();
+	
+	/**
 	 * Set a custom header. The method {@link Object#toString()} will be call.
 	 * @param header a custom header
 	 * @throws CsvBangException if the files are already open. You can't set the header after the CSV file are open.

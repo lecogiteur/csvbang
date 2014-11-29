@@ -119,6 +119,7 @@ public class AsynchronousBlockCsvWriter<T> extends AbstractWriter<T> {
 	 * @since 0.1.0
 	 */
 	public void close() throws CsvBangIOException {
+		isClose = true;
 		try {
 			if (buffer.size()>0){
 				executor.submit(this.hashCode(), new Callable<Void>() {

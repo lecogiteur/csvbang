@@ -104,6 +104,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	 */
 	public void close() throws CsvBangIOException {
 		try {
+			isClose = true;
 			if (executor.awaitGroupTermination(this.hashCode())){
 				//close file
 				super.close();

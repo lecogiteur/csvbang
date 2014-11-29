@@ -38,7 +38,7 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
 /**
  * Writer by block
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  */
 public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	/**
@@ -59,28 +59,30 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 		 */
 		private boolean isComment = false;
 	}
+	
 	/**
 	 * the buffer
 	 * @since 0.0.1
 	 * 
 	 */
-	private ConcurrentLinkedQueue<LinesWrapper> buffer;
+	private final ConcurrentLinkedQueue<LinesWrapper> buffer;
 	
+	/**
+	 * Number of writer task in action
+	 * @since 0.1.0
+	 */
 	private final AtomicInteger isEnded = new AtomicInteger(0);
 
 	/**
 	 * Constructor
-	 * @param file CSV file
-	 * @since 0.0.1
-	 */
-	/**
-	 * @param pool
-	 * @param conf
-	 * @throws CsvBangException 
+	 * @param pool pool of file
+	 * @param conf the configuration
+	 * @throws CsvBangException if a problem occurred during initialization
 	 * @since 0.1.0
 	 */
 	public BlockCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf) throws CsvBangException {
 		super(pool, conf);	
+		buffer = new ConcurrentLinkedQueue<LinesWrapper>();
 	}
 
 	/**
@@ -95,7 +97,7 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 		}
 		for (final Object line:lines){
 			final LinesWrapper wrapper = new LinesWrapper();
-			wrapper.line = generateLine(line, isComment);;
+			wrapper.line = line;
 			wrapper.isComment = isComment;
 			buffer.offer(wrapper);
 			if (buffer.size() > conf.blockSize){
@@ -113,14 +115,23 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 		try {
 			emptyQueue(true);
 			//close file
+			isClose = isEnded.get() == 0;
 			if (isEnded.get() == 0){
 				super.close();
+			}else{
+				isClose = false;
 			}
 		} catch (CsvBangException e) {
 			throw new CsvBangIOException(String.format("Error has occurred on closing file."), e);
 		}
 	}
 	
+	/**
+	 * Drain the queue in order to write them in file
+	 * @param isEnd True if it's the last drain
+	 * @return the list of line to write in file
+	 * @since 0.1.0
+	 */
 	private Collection<LinesWrapper> drainQueue(final boolean isEnd){
 		if (isEnd || buffer.size()>conf.blockSize){
 			int i = 0;
@@ -141,8 +152,8 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
 	 * Empty the buffer
-	 * @param isEnd
-	 * @throws CsvBangException
+	 * @param isEnd True if it's the last 
+	 * @throws CsvBangException if a problem occurred during writing
 	 * @since 0.1.0
 	 */
 	private final void emptyQueue(boolean isEnd) throws CsvBangException{
