@@ -94,19 +94,21 @@ public class CsvbangThreadPoolExecutor extends ThreadPoolExecutor implements Csv
 	 */
 	@Override
 	public boolean awaitGroupTermination(final Integer groupId) throws CsvBangException{
-		final Collection<Future<Void>> c = groupOfTasks.remove(groupId);
-		if (CsvbangUti.isCollectionEmpty(c)){
-			return true;
-		}
-		for (final Future<Void> f:c){
-			try{
-				f.get();
-			}catch(InterruptedException e){
-				LOGGER.log(Level.WARNING, String.format("A task of group [%s] is interrupted in Csvbang.", groupId), e);
-			}catch(CancellationException e){
-				LOGGER.log(Level.WARNING, String.format("A task of group [%s] is cancelled in Csvbang.", groupId), e);
-			}catch(ExecutionException e){
-				throw new CsvBangException(String.format("A task of group [%s] is in error in Csvbang.", groupId), e);
+		while(groupOfTasks.containsKey(groupId)){
+			final Collection<Future<Void>> c = groupOfTasks.remove(groupId);
+			if (CsvbangUti.isCollectionEmpty(c)){
+				continue;
+			}
+			for (final Future<Void> f:c){
+				try{
+					f.get();
+				}catch(InterruptedException e){
+					LOGGER.log(Level.WARNING, String.format("A task of group [%s] is interrupted in Csvbang.", groupId), e);
+				}catch(CancellationException e){
+					LOGGER.log(Level.WARNING, String.format("A task of group [%s] is cancelled in Csvbang.", groupId), e);
+				}catch(ExecutionException e){
+					throw new CsvBangException(String.format("A task of group [%s] is in error in Csvbang.", groupId), e);
+				}
 			}
 		}
 		return true;
