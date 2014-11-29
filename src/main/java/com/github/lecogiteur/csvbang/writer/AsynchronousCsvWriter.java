@@ -43,26 +43,23 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
 public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	
 	/**
-	 * Service which manage thread
+	 * Service which manages threads
 	 * @since 0.1.0
 	 */
 	private CsvbangExecutorService executor;
 
+	
 	/**
 	 * Constructor
-	 * @param file CSV file
-	 * @throws CsvBangException 
-	 * @since 0.1.0
-	 */
-	/**
-	 * @param pool
-	 * @param conf
-	 * @param serviceExecutor
-	 * @throws CsvBangException
+	 * @param pool pool of files
+	 * @param conf configuration
+	 * @param serviceExecutor service which manages threads
+	 * @throws CsvBangException if a problem occurred during initialization
 	 * @since 0.1.0
 	 */
 	public AsynchronousCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf, final CsvbangExecutorService serviceExecutor) throws CsvBangException {
 		super(pool, conf);
+		executor = serviceExecutor;
 	}
 	
 	/**
