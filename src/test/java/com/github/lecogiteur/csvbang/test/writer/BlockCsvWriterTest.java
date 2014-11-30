@@ -37,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
@@ -59,6 +60,7 @@ public class BlockCsvWriterTest {
 		private final T[] samples;
 		private long nbWriting = 0;
 		private boolean close = false;
+		private boolean fail = false;
 
 		public Writer(CsvWriter<T> w, Integer millis, Integer nbSamples, T[] samples, boolean close) {
 			super();
@@ -88,7 +90,7 @@ public class BlockCsvWriterTest {
 					}
 				} catch (CsvBangException e) {
 					e.printStackTrace();
-					Assert.fail();
+					fail=true;
 				}
 			}
 			
@@ -96,8 +98,8 @@ public class BlockCsvWriterTest {
 				try {
 					w.close();
 				} catch (CsvBangIOException e) {
+					fail=!(e instanceof CsvBangCloseException);
 					e.printStackTrace();
-					Assert.fail();
 				}
 			}
 		}
@@ -105,8 +107,10 @@ public class BlockCsvWriterTest {
 		public long getNbWriting() {
 			return nbWriting;
 		}
-		
-		
+
+		public boolean isFail() {
+			return fail;
+		}
 	}
 
 	@Rule
@@ -145,6 +149,10 @@ public class BlockCsvWriterTest {
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){}
 		
 		writer.close();
+		
+		Assert.assertFalse(w1.isFail());
+		Assert.assertFalse(w2.isFail());
+		Assert.assertFalse(w3.isFail());
 		
 		Assert.assertEquals(50000, w1.getNbWriting() +  w2.getNbWriting() + w3.getNbWriting() );
 		File[] files = folder.listFiles();
@@ -233,6 +241,10 @@ public class BlockCsvWriterTest {
 		t3.start();
 		
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){}
+		
+		Assert.assertFalse(w1.isFail());
+		Assert.assertFalse(w2.isFail());
+		Assert.assertFalse(w3.isFail());
 		
 		File[] files = folder.listFiles();
 		Assert.assertNotNull(files);

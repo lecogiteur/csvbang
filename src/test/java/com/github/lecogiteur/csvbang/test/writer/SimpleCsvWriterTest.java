@@ -74,7 +74,6 @@ public class SimpleCsvWriterTest {
 					w.close();
 				} catch (CsvBangIOException e) {
 					e.printStackTrace();
-					fail=true;
 				}
 			}
 		}
@@ -226,6 +225,10 @@ public class SimpleCsvWriterTest {
 		t3.start();
 		
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){}
+		
+		Assert.assertFalse(w1.isFail());
+		Assert.assertFalse(w2.isFail());
+		Assert.assertFalse(w3.isFail());
 		
 		File[] files = folder.listFiles();
 		Assert.assertNotNull(files);

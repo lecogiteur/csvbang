@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.file.CsvFileContext;
@@ -115,11 +116,12 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 		try {
 			emptyQueue(true);
 			//close file
-			isClose = isEnded.get() == 0;
-			if (isEnded.get() == 0){
+			int workers = isEnded.get();
+			isClose = workers == 0;
+			if (isClose){
 				super.close();
 			}else{
-				isClose = false;
+				throw new CsvBangCloseException(workers);
 			}
 		} catch (CsvBangException e) {
 			throw new CsvBangIOException(String.format("Error has occurred on closing file."), e);

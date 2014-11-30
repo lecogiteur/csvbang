@@ -32,6 +32,7 @@ public class AsynchronousCsvWriterTest {
 		private final Integer nbSamples;
 		private final T[] samples;
 		private long nbWriting = 0;
+		private boolean fail = false;
 
 		public Writer(CsvWriter<T> w, Integer millis, Integer nbSamples, T[] samples) {
 			super();
@@ -56,13 +57,17 @@ public class AsynchronousCsvWriterTest {
 					nbWriting += samples.length;
 				} catch (CsvBangException e) {
 					e.printStackTrace();
-					Assert.fail();
+					fail = true;
 				}
 			}
 		}
 
 		public long getNbWriting() {
 			return nbWriting;
+		}
+
+		public boolean isFail() {
+			return fail;
 		}
 		
 		
@@ -110,6 +115,10 @@ public class AsynchronousCsvWriterTest {
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){}
 		
 		writer.close();
+		
+		Assert.assertFalse(w1.isFail());
+		Assert.assertFalse(w2.isFail());
+		Assert.assertFalse(w3.isFail());
 		
 		Assert.assertEquals(50000, w1.getNbWriting() +  w2.getNbWriting() + w3.getNbWriting() );
 		File[] files = folder.listFiles();
