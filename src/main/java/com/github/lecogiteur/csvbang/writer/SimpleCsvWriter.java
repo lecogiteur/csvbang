@@ -39,9 +39,10 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 
 	/**
 	 * Constructor
-	 * @param file CSV file
-	 * @throws CsvBangException 
-	 * @since 0.0.1
+	 * @param pool pool of file
+	 * @param conf configuration
+	 * @throws CsvBangException if a problem occurred during initialization
+	 * @since 0.1.0
 	 */
 	public SimpleCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf) throws CsvBangException {
 		super(pool, conf);

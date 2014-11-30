@@ -23,6 +23,8 @@
  */
 package com.github.lecogiteur.csvbang.test.bean.writer;
 
+import java.util.Calendar;
+
 import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -30,6 +32,19 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 @CsvType
 public class CommentWriterBean extends SimpleWriterBean{
+	
+	public CommentWriterBean(Integer id, String name, Calendar birthday, Double price) {
+		super();
+		setId(id);
+		setName(name);
+		setBirthday(birthday);
+		setPrice(price);
+	}
+
+	
+	public CommentWriterBean() {
+		super();
+	}
 
 	/**
 	 * @return the name

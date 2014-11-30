@@ -222,7 +222,7 @@ public class FileNameTest {
 			}
 			for(int i=0; i<300; i++){
 				String n=name.getNewFileName(false);
-				System.out.println("Thread " + threadname + " nom: " + n);
+				//System.out.println("Thread " + threadname + " nom: " + n);
 				queue.add(n);
 			}
 		}

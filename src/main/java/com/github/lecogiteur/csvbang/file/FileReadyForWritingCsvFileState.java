@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.file;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
@@ -66,6 +67,12 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 */
 	private boolean isNotClosed = true;
 	
+	/**
+	 * Number of thread writing in file
+	 * @since 0.1.0
+	 */
+	private AtomicInteger workers = new AtomicInteger(0);
+	
 	
 	/**
 	 * Constructor
@@ -100,6 +107,7 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 */
 	@Override
 	public void write(final Object customHeader, final String content) throws CsvBangException {
+		workers.incrementAndGet();
 		if (content.length() > 0){
 			byte[] bTab = null;
 			bTab = content.getBytes(conf.charset);
@@ -109,9 +117,11 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 			try {
 				channel.write(bb);
 			} catch (IOException e) {
+				workers.decrementAndGet();
 				throw new CsvBangException(String.format("An error has occured [%s]: %s", csvFile.getFile().getAbsolutePath(), content), e);
 			}
 		}
+		workers.decrementAndGet();
 	}
 
 	/**
@@ -133,6 +143,11 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 			}
 		}
 		if (doIt){
+			int i = workers.get();
+			while(i > 0){
+				//wait that all writings terminate
+				i = workers.get();
+			}
 			final FileToCloseForWritingCsvFileState state = new FileToCloseForWritingCsvFileState(csvFile, conf);
 			state.close(customFooter);
 			context.setCsvFileState(state);

@@ -31,7 +31,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Define a field or a method like a CSV comment
+ * Define a field or a method like a CSV comment.
+ * This annotation doesn't override CsvField annotation.
  * @author Tony EMMA
  * @version 0.1.0
  *
