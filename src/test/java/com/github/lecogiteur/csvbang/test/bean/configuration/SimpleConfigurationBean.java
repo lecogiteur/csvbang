@@ -20,19 +20,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Csvbang. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.lecogiteur.csvbang.test.bean;
+package com.github.lecogiteur.csvbang.test.bean.configuration;
 
 import java.util.Calendar;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
-import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
+import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 
 @CsvType
 public class SimpleConfigurationBean {
 	
+	@CsvComment
 	private String name;
 	
 	@CsvField(defaultIfNull="No Date", position=3)
@@ -46,6 +49,9 @@ public class SimpleConfigurationBean {
 	protected boolean old;
 	
 	public String notUsed;
+	
+	@CsvComment(direction=DIRECTION.AFTER_RECORD)
+	private String myComment;
 
 	/**
 	 * @return the name
@@ -80,4 +86,25 @@ public class SimpleConfigurationBean {
 	public double customMethod(){
 		return 12.99;
 	}
+	
+	@CsvComment(direction=DIRECTION.BEFORE_RECORD)
+	public Double getDoubleComment(){
+		return 255d;
+	}
+
+	/**
+	 * @return the myComment
+	 */
+	public String getMyComment() {
+		return myComment;
+	}
+
+	/**
+	 * @param myComment the myComment to set
+	 */
+	public void setMyComment(String myComment) {
+		this.myComment = myComment;
+	}
+	
+	
 }

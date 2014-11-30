@@ -41,8 +41,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.test.bean.BeanReflectionUtiTest;
-import com.github.lecogiteur.csvbang.test.bean.ChildBeanReflectionUtiTest;
+import com.github.lecogiteur.csvbang.test.bean.reflection.BeanReflectionUtiTest;
+import com.github.lecogiteur.csvbang.test.bean.reflection.ChildBeanReflectionUtiTest;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
 
@@ -215,6 +215,57 @@ public class ReflectionUtiTest {
 		
 		annotations = ChildBeanReflectionUtiTest.class.getField("publicField").getAnnotations();
 		Assert.assertNotNull(ReflectionUti.getCsvFormatAnnotation(annotations));
+	}
+	
+	@Test
+	public void getCsvFileAnnotationTest() throws SecurityException, NoSuchFieldException{
+		Annotation[] annotations = BeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNull(ReflectionUti.getCsvFileAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFileAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getDeclaredAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFileAnnotation(annotations));
+	}
+	
+	@Test
+	public void getCsvHeaderAnnotationTest() throws SecurityException, NoSuchFieldException{
+		Annotation[] annotations = BeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNull(ReflectionUti.getCsvHeaderAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvHeaderAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getDeclaredAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvHeaderAnnotation(annotations));
+	}
+	
+	@Test
+	public void getCsvFooterAnnotationTest() throws SecurityException, NoSuchFieldException{
+		Annotation[] annotations = BeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNull(ReflectionUti.getCsvFooterAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFooterAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getDeclaredAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvFooterAnnotation(annotations));
+	}
+	
+	@Test
+	public void getCsvCommentAnnotationTest() throws SecurityException, NoSuchFieldException{
+		Annotation[] annotations = BeanReflectionUtiTest.class.getField("comment").getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvCommentAnnotation(annotations));
+		
+		annotations = BeanReflectionUtiTest.class.getField("publicField").getAnnotations();
+		Assert.assertNull(ReflectionUti.getCsvCommentAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getField("comment").getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvCommentAnnotation(annotations));
+		
+		annotations = ChildBeanReflectionUtiTest.class.getField("comment").getAnnotations();
+		Assert.assertNotNull(ReflectionUti.getCsvCommentAnnotation(annotations));
 	}
 	
 	@Test

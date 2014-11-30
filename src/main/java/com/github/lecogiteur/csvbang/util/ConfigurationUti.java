@@ -27,6 +27,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,13 +40,19 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
+import com.github.lecogiteur.csvbang.annotation.CsvComment.DIRECTION;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
-import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
+import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.file.FileName;
 import com.github.lecogiteur.csvbang.formatter.BooleanCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.CsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.CurrencyCsvFormatter;
@@ -57,13 +65,14 @@ import com.github.lecogiteur.csvbang.formatter.NumberCsvFormatter;
 /**
  * Utility class in order to load and parse configuration of a CSV bean
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class ConfigurationUti {
 	
 	/**
 	 * The logger
+	 * @since 0.0.1
 	 */
 	private static final Logger LOGGER = Logger.getLogger(ConfigurationUti.class.getName());
 	
@@ -78,8 +87,6 @@ public class ConfigurationUti {
 	 * @since 0.0.1
 	 */
 	private static final CsvFormatter DEFAULT_FORMAT = new Default(); 
-	
-	
 	
 	/**
 	 * Get value, if the value is equals to defaultValue, we return the old value, else we return the value
@@ -111,56 +118,25 @@ public class ConfigurationUti {
 		return value;
 	}
 	
-	/**
-	 * Get value, if the value is equals to defaultValue, we return the old value, else we return the value
-	 * @param oldValue the old value
-	 * @param value the actual value
-	 * @param defaultValue the default value
-	 * @return the value
-	 * @since 0.0.1
-	 */
-	private static char getParameterValue(final char oldValue, final char value, final char defaultValue){
-		if (defaultValue == value){
-			return oldValue;
-		}
-		return value;
-	}
-	
-	/**
-	 * Get value, if the value is equals to defaultValue, we return the old value, else we return the value
-	 * @param oldValue the old value
-	 * @param value the actual value
-	 * @param defaultValue the default value
-	 * @return the value
-	 * @since 0.0.1
-	 */
-	private static boolean getParameterValue(final boolean oldValue, final boolean value, final boolean defaultValue){
-		if (defaultValue == value){
-			return oldValue;
-		}
-		return value;
-	}
-	
 	
 	/**
 	 * Load configuration for all CSV field of class (not of its parent)
 	 * @param finalClass the final class
 	 * @param clazz class (can be a parent of final class
 	 * @param mapConf all configuration of each field (with configuration of class parent). KEY: name of member || VALUE: its configuration
-	 * 
+	 * @param commentFields map which contains comment members. KEY: {@link CsvComment#direction()} || VALUE = [[Map with  KEY: name of member || VALUE: its getter]]
 
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	private static void loadCsvFieldConfiguration(final Class<?> finalClass, final Class<?> clazz, 
-			final Map<String, CsvFieldConfiguration> mapConf) throws CsvBangException {
+			final Map<String, CsvFieldConfiguration> mapConf, final Map<DIRECTION, Map<String, AnnotatedElement>> commentFields) 
+	throws CsvBangException {
 		final List<AnnotatedElement> members = ReflectionUti.getMembers(clazz);
 		for (final AnnotatedElement member:members){
 			final CsvField csvField = ReflectionUti.getCsvFieldAnnotation(member.getDeclaredAnnotations());
-			if (csvField == null){
-				continue;
-			}
+			final CsvComment csvComment = ReflectionUti.getCsvCommentAnnotation(member.getDeclaredAnnotations());
 			
 			//Retrieve getter of value
 			AnnotatedElement getter = member;
@@ -180,6 +156,25 @@ public class ConfigurationUti {
 			//retrieve conf
 			String internName = getter instanceof Field?"F: ":"M: ";
 			internName += ((Member)getter).getName();
+			
+			if (csvComment != null){
+				//a comment field
+				final Map<String, AnnotatedElement> commentFieldList =  commentFields.get(csvComment.direction());
+				commentFieldList.put(internName, getter);
+				DIRECTION direction = null;
+				if (DIRECTION.BEFORE_RECORD.equals(csvComment.direction())){
+					direction = DIRECTION.AFTER_RECORD;
+				}else{
+					direction = DIRECTION.BEFORE_RECORD;
+				}
+				commentFields.get(direction).remove(internName);
+			}
+			
+			if (csvField == null){
+				//No Csv Field
+				continue;
+			}
+			
 			CsvFieldConfiguration conf = mapConf.get(internName);
 			if (conf == null){
 				conf = new CsvFieldConfiguration();
@@ -188,9 +183,9 @@ public class ConfigurationUti {
 			
 			
 			conf.position = getParameterValue(conf.position, csvField.position(), IConstantsCsvBang.DEFAULT_FIELD_POSITION);
-			conf.isDeleteFieldIfNull =  getParameterValue(conf.isDeleteFieldIfNull, csvField.deleteIfNull(), IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL);
+			conf.isDeleteFieldIfNull = csvField.deleteIfNull();
 			conf.memberBean = getter;
-			conf.nullReplaceString = getParameterValue(conf.nullReplaceString, csvField.defaultIfNull(), IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE);
+			conf.nullReplaceString = csvField.defaultIfNull();
 			
 			String realName = csvField.name();
 			if (CsvbangUti.isStringBlank(realName)){
@@ -217,7 +212,7 @@ public class ConfigurationUti {
 	 * @param member field or method of a class
 	 * @return its format
 	 * @throws CsvBangException if we can't create an instance of custom formatter
-	 * @since 0.0.1
+	 * @since 0.0.4
 	 */
 	private static CsvFormatter loadCsvFormat(final AnnotatedElement member) 
 	throws CsvBangException{
@@ -277,36 +272,13 @@ public class ConfigurationUti {
 		return format;
 	}
 	
-	
-	/**
-	 * Generate header of file if necessary
-	 * @param conf a general configuration
-	 * @since 0.0.1
-	 */
-	private static void generateHeader(final CsvBangConfiguration conf){
-		if (conf.isDisplayHeader){
-			final StringBuilder header = new StringBuilder(1000).append(conf.startRecord);
-			for (final CsvFieldConfiguration field : conf.fields){
-				
-				String n = field.name;
-				if (!(n != null && n.length() > 0)){
-					n = ((Member)field.memberBean).getName();
-				}
-				header.append(n).append(conf.delimiter);
-			}
-			header.delete(header.length() - conf.delimiter.length(), header.length());
-			header.append(conf.endRecord);
-			conf.header = header.toString();
-		}
-	}
-	
 	/**
 	 * Load configuration of CSV bean (file CSV)
 	 * @param clazz a class
 	 * @return its configuration (or null if the class or parents is not annotated with CsvType)
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	public static final CsvBangConfiguration loadCsvBangConfiguration(final Class<?> clazz) throws CsvBangException{
 		if (clazz == null){
@@ -329,24 +301,71 @@ public class ConfigurationUti {
 		
 		final CsvBangConfiguration conf = new CsvBangConfiguration();
 		final Map<String, CsvFieldConfiguration> mapFieldConf = new HashMap<String, CsvFieldConfiguration>();
+		final Map<DIRECTION, Map<String, AnnotatedElement>> mapCommentFields = new HashMap<CsvComment.DIRECTION, Map<String,AnnotatedElement>>();
+		
+		mapCommentFields.put(DIRECTION.BEFORE_RECORD, new HashMap<String, AnnotatedElement>());
+		mapCommentFields.put(DIRECTION.AFTER_RECORD, new HashMap<String, AnnotatedElement>());
+		
+		//Load the configuration of class
+		//We read annotations from the parent to child
+		boolean hasCsvTypeDefined = false;
 		for (final Class<?> c:parents){
 			final CsvType csvType = ReflectionUti.getCsvTypeAnnotation(c.getDeclaredAnnotations());
 			if (csvType != null){
-				conf.blockingSize = getParameterValue(conf.blockingSize, csvType.blocksize(), IConstantsCsvBang.DEFAULT_BLOCKING_SIZE);
-				conf.isAsynchronousWrite = getParameterValue(conf.isAsynchronousWrite, csvType.asynchronousWriter(), IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE);
-				conf.charset = getParameterValue(conf.charset, csvType.charsetName(), IConstantsCsvBang.DEFAULT_CHARSET_NAME);
-				conf.delimiter = getParameterValue(conf.delimiter, csvType.delimiter(), IConstantsCsvBang.DEFAULT_DELIMITER);
-				conf.endRecord = getParameterValue(conf.endRecord, csvType.endRecord(), IConstantsCsvBang.DEFAULT_END_RECORD);
-				conf.startRecord = getParameterValue(conf.startRecord, csvType.startRecord(), IConstantsCsvBang.DEFAULT_START_RECORD);
-				conf.isDisplayHeader = getParameterValue(conf.isDisplayHeader, csvType.header(), IConstantsCsvBang.DEFAULT_HEADER);
-				conf.escapeQuoteCharacter = getParameterValue(conf.escapeQuoteCharacter, csvType.quoteEscapeCharacter(), IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER);
-				conf.filename = getParameterValue(conf.filename, csvType.fileName(), IConstantsCsvBang.DEFAULT_FILE_NAME);
-				conf.isAppendToFile = getParameterValue(conf.isAppendToFile, csvType.append(), IConstantsCsvBang.DEFAULT_APPEND_FILE);
+				try{
+					conf.charset = Charset.forName(csvType.charsetName());
+				}catch(IllegalCharsetNameException e1){
+					throw new CsvBangException(String.format("The charset [%s] for CSV file is undefined for the class %s. See https://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html", csvType.charsetName(), c));
+				}catch(IllegalArgumentException e2){
+					throw new CsvBangException(String.format("The charset [%s] for CSV file is undefined for the class %s. See https://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html", csvType.charsetName(), c));
+				}
+				conf.delimiter = csvType.delimiter();
+				conf.endRecord = csvType.endRecord();
+				conf.startRecord = csvType.startRecord();
+				conf.escapeQuoteCharacter = csvType.quoteEscapeCharacter();
+				conf.commentCharacter = csvType.commentCharacter();
+				conf.defaultEndLineCharacter = csvType.defaultEndLineCharacter();
 				if (csvType.quoteCharacter() != null && csvType.quoteCharacter().length() > 0){
 					conf.quote = csvType.quoteCharacter().charAt(0);
 				}
+				hasCsvTypeDefined = true;
+				if (IConstantsCsvBang.DEFAULT_END_RECORD.equals(conf.endRecord)){
+					conf.endRecord = conf.defaultEndLineCharacter.toString();
+				}
 			}
-			loadCsvFieldConfiguration(clazz, c, mapFieldConf);
+
+			final CsvHeader csvHeader = ReflectionUti.getCsvHeaderAnnotation(c.getDeclaredAnnotations());
+			if (csvHeader != null){
+				conf.isDisplayHeader = csvHeader.header();
+				conf.header = csvHeader.customHeader();
+			}
+
+			final CsvFooter csvFooter = ReflectionUti.getCsvFooterAnnotation(c.getDeclaredAnnotations());
+			if (csvFooter != null){
+				conf.footer = csvFooter.customFooter();
+				conf.noEndRecordOnLastRecord = csvFooter.noEndRecordOnLastRecord();
+			}
+
+			final CsvFile csvFile = ReflectionUti.getCsvFileAnnotation(c.getDeclaredAnnotations());
+			if (csvFile != null){
+				//configuration about file
+				conf.fileName = new FileName(csvFile.fileName(), csvFile.datePattern());
+				conf.isAppendToFile = csvFile.append();
+				conf.blockSize = csvFile.blocksize();
+				conf.isAsynchronousWrite = csvFile.asynchronousWriter();
+				conf.maxFile = csvFile.maxFileNumber();
+				conf.maxFileSize = csvFile.maxFileSize();
+				conf.maxRecordByFile = csvFile.maxRecordByFile();
+				conf.isFileByFile = csvFile.fileByFile();
+				
+			}
+			
+			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields);
+		}
+		
+		if (!hasCsvTypeDefined){
+			//The CsvType is required
+			return null;
 		}
 		
 		//manage order of field
@@ -362,13 +381,21 @@ public class ConfigurationUti {
 		}
 		
 		if (orderedField.size() == 0){
-			//TODO mettre des logs
+			LOGGER.warning(String.format("No field defined for class:", clazz));
 			return null;
 		}
 		conf.fields = new ArrayList<CsvFieldConfiguration>(orderedField.values());
 		
-		//generate header
-		generateHeader(conf);
+		//manage comment field
+		if (CsvbangUti.isCollectionNotEmpty(mapCommentFields.get(DIRECTION.BEFORE_RECORD).values())){
+			conf.commentsBefore = mapCommentFields.get(DIRECTION.BEFORE_RECORD).values();
+		}
+		
+		if (CsvbangUti.isCollectionNotEmpty(mapCommentFields.get(DIRECTION.AFTER_RECORD).values())){
+			conf.commentsAfter = mapCommentFields.get(DIRECTION.AFTER_RECORD).values();
+		}
+		
+		conf.init();
 		
 		return conf;
 	}

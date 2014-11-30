@@ -24,7 +24,9 @@
 package com.github.lecogiteur.csvbang.test.bean;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 
+@CsvFooter(noEndRecordOnLastRecord=true)
 public class BeanChildCsv extends BeanCsv {
 	
 	

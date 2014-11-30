@@ -77,7 +77,7 @@ public @interface CsvField {
 	String defaultIfNull() default IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE;
 	
 	/**
-	 * Delete field if the value is null. Delete field only for the current record. By default false.
+	 * Delete field if the value is null. Delete field only for the current record. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FIELD_DELETE_IF_NULL}.
 	 * @return True if we must delete field.
 	 * @since 0.0.1
 	 * 

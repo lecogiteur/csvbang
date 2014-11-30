@@ -26,7 +26,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
 
@@ -35,7 +37,9 @@ import com.github.lecogiteur.csvbang.annotation.CsvFormat.TYPE_FORMAT;
  * @author Tony EMMA
  *
  */
-@CsvType(header=true, blocksize=10000, asynchronousWriter=false)
+@CsvType
+@CsvHeader(header=true)
+@CsvFile(blocksize=10000, asynchronousWriter=false)
 public class BeanCsv {
 
 	@CsvField(name="fieldName", position=2)
@@ -125,8 +129,4 @@ public class BeanCsv {
 	public void setDateYear(List<Date> dateYear) {
 		this.dateYear = dateYear;
 	}
-	
-	
-	
-	
 }

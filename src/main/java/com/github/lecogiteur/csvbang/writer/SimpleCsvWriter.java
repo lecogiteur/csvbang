@@ -22,14 +22,14 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
+import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
@@ -39,78 +39,64 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
  * @version 0.0.1
  */
 public class SimpleCsvWriter<T> extends AbstractWriter<T> {
-
-	/**
-	 * Constructor
-	 * @param file CSV file
-	 * @since 0.0.1
-	 */
-	public SimpleCsvWriter(final File file, final CsvBangConfiguration conf) {
-		super(file, conf);
-	}
 	
 	/**
-	 * Constructor
-	 * @param file path of CSV file
-	 * @since 0.0.1
+	 * Number of writer task in action
+	 * @since 0.1.0
 	 */
-	public SimpleCsvWriter(final String file, final CsvBangConfiguration conf) {
-		super(file, conf);
-	}
+	private final AtomicInteger isEnded = new AtomicInteger(0);
 
 	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#write(java.util.Collection)
-	 * @since 0.0.1
+	 * Constructor
+	 * @param pool pool of file
+	 * @param conf configuration
+	 * @throws CsvBangException if a problem occurred during initialization
+	 * @since 0.1.0
 	 */
-	public void write(final Collection<T> lines) throws CsvBangException {
+	public SimpleCsvWriter(final CsvFilePool pool, final CsvBangConfiguration conf) throws CsvBangException {
+		super(pool, conf);
+	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.writer.AbstractWriter#internalWrite(java.util.Collection, boolean)
+	 * @since 0.1.0
+	 */
+	@Override
+	protected void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException {
+		isEnded.incrementAndGet();
 		if (CsvbangUti.isCollectionEmpty(lines)){
 			return;
 		}
-		if (out == null){
-			//if not open
-			open();
-		}
+		
 		final StringBuilder sLines = new StringBuilder(defaultLineSize * lines.size());
 		
 		for (final Object line:lines){
-			final StringBuilder sLine = writeLine(line);
+			final StringBuilder sLine = generateLine(line, isComment);
 			if (sLine != null){
 				sLines.append(sLine);
 			}
 		}
 		
-		if (sLines.length() > 0){
-			byte[] bTab = null;
-			try {
-				bTab = sLines.toString().getBytes(conf.charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new CsvBangException(String.format("The charset for [%s] is not supported: %s", file.getAbsolutePath(), conf.charset), e);
-			}
-			final ByteBuffer bb = ByteBuffer.allocateDirect(bTab.length);
-			bb.put(bTab);
-			bb.flip();
-			try {
-				out.getChannel().write(bb);
-			} catch (IOException e) {
-				throw new CsvBangException(String.format("An error has occured [%s]: %s", file.getAbsolutePath(), sLines), e);
-			}
-		}
-
+		filePool.getFile(isComment?0:lines.size(), sLines.length()).write(sLines.toString());
+		isEnded.decrementAndGet();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
-	public void close() throws CsvBangException {
-		try {
-			if (out != null){
-				out.close();
-			}
-		} catch (IOException e) {
-			throw new CsvBangException("An error has occured when closed file", e);
+	public void close() throws CsvBangIOException {
+
+		//close file
+		int workers = isEnded.get();
+		isClose = workers == 0;
+		if (isClose){
+			super.close();
+		}else{
+			throw new CsvBangCloseException(workers);
 		}
 	}
 

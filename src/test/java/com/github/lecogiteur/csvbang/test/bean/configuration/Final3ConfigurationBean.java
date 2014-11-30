@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.test.bean.FinalConfigurationBean
+ *  com.github.lecogiteur.csvbang.test.bean.configuration.Final2ConfigurationBean
  * 
  *  Copyright (C) 2013  Tony EMMA
  *
@@ -20,45 +20,47 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Csvbang. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.lecogiteur.csvbang.test.bean;
+package com.github.lecogiteur.csvbang.test.bean.configuration;
 
 import java.util.Calendar;
 
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
-
+import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 /**
  * @author Tony EMMA
  *
  */
-@CsvType(append=true, asynchronousWriter=true, blocksize=20, charsetName="ISO-8859-1", delimiter="||", 
-		endRecord="\nEND\n", fileName="test.csv", header=true, quoteCharacter="'", 
-		quoteEscapeCharacter='\'', startRecord="*")
-public class FinalConfigurationBean extends ChildSimpleConfigurationBean {
+@CsvType(startRecord="**", delimiter=IConstantsCsvBang.DEFAULT_DELIMITER, charsetName="ISO-8859-1", 
+endRecord="\nEND\n", quoteCharacter="'", 
+quoteEscapeCharacter='\'', commentCharacter='%')
+@CsvFile(append=true, asynchronousWriter=true, blocksize=20, fileName="test2.csv")
+@CsvHeader(header=false, customHeader="")
+@CsvFooter(customFooter="", noEndRecordOnLastRecord=false)
+public class Final3ConfigurationBean extends Child3SimpleConfigurationBean {
 
+	
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.ChildSimpleConfigurationBean#customMethod()
+	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#customMethod()
 	 */
 	@Override
-	@CsvField(name="custom")
+	@CsvField(defaultIfNull="0", name="custom")
 	public double customMethod() {
-		// TODO Auto-generated method stub
 		return super.customMethod();
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.ChildSimpleConfigurationBean#getDate()
+	 * @see com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean#getDate()
 	 */
 	@Override
-	@CsvField(position=-2)
+	@CsvField(position=-2, deleteIfNull=true)
 	public Calendar getDate() {
-		// TODO Auto-generated method stub
 		return super.getDate();
 	}
-
-	
-	
 }

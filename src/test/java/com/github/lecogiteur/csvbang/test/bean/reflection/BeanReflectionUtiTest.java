@@ -20,8 +20,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Csvbang. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.lecogiteur.csvbang.test.bean;
+package com.github.lecogiteur.csvbang.test.bean.reflection;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
@@ -48,6 +49,9 @@ public class BeanReflectionUtiTest {
 	protected String protectedField = "protectedField";
 
 	protected String othrProtectedField = "othrProtectedField";
+	
+	@CsvComment
+	public Integer comment;
 	
 	public String getPrivateField(){
 		return privateField;
@@ -85,4 +89,6 @@ public class BeanReflectionUtiTest {
 	public String getOther(){
 		return otherPrivateField;
 	}
+	
+	
 }

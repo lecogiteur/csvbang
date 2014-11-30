@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
@@ -41,10 +43,11 @@ import com.github.lecogiteur.csvbang.writer.CsvWriter;
 
 
 
-//@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BlockJUnit4ClassRunner.class)
 public class WriterLaunchTest {
 
-	//@Test
+	@Test
+	@Ignore
 	public void testSimpleWriter() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
 		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony.csv");
@@ -107,14 +110,15 @@ public class WriterLaunchTest {
 		System.out.println(System.currentTimeMillis() - start + " ms" );
 	}
 	
-	//@Test
+	@Test
+	@Ignore
 	public void testSimpleWriter2() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
 		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony2.csv");
 		
 		List<BeanChildCsv> list = new ArrayList<BeanChildCsv>(10000);
 		
-		for (int i=0; i<100000; i++){
+		for (int i=0; i<10; i++){
 			BeanChildCsv b = new BeanChildCsv();
 			b.setName("sasa");
 			b.setValue("fafafafafafafafafafafafafafafafafaffafafafafa");
@@ -128,7 +132,7 @@ public class WriterLaunchTest {
 		
 		long start = System.currentTimeMillis();
 		
-		for (int j=0; j<45; j++){
+		for (int j=0; j<1; j++){
 			int i=0;
 			while (i<list.size()){
 				final List<BeanChildCsv> l = list.subList(i, Math.min(i + 1000, list.size()));
@@ -143,7 +147,8 @@ public class WriterLaunchTest {
 		System.out.println(System.currentTimeMillis() - start + " ms" );
 	}
 	
-	//@Test
+	@Test
+	@Ignore
 	public void testSimpleWriter3() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
 		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony3.csv");

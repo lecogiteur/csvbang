@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.writer.AbstractWriter;
 
 
@@ -34,15 +35,8 @@ public class SimpleWriterTest<T> extends AbstractWriter<T> {
 
 	StringBuilder result = new StringBuilder();
 	
-	public SimpleWriterTest(CsvBangConfiguration conf) {
-		super(conf);
-	}
-
-	@Override
-	public void write(Collection<T> lines) throws CsvBangException {
-		for(T line:lines){
-			result.append(writeLine(line));
-		}
+	public SimpleWriterTest(CsvFilePool pool, CsvBangConfiguration conf) throws CsvBangException {
+		super(pool, conf);
 	}
 	
 	public String getResult(){
@@ -50,7 +44,12 @@ public class SimpleWriterTest<T> extends AbstractWriter<T> {
 	}
 
 	@Override
-	public void close() throws CsvBangException {
+	protected void internalWrite(Collection<?> lines, boolean isComment)
+			throws CsvBangException {
+		for(Object line:lines){
+			result.append(generateLine(line, isComment));
+		}
 	}
 
+	
 }

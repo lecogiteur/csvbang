@@ -48,8 +48,12 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.lecogiteur.csvbang.annotation.CsvComment;
 import com.github.lecogiteur.csvbang.annotation.CsvField;
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
 import com.github.lecogiteur.csvbang.annotation.CsvFormat;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
@@ -57,7 +61,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 /**
  * Utility class on reflection
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class ReflectionUti {
@@ -351,6 +355,42 @@ public class ReflectionUti {
 	}
 	
 	/**
+	 * Retrieve the CsvHeader annotation
+	 * @param annotations the list of annotation
+	 * @return the CsvHeader annotation or null if not exists
+	 * @since 0.1.0
+	 */
+	public static CsvHeader getCsvHeaderAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvHeader){
+				return (CsvHeader)annotation;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the CsvFooter annotation
+	 * @param annotations the list of annotation
+	 * @return the CsvFooter annotation or null if not exists
+	 * @since 0.1.0
+	 */
+	public static CsvFooter getCsvFooterAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvFooter){
+				return (CsvFooter)annotation;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Retrieve the CsvField annotation
 	 * @param annotations  the list of annotation
 	 * @return the CsvField annotation or null if not exists
@@ -381,6 +421,42 @@ public class ReflectionUti {
 		for (final Annotation annotation:annotations){
 			if (annotation instanceof CsvFormat){
 				return (CsvFormat)annotation;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the CsvFile annotation
+	 * @param annotations  the list of annotation
+	 * @return the CsvFile annotation or null if not exists
+	 * @since 0.1.0
+	 */
+	public static CsvFile getCsvFileAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvFile){
+				return (CsvFile)annotation;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the CsvComment annotation
+	 * @param annotations  the list of annotation
+	 * @return the CsvComment annotation or null if not exists
+	 * @since 0.1.0
+	 */
+	public static CsvComment getCsvCommentAnnotation(final Annotation[] annotations){
+		if (annotations == null || annotations.length == 0){
+			return null;
+		}
+		for (final Annotation annotation:annotations){
+			if (annotation instanceof CsvComment){
+				return (CsvComment)annotation;
 			}
 		}
 		return null;

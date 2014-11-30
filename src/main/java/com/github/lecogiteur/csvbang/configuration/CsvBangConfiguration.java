@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.configuration.CsvKuaiConfiguration
+ *  com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration
  * 
  *  Copyright (C) 2013  Tony EMMA
  *
@@ -22,15 +22,25 @@
  */
 package com.github.lecogiteur.csvbang.configuration;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.file.FileName;
+import com.github.lecogiteur.csvbang.util.Comment;
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
+import com.github.lecogiteur.csvbang.util.EndLineType;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 
 /**
- * General configuration
+ * General configuration for one CSV file.
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 0.1.0
  *
  */
 public class CsvBangConfiguration {
@@ -57,7 +67,7 @@ public class CsvBangConfiguration {
 	 * Charset of file. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_CHARSET_NAME}
 	 * @since 0.0.1
 	 */
-	public String charset = IConstantsCsvBang.DEFAULT_CHARSET_NAME;
+	public Charset charset = IConstantsCsvBang.DEFAULT_CHARSET;
 	
 	/**
 	 * list of fields
@@ -66,11 +76,12 @@ public class CsvBangConfiguration {
 	public List<CsvFieldConfiguration> fields;
 	
 	/**
-	 * Size of buffer in number of record. Negative value means no buffer.
+	 * <p>Size of buffer in number of record. Negative value means no buffer.</p>
+	 * <p>The buffer is used in order to write by block in file. The record is generated in memory into buffer. When the buffer is full, we flush the buffer in file.</p>
 	 * By default -1.
 	 * @since 0.0.1
 	 */
-	public int blockingSize = IConstantsCsvBang.DEFAULT_BLOCKING_SIZE;
+	public int blockSize = IConstantsCsvBang.DEFAULT_BLOCKING_SIZE;
 	
 	/**
 	 * 
@@ -86,7 +97,8 @@ public class CsvBangConfiguration {
 	/**
 	 * the header of CSV file generated.
 	 * The header is generated with the name of field. If no name is defined for a field, 
-	 * we take the property name or method name
+	 * we take the property name or method name.
+	 * If a custom header is defined, its value is append to variable header
 	 * @since 0.0.1
 	 * 
 	 */
@@ -97,6 +109,13 @@ public class CsvBangConfiguration {
 	 * @since 0.0.1
 	 */
 	public boolean isDisplayHeader = IConstantsCsvBang.DEFAULT_HEADER;
+	
+	/**
+	 * the footer of CSV file generated.
+	 * @since 0.0.1
+	 * 
+	 */
+	public String footer;
 	
 	/**
 	 * Character in order to quote value of field. By default, no quote defined.
@@ -111,17 +130,163 @@ public class CsvBangConfiguration {
 	public char escapeQuoteCharacter = IConstantsCsvBang.DEFAULT_QUOTE_ESCAPE_CHARACTER;
 	
 	/**
-	 * <p>You can define a static file name. </p>
-	 * <p>It is not required. You could define dynamically the filename in Factory.</p>
-	 * @since 0.0.1
-	 */
-	public String filename = IConstantsCsvBang.DEFAULT_FILE_NAME;
-	
-	/**
 	 * <p>True if you want to append csv data to a file (if it exist). If the file doesn't exist, it create a new file.</p>
 	 * <p>False, if you already want to create a new file. By default, it's false.</p>
 	 * 
 	 * @since 0.0.1
 	 */
 	public boolean isAppendToFile = IConstantsCsvBang.DEFAULT_APPEND_FILE;
+	
+	/**
+	 * Define the character in order to comment a line or data. Each comments will be write on a new line. 
+	 * If a field value has carriage return, a comment character will be added after the carriage return.
+	 * By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_COMMENT_CHARACTER}
+	 * @since 0.1.0
+	 * @see Comment
+	 */
+	public char commentCharacter = IConstantsCsvBang.DEFAULT_COMMENT_CHARACTER;
+	
+	/**
+	 * Define Pattern with the comment character
+	 * @since 0.1.0
+	 * @see Comment
+	 * 
+	 */
+	public Pattern patternCommentCharacter = null;
+	
+	/**
+	 * List of members (fields or methods) which are comment before record
+	 * @since 0.1.0
+	 */
+	public Collection<AnnotatedElement> commentsBefore;
+	
+	/**
+	 * List of members (fields or methods) which are comment after record
+	 * @since 0.1.0
+	 */
+	public Collection<AnnotatedElement> commentsAfter;
+	
+	/**
+	 * Start string for comment
+	 * @since 0.1.0
+	 */
+	public String startComment = "";
+	
+	/**
+	 * Put or not the end record characters on the last record. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_NO_END_RECORD}.
+	 * 
+	 * @since 0.0.1
+	 */
+	public boolean noEndRecordOnLastRecord = IConstantsCsvBang.DEFAULT_NO_END_RECORD;
+	
+	/**
+	 * Max records by file. If the max number of record is negative, no max number of record is defined. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_MAX_RECORD}.
+	 * @since 0.1.0
+	 */
+	public long maxRecordByFile = IConstantsCsvBang.DEFAULT_FILE_MAX_RECORD;
+	
+	/**
+	 * The default max size of file. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_MAX_SIZE}.
+	 * If the max size is negative, no max size is defined. The size is defined in byte. 
+	 * @since 0.1.0
+	 */
+	public long maxFileSize = IConstantsCsvBang.DEFAULT_FILE_MAX_SIZE;
+	
+	/**
+	 * The default max number of file. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_MAX_NUMBER_FILE}.
+	 * If the max is negative, no max is defined.
+	 * @since 0.1.0
+	 */
+	public long maxFile = IConstantsCsvBang.DEFAULT_MAX_NUMBER_FILE;
+	
+	/**
+	 * <p>You can define a static file name. </p>
+	 * <p>It is not required. You could define dynamically the filename in Factory.</p>
+	 * @since 0.0.1
+	 */
+	public FileName fileName;
+	
+	/**
+	 * If CsvBang must process file one by one or multiple file. This option is active only if a max number of files in pool is defined.
+	 * By default, it's value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}.
+	 * @since 0.1.0
+	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#maxFile
+	 */
+	public boolean isFileByFile = IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
+	
+	/**
+	 * The pattern of date to use in file name. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_NAME_DATE_PATTERN}
+	 * @since 0.1.0
+	 */
+	public String fileDatePattern = IConstantsCsvBang.DEFAULT_FILE_NAME_DATE_PATTERN;
+	
+	/**
+	 * The default end line to use in file for comment, header, footer, end record, ...
+	 * By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_NAME_DATE_PATTERN}
+	 * @since 0.1.0
+	 */
+	public EndLineType defaultEndLineCharacter = IConstantsCsvBang.DEFAULT_END_LINE;
+	
+	/**
+	 * Initialize the configuration
+	 * @throws CsvBangException if a problem occurred when we create the the file name
+	 * @since 0.1.0
+	 */
+	public void init() throws CsvBangException{
+			
+		if (!endRecord.endsWith(defaultEndLineCharacter.toString())){
+			//A comment always start on a new line
+			startComment = defaultEndLineCharacter.toString();
+		}
+		
+		patternCommentCharacter = Pattern.compile("^" + Pattern.quote(commentCharacter + "") + ".*$");
+		
+		//generate header
+		generateHeader();
+		
+		//generate file name
+		if (fileName == null){
+			fileName = new FileName(IConstantsCsvBang.DEFAULT_FILE_NAME, fileDatePattern);
+		}
+		
+		if (IConstantsCsvBang.DEFAULT_CUSTOM_FOOTER.equals(footer) || CsvbangUti.isStringBlank(footer)){
+			footer = null;
+		}
+	}
+	
+	/**
+	 * Generate header of file if necessary
+	 * @param conf a general configuration
+	 * @since 0.1.0
+	 */
+	private void generateHeader(){
+		if (IConstantsCsvBang.DEFAULT_CUSTOM_HEADER.equals(header)){
+			header = null;
+		}
+		
+		if (isDisplayHeader){
+			final StringBuilder h = new StringBuilder(1000).append(startRecord);
+			for (final CsvFieldConfiguration field : fields){
+				
+				String n = field.name;
+				if (!(n != null && n.length() > 0)){
+					n = ((Member)field.memberBean).getName();
+				}
+				h.append(n).append(delimiter);
+			}
+			h.delete(h.length() - delimiter.length(), h.length());
+			h.append(endRecord);
+			
+			if (CsvbangUti.isStringBlank(header)){
+				//if there is not custom header
+				header = h.toString();
+			}else{
+				header += h.toString();
+			}			
+		}
+		
+		if (CsvbangUti.isStringBlank(header)){
+			header = null;
+		}
+	}
 }

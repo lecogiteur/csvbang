@@ -20,20 +20,27 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Csvbang. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.lecogiteur.csvbang.test.bean;
+package com.github.lecogiteur.csvbang.test.bean.reflection;
+
+import com.github.lecogiteur.csvbang.annotation.CsvFile;
+import com.github.lecogiteur.csvbang.annotation.CsvFooter;
+import com.github.lecogiteur.csvbang.annotation.CsvHeader;
 
 
 /**
  * @author Tony EMMA
  *
  */
+@CsvFile
+@CsvHeader(header=true)
+@CsvFooter
 public class ChildBeanReflectionUtiTest extends BeanReflectionUtiTest {
 	
 	private String subclass = "subclass";
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.BeanReflectionUtiTest#getProtectedField()
+	 * @see com.github.lecogiteur.csvbang.test.bean.reflection.BeanReflectionUtiTest#getProtectedField()
 	 */
 	@Override
 	public String getProtectedField() {
@@ -42,7 +49,7 @@ public class ChildBeanReflectionUtiTest extends BeanReflectionUtiTest {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.BeanReflectionUtiTest#simpleMethod()
+	 * @see com.github.lecogiteur.csvbang.test.bean.reflection.BeanReflectionUtiTest#simpleMethod()
 	 */
 	@Override
 	public String simpleMethod() {
@@ -51,7 +58,7 @@ public class ChildBeanReflectionUtiTest extends BeanReflectionUtiTest {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.test.bean.BeanReflectionUtiTest#protectedMethod()
+	 * @see com.github.lecogiteur.csvbang.test.bean.reflection.BeanReflectionUtiTest#protectedMethod()
 	 */
 	@Override
 	protected String protectedMethod() {
