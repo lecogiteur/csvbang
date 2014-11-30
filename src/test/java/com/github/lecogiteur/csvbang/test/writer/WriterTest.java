@@ -275,9 +275,7 @@ public class WriterTest {
 	
 	}
 	
-	//@Test
-	//TODO vérifier que cela fonctionne et l'ajouter dans la doc
-	//Choix doit t on dans ce cas considérer la chaine de fin d'enregistrement lorsque c'est un commentaire
+	@Test
 	public void noEndRecordWithCommentTest() throws CsvBangException{
 
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoEndRecordWithCommentWriterBean.class);
@@ -304,7 +302,7 @@ public class WriterTest {
 		bean3.setId(125874);
 		bean3.setPrice(1287.45);
 		bean3.setName("super name");
-		result += "\n125874,super name,public Name: super name,no date,1287.45\n#a comment";
+		result += "\n125874,super name,public Name: super name,no date,1287.45\n#a comment\n";
 		
 		writer.write(bean);
 		writer.comment(bean2);
@@ -313,8 +311,6 @@ public class WriterTest {
 		Assert.assertEquals(result, writer.getResult());
 	
 	}
-	
-	//TODO faire des tests sur les header, méthode close
 	
 	
 }

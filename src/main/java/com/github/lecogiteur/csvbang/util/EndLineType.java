@@ -23,6 +23,7 @@
 package com.github.lecogiteur.csvbang.util;
 
 import java.nio.charset.Charset;
+import java.util.regex.Pattern;
 
 /**
  * Enumeration of end line type. Before to use a end line type verify if charset contains this character.
@@ -97,6 +98,12 @@ public enum EndLineType {
 	 * @since 0.1.0
 	 */
 	private final String charToString;
+	
+	/**
+	 * Pattern of end line
+	 * @since 0.1.0
+	 */
+	private final Pattern pattern;
 
 	/**
 	 * Constructor
@@ -106,6 +113,7 @@ public enum EndLineType {
 	private EndLineType(char[] characters) {
 		this.characters = characters;
 		charToString = new String(characters);
+		pattern = Pattern.compile(Pattern.quote(charToString));
 	}
 
 	/**
@@ -137,6 +145,15 @@ public enum EndLineType {
 	public byte[] toBytes(final Charset charset){
 		final String s = new String(characters);
 		return s.getBytes(charset);
+	}
+
+	/**
+	 * Get the pattern of end line
+	 * @return the pattern
+	 * @since 0.1.0
+	 */
+	public Pattern getPattern() {
+		return pattern;
 	}
 
 	

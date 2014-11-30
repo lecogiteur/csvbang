@@ -69,7 +69,6 @@ public class WriterThread<T> implements Runnable {
 				}
 			}
 		} catch (CsvBangException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

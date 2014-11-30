@@ -51,4 +51,5 @@ public class SimpleWriterTest<T> extends AbstractWriter<T> {
 		}
 	}
 
+	
 }

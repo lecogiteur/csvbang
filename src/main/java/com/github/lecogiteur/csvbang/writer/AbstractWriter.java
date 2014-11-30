@@ -26,7 +26,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.regex.Pattern;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
@@ -46,11 +45,6 @@ import com.github.lecogiteur.csvbang.util.ReflectionUti;
  * @version 0.1.0
  */
 public abstract class AbstractWriter<T> implements CsvWriter<T>{
-
-	/**
-	 * a carriage return
-	 */
-	private static final Pattern PATTERN_CARRIAGE_RETURN = Pattern.compile("\n");
 	
 	
 	/**
@@ -469,8 +463,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		
 		final StringBuilder c = new StringBuilder(comment.length() + 10).append(conf.startComment);
 		
-		//TODO revoir le pattern avec le saut de ligne par défaut
-		final String[] lines = PATTERN_CARRIAGE_RETURN.split(comment);
+		final String[] lines = conf.defaultEndLineCharacter.getPattern().split(comment);
 		
 		for (final String line:lines){
 			if (!conf.patternCommentCharacter.matcher(line).matches()){

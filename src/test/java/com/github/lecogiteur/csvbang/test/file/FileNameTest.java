@@ -217,7 +217,6 @@ public class FileNameTest {
 			try {
 				Thread.sleep(millis);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			for(int i=0; i<300; i++){
@@ -226,6 +225,12 @@ public class FileNameTest {
 				queue.add(n);
 			}
 		}
+		
+		public int getThreadname() {
+			return threadname;
+		}
+		
+		
 		
 	}
 }
