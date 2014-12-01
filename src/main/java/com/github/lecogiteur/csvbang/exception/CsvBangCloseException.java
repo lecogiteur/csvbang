@@ -22,13 +22,15 @@
  */
 package com.github.lecogiteur.csvbang.exception;
 
+import java.nio.channels.ClosedChannelException;
+
 /**
  * Exception throws when some threads are writing and we want close.
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  * @since 0.1.0
  */
-public class CsvBangCloseException extends CsvBangIOException {
+public class CsvBangCloseException extends ClosedChannelException {
 
 	/**
 	 * serialVersionUID
@@ -42,7 +44,16 @@ public class CsvBangCloseException extends CsvBangIOException {
 	 * @since 0.1.0
 	 */
 	public CsvBangCloseException(int nbThread) {
-		super(String.format("Error has occurred on closing file. We can't close writer. Some threads (%s thread(s)) are writing.", nbThread));
+		initCause(new CsvBangIOException(String.format("Error has occurred on closing file. We can't close writer. Some threads (%s thread(s)) are writing.", nbThread)));
+	}
+	
+	/**
+	 * Constructor
+	 * @param message message of exception
+	 * @since 1.0.0
+	 */
+	public CsvBangCloseException(String message){
+		initCause(new CsvBangIOException(message));
 	}
 
 	

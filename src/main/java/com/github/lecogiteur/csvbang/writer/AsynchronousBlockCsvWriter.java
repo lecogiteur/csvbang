@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -118,7 +119,7 @@ public class AsynchronousBlockCsvWriter<T> extends AbstractWriter<T> {
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
 	 * @since 0.1.0
 	 */
-	public void close() throws CsvBangIOException {
+	public void close() throws IOException {
 		isClose = true;
 		try {
 			if (buffer.size()>0){

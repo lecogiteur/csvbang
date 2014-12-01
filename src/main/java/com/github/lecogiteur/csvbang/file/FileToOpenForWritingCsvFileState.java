@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 
@@ -171,12 +172,11 @@ public class FileToOpenForWritingCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @throws CsvBangException 
 	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#write(java.lang.Object, java.lang.String)
 	 * @since 0.1.0
 	 */
 	@Override
-	public void write(final Object customHeader, final String content) throws CsvBangException {
+	public void write(final Object customHeader, final String content) throws CsvBangException, CsvBangCloseException {
 		open(customHeader);
 		context.write(content);
 	}

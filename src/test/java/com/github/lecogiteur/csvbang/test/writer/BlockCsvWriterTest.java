@@ -39,7 +39,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
 import com.github.lecogiteur.csvbang.test.bean.writer.BlockCsvWriterBean;
 import com.github.lecogiteur.csvbang.writer.BlockCsvWriter;
@@ -91,13 +90,15 @@ public class BlockCsvWriterTest {
 				} catch (CsvBangException e) {
 					e.printStackTrace();
 					fail=true;
+				} catch (CsvBangCloseException e) {
+					e.printStackTrace();
 				}
 			}
 			
 			if (close){
 				try {
 					w.close();
-				} catch (CsvBangIOException e) {
+				} catch (IOException e) {
 					fail=!(e instanceof CsvBangCloseException);
 					e.printStackTrace();
 				}

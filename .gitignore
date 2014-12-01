@@ -1,6 +1,7 @@
 build.sh
 info
 *.class
+releasenotes
 
 # Package Files #
 *.jar

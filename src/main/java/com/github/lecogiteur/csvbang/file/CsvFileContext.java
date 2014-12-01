@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.file;
 import java.nio.channels.Channel;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 
@@ -72,9 +73,10 @@ public class CsvFileContext implements Channel{
 	/**
 	 * Open the CSV file.
 	 * @throws CsvBangException if problem occurred during opening
+	 * @throws CsvBangCloseException if the file is closed
 	 * @since 0.1.0
 	 */
-	public void open() throws CsvBangException{
+	public void open() throws CsvBangException, CsvBangCloseException{
 		fileState.open(customHeader);
 	}
 	
@@ -92,9 +94,10 @@ public class CsvFileContext implements Channel{
 	 * Write some content in csv file
 	 * @param content content to write
 	 * @throws CsvBangException if problem occurred during writing
+	 * @throws CsvBangCloseException if the file is closed
 	 * @since 0.1.0
 	 */
-	public void write(final String content) throws CsvBangException{
+	public void write(final String content) throws CsvBangException, CsvBangCloseException{
 		fileState.write(customHeader, content);
 	}
 	

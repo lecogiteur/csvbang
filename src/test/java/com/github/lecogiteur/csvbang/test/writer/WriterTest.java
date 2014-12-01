@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.CsvFilePoolFactory;
 import com.github.lecogiteur.csvbang.pool.CsvFilePool;
@@ -56,7 +57,7 @@ public class WriterTest {
 	}
 	
 	@Test
-	public void simpleTest() throws CsvBangException{
+	public void simpleTest() throws CsvBangException, CsvBangCloseException{
 		SimpleWriterTest<SimpleWriterBean> writer = getSimpleWriter();
 		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
 		
@@ -84,7 +85,7 @@ public class WriterTest {
 	}
 	
 	@Test
-	public void simple2Test() throws CsvBangException{
+	public void simple2Test() throws CsvBangException, CsvBangCloseException{
 		SimpleWriterTest<SimpleWriterBean> writer = getSimpleWriter();
 		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
 		
@@ -117,7 +118,7 @@ public class WriterTest {
 	}
 	
 	@Test
-	public void simple3Test() throws CsvBangException{
+	public void simple3Test() throws CsvBangException, CsvBangCloseException{
 		SimpleWriterTest<SimpleWriterBean> writer = getSimpleWriter();
 		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
 		
@@ -150,7 +151,7 @@ public class WriterTest {
 	}
 	
 	@Test
-	public void simple4Test() throws CsvBangException{
+	public void simple4Test() throws CsvBangException, CsvBangCloseException{
 		SimpleWriterTest<SimpleWriterBean> writer = getSimpleWriter();
 		SimpleDateFormat format = new SimpleDateFormat(SimpleWriterBean.DATE_PATTERN);
 		
@@ -191,7 +192,7 @@ public class WriterTest {
 	}
 	
 	@Test
-	public void simpleWithCommentTest() throws CsvBangException{
+	public void simpleWithCommentTest() throws CsvBangException, CsvBangCloseException{
 
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(CommentWriterBean.class);
 		CsvFilePool pool = CsvFilePoolFactory.createPool(conf, (String)null, null, null);
@@ -239,7 +240,7 @@ public class WriterTest {
 	}
 	
 	//@Test
-	public void noEndRecordTest() throws CsvBangException{
+	public void noEndRecordTest() throws CsvBangException, CsvBangCloseException{
 
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoEndRecordWriterBean.class);
 		CsvFilePool pool = CsvFilePoolFactory.createPool(conf, (String)null, null, null);
@@ -276,7 +277,7 @@ public class WriterTest {
 	}
 	
 	@Test
-	public void noEndRecordWithCommentTest() throws CsvBangException{
+	public void noEndRecordWithCommentTest() throws CsvBangException, CsvBangCloseException{
 
 		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoEndRecordWithCommentWriterBean.class);
 		CsvFilePool pool = CsvFilePoolFactory.createPool(conf, (String)null, null, null);

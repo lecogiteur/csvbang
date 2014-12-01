@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
@@ -102,7 +103,7 @@ public class AsynchronousCsvWriter<T> extends AbstractWriter<T> {
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
 	 * @since 0.1.0
 	 */
-	public void close() throws CsvBangIOException {
+	public void close() throws IOException {
 		try {
 			isClose = true;
 			if (executor.awaitGroupTermination(this.hashCode())){

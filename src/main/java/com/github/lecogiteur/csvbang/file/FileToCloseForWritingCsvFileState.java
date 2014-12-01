@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
 /**
@@ -76,13 +77,13 @@ public class FileToCloseForWritingCsvFileState implements CsvFileState {
 	 * @since 0.1.0
 	 */
 	@Override
-	public void open(Object customHeader) throws CsvBangException {
+	public void open(Object customHeader) throws CsvBangCloseException {
 		final File file = csvFile.getFile();
 		String s = "no file defined";
 		if (file != null){
 			s = file.getAbsolutePath();
 		}
-		throw new CsvBangException(String.format("The file %s is closed. We can't open it.", s));
+		throw new CsvBangCloseException(String.format("The file %s is closed. We can't open it.", s));
 	}
 
 	/**
@@ -91,13 +92,13 @@ public class FileToCloseForWritingCsvFileState implements CsvFileState {
 	 * @since 0.1.0
 	 */
 	@Override
-	public void write(final Object customHeader, String content) throws CsvBangException {
+	public void write(final Object customHeader, String content) throws CsvBangCloseException {
 		final File file = csvFile.getFile();
 		String s = "no file defined";
 		if (file != null){
 			s = file.getAbsolutePath();
 		}
-		throw new CsvBangException(String.format("The file is closed. We can't write in %s the content: %s .", s, content));
+		throw new CsvBangCloseException(String.format("The file is closed. We can't write in %s the content: %s .", s, content));
 	}
 
 	/**

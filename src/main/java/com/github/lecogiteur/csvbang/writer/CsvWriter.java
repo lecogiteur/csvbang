@@ -22,9 +22,11 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.io.IOException;
 import java.nio.channels.Channel;
 import java.util.Collection;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.util.Comment;
@@ -43,9 +45,10 @@ public interface CsvWriter<T> extends Channel{
 	 * Create CSV file and write header.</p>
 	 * <p>Not necessary to open writer. To the first, write the writer if it's not opened, will be opened.</p>
 	 * @throws CsvBangException if a problem occurred during creation of file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.0.1
 	 */
-	public void open() throws CsvBangException;
+	public void open() throws CsvBangException, CsvBangCloseException;
 	
 	
 	/**
@@ -60,57 +63,64 @@ public interface CsvWriter<T> extends Channel{
 	 * Write a line in file
 	 * @param line a line
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.0.1
 	 */
-	public void write(final T line) throws CsvBangException;
+	public void write(final T line) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * Write lines in file
 	 * @param lines lines
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.0.1
 	 */
-	public void write(final T[] lines) throws CsvBangException;
+	public void write(final T[] lines) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * Write lines in file
 	 * @param lines lines
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.0.1
 	 */
-	public void write(final Collection<T> lines) throws CsvBangException;
+	public void write(final Collection<T> lines) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * Comment
 	 * @param comment a comment
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.1.0
 	 */
-	public void comment(final Comment comment) throws CsvBangException;
+	public void comment(final Comment comment) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * comment a line in file
 	 * @param line a line
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.1.0
 	 */
-	public void comment(final T line) throws CsvBangException;
+	public void comment(final T line) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * comment lines in file
 	 * @param lines lines
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.1.0
 	 */
-	public void comment(final T[] lines) throws CsvBangException;
+	public void comment(final T[] lines) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * comment lines in file
 	 * @param lines lines
 	 * @throws CsvBangException if a problem occurred during writing file
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.1.0
 	 */
-	public void comment(final Collection<T> lines) throws CsvBangException;
+	public void comment(final Collection<T> lines) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * Close file and write footer
@@ -118,7 +128,7 @@ public interface CsvWriter<T> extends Channel{
 	 * @since 0.0.1
 	 */
 	@Override
-	public void close() throws CsvBangIOException;
+	public void close() throws IOException;
 	
 	/**
 	 * Verify if writer is closed

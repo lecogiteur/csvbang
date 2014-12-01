@@ -22,13 +22,13 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
@@ -64,7 +64,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 	 * @since 0.1.0
 	 */
 	@Override
-	protected void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException {
+	protected void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException, CsvBangCloseException {
 		isEnded.incrementAndGet();
 		if (CsvbangUti.isCollectionEmpty(lines)){
 			return;
@@ -88,7 +88,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
 	 * @since 0.1.0
 	 */
-	public void close() throws CsvBangIOException {
+	public void close() throws IOException {
 
 		//close file
 		int workers = isEnded.get();

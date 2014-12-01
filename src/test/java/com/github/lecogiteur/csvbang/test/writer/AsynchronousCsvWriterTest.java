@@ -17,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousCsvWriterBean;
@@ -56,6 +57,9 @@ public class AsynchronousCsvWriterTest {
 					w.write(samples);
 					nbWriting += samples.length;
 				} catch (CsvBangException e) {
+					e.printStackTrace();
+					fail = true;
+				} catch (CsvBangCloseException e) {
 					e.printStackTrace();
 					fail = true;
 				}

@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,8 +30,8 @@ import java.util.Collections;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 import com.github.lecogiteur.csvbang.file.CsvFileContext;
 import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.util.Comment;
@@ -114,7 +115,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#open()
 	 * @since 0.0.1
 	 */
-	public void open() throws CsvBangException {				
+	public void open() throws CsvBangException, CsvBangCloseException {				
 		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		
 		if (CsvbangUti.isCollectionNotEmpty(files)){
@@ -130,6 +131,9 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	public boolean isOpen() {				
+		if (isClose){
+			return false;
+		}
 		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		
 		if (CsvbangUti.isCollectionNotEmpty(files)){
@@ -175,7 +179,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#write(java.lang.Object)
 	 * @since 0.0.1
 	 */
-	public void write(final T line) throws CsvBangException {
+	public void write(final T line) throws CsvBangException, CsvBangCloseException {
 		if (line == null){
 			return;
 		}
@@ -187,7 +191,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#write(java.lang.Object[])
 	 * @since 0.0.1
 	 */
-	public void write(final T[] lines) throws CsvBangException {
+	public void write(final T[] lines) throws CsvBangException, CsvBangCloseException {
 		if (lines == null || lines.length == 0){
 			return;
 		}
@@ -201,7 +205,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void write(final Collection<T> lines) throws CsvBangException {
+	public void write(final Collection<T> lines) throws CsvBangException, CsvBangCloseException {
 		internalWrite(lines, false);
 	}
 
@@ -211,7 +215,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void comment(final Comment comment) throws CsvBangException {
+	public void comment(final Comment comment) throws CsvBangException, CsvBangCloseException {
 		internalWrite(Collections.singleton(comment), true);
 	}
 
@@ -221,7 +225,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void comment(final T line) throws CsvBangException {
+	public void comment(final T line) throws CsvBangException, CsvBangCloseException {
 		if (line == null){
 			return;
 		}
@@ -234,7 +238,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void comment(final T[] lines) throws CsvBangException {
+	public void comment(final T[] lines) throws CsvBangException, CsvBangCloseException {
 		if (lines == null || lines.length > 0){
 			return;
 		}
@@ -247,7 +251,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void comment(final Collection<T> lines) throws CsvBangException {
+	public void comment(final Collection<T> lines) throws CsvBangException, CsvBangCloseException {
 		internalWrite(lines, true);
 	}
 	
@@ -257,7 +261,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.1.0
 	 */
 	@Override
-	public void close() throws CsvBangIOException {
+	public void close() throws IOException {
 		isClose = true;
 		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		if (CsvbangUti.isCollectionNotEmpty(files)){
@@ -282,9 +286,10 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @param lines lines to write
 	 * @param isComment True if lines must be commented
 	 * @throws CsvBangException if a problem occurs when line
+	 * @throws CsvBangCloseException if the writer is closed
 	 * @since 0.1.0
 	 */
-	protected abstract void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException;
+	protected abstract void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException, CsvBangCloseException;
 	
 	
 	/**

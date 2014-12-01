@@ -24,6 +24,7 @@ package com.github.lecogiteur.csvbang.test.util;
 
 import java.util.List;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 
@@ -69,6 +70,8 @@ public class WriterThread<T> implements Runnable {
 				}
 			}
 		} catch (CsvBangException e) {
+			e.printStackTrace();
+		} catch (CsvBangCloseException e) {
 			e.printStackTrace();
 		}
 	}

@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -92,7 +93,7 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	 * @since 0.1.0
 	 */
 	@Override
-	protected void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException {
+	protected void internalWrite(final Collection<?> lines, final boolean isComment) throws CsvBangException, CsvBangCloseException {
 		if (CsvbangUti.isCollectionEmpty(lines)){
 			return;
 		}
@@ -112,7 +113,7 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
 	 * @since 0.1.0
 	 */
-	public void close() throws CsvBangIOException {
+	public void close() throws IOException {
 		try {
 			emptyQueue(true);
 			//close file
@@ -156,9 +157,10 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	 * Empty the buffer
 	 * @param isEnd True if it's the last 
 	 * @throws CsvBangException if a problem occurred during writing
+	 * @throws CsvBangCloseException if writer is closed
 	 * @since 0.1.0
 	 */
-	private final void emptyQueue(boolean isEnd) throws CsvBangException{
+	private final void emptyQueue(boolean isEnd) throws CsvBangException, CsvBangCloseException{
 		isEnded.incrementAndGet();
 		final Collection<LinesWrapper> wrappers = drainQueue(isEnd);
 		if (CsvbangUti.isCollectionNotEmpty(wrappers)){
