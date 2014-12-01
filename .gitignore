@@ -1,4 +1,5 @@
 build.sh
+info
 *.class
 
 # Package Files #
