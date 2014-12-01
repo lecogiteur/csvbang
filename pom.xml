@@ -18,7 +18,7 @@
 		<connection>scm:git:ssh://git@github.com/lecogiteur/csvbang.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/lecogiteur/csvbang.git</developerConnection>
 		<url>https://github.com/lecogiteur/csvbang.git</url>
-		<tag>HEAD</tag>
+		<tag>csvbang-0.1.0-2</tag>
 	</scm>
 
 	<licenses>
