@@ -131,9 +131,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	public boolean isOpen() {				
-		if (isClose){
-			return false;
-		}
 		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		
 		if (CsvbangUti.isCollectionNotEmpty(files)){
@@ -143,7 +140,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 				}
 			}
 		}
-		return true;
+		return !isClose;
 	}
 	
 
