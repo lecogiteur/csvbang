@@ -1,0 +1,9 @@
+com.github.lecogiteur.csvbang.annotation
+com.github.lecogiteur.csvbang.configuration
+com.github.lecogiteur.csvbang.exception
+com.github.lecogiteur.csvbang.factory
+com.github.lecogiteur.csvbang.file
+com.github.lecogiteur.csvbang.formatter
+com.github.lecogiteur.csvbang.pool
+com.github.lecogiteur.csvbang.util
+com.github.lecogiteur.csvbang.writer

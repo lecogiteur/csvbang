@@ -1,6 +1,13 @@
 *.class
+.build.sh.swp
+.classpath
+.project
+.settings/
+build.sh
+info
+target
+
 
 # Package Files #
-*.jar
 *.war
 *.ear
