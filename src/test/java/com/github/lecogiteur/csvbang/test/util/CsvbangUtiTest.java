@@ -22,8 +22,11 @@
  */
 package com.github.lecogiteur.csvbang.test.util;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -78,5 +81,46 @@ public class CsvbangUtiTest {
 		
 		c.add("string");
 		Assert.assertTrue("no empty collection is not empty", CsvbangUti.isCollectionNotEmpty(c));
+	}
+	
+	@Test
+	public void getAllFiles(){
+		//null
+		Assert.assertNull(CsvbangUti.getAllFiles(null, null));
+		
+		//not exist
+		Assert.assertNull(CsvbangUti.getAllFiles(new File("toto"), null));
+		
+		//file
+		System.out.println(new File("").getAbsolutePath());
+		Assert.assertNotNull(CsvbangUti.getAllFiles(new File("csvbanguti/folder4/file4.csv"), null));
+		Assert.assertEquals(1, CsvbangUti.getAllFiles(new File("csvbanguti/folder4/file4.csv"), null).size());
+		Assert.assertEquals("file4.csv", CsvbangUti.getAllFiles(new File("csvbanguti/folder4/file4.csv"), null).iterator().next().getName());
+		
+		//directory
+		final Collection<File> files = CsvbangUti.getAllFiles(new File("csvbanguti"), null);
+		Assert.assertNotNull(files);
+		Assert.assertEquals(4, files.size());
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i=1; i<=4; i++){
+			list.add("file" + i + ".csv");
+		}
+		for (final File f:files){
+			Assert.assertTrue(list.contains(f.getName()));
+		}
+		
+		final Collection<File> fileswithFilter = CsvbangUti.getAllFiles(new File("csvbanguti"), new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				Pattern p = Pattern.compile("file[1-9]\\.csv");
+				return p.matcher(name).matches();
+			}
+		});
+		Assert.assertNotNull(fileswithFilter);
+		Assert.assertEquals(4, fileswithFilter.size());
+		for (final File f:files){
+			Assert.assertTrue(list.contains(f.getName()));
+		}
 	}
 }

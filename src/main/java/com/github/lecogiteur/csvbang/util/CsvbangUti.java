@@ -22,7 +22,11 @@
  */
 package com.github.lecogiteur.csvbang.util;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 
@@ -81,5 +85,35 @@ public class CsvbangUti {
 	 */
 	public static final boolean isCollectionNotEmpty(final Collection<?> c){
 		return c != null && c.size() > 0;
+	}
+	
+	
+	/**
+	 * Get all files of a base directory and its sub-directories
+	 * @param baseDir base directory
+	 * @return all files
+	 * @since 1.0.0
+	 */
+	public static final Collection<File> getAllFiles(final File baseDir, final FilenameFilter filter){
+		if (baseDir != null && baseDir.exists()){ 
+			if (baseDir.isDirectory()){
+				final Collection<File> result = new ArrayList<File>();
+				final File[] files = baseDir.listFiles(filter);
+				if (files != null){
+					for (final File file:files){
+						if (file.isDirectory()){
+							final Collection<File> c = getAllFiles(file, filter);
+							if (c != null) result.addAll(c);
+						}else{
+							result.add(file);
+						}
+					}
+				}
+				return result;
+			}else{
+				return Collections.singleton(baseDir);
+			}
+		}
+		return null;
 	}
 }
