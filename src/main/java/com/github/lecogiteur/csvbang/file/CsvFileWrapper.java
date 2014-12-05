@@ -30,7 +30,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 /**
  * A CSV file
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  *
  */
 public class CsvFileWrapper { 
@@ -45,7 +45,7 @@ public class CsvFileWrapper {
 	 * Csv File
 	 * @since 0.1.0
 	 */
-	private File file;
+	private final File file;
 	
 	/**
 	 * Name of file
@@ -53,16 +53,36 @@ public class CsvFileWrapper {
 	 */
 	private final String fileName;
 	
+	/**
+	 * Action on file
+	 * @since 1.0.0
+	 */
+	private final FileActionType action;
+	
 	
 	/**
 	 * Constructor
-	 * @param file the file
-	 * @since 0.1.0
+	 * @param fileName file name
+	 * @param action the action on file
+	 * @since 1.0.0
 	 */
-	public CsvFileWrapper(final String fileName) {
+	public CsvFileWrapper(final String fileName, final FileActionType action) {
 		super();
 		this.fileName = fileName;
 		this.file = new File(fileName);
+		this.action = action;
+	}
+	
+	/**
+	 * Constructor
+	 * @param file a file (not null)
+	 * @param action the action on file
+	 * @since 1.0.0
+	 */
+	public CsvFileWrapper(final File file, final FileActionType action){
+		this.file = file;
+		this.fileName = file.getName();
+		this.action = action;
 	}
 	
 	/**
@@ -104,5 +124,14 @@ public class CsvFileWrapper {
 	 */
 	public String getFileName() {
 		return fileName;
+	}
+
+	/**
+	 * Get the action on file
+	 * @return the action
+	 * @since 1.0.0
+	 */
+	public FileActionType getAction() {
+		return action;
 	}
 }

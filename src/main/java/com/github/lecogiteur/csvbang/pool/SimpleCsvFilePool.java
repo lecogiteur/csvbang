@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.pool;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -29,6 +30,7 @@ import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.file.CsvFileContext;
 import com.github.lecogiteur.csvbang.file.CsvFileWrapper;
+import com.github.lecogiteur.csvbang.file.FileActionType;
 import com.github.lecogiteur.csvbang.file.FileName;
 
 /**
@@ -58,10 +60,10 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	private volatile Object customFooter;
 	
 	/**
-	 * The file name generator
+	 * The file
 	 * @since 0.1.0
 	 */
-	private FileName filename;
+	private CsvFileWrapper fileWrapper;
 	
 	/**
 	 * The configuration
@@ -75,18 +77,35 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	 * @param filename The file name generator
 	 * @param customHeader The custom header
 	 * @param customFooter The custom footer
-	 * @since 0.1.0
+	 * @param action action on file
+	 * @since 1.0.0
 	 */
 	public SimpleCsvFilePool(final CsvBangConfiguration conf, final FileName filename, 
-			final Object customHeader, final Object customFooter) {
+			final Object customHeader, final Object customFooter, final FileActionType action) {
 		super();
-		final CsvFileWrapper w = new CsvFileWrapper(filename.getNewFileName(false));
-		this.file = new CsvFileContext(conf, w, customHeader, customFooter);
+		final CsvFileWrapper fileWrapper = new CsvFileWrapper(filename.getNewFileName(false), action);
+		this.file = new CsvFileContext(conf, fileWrapper, customHeader, customFooter);
 		this.customHeader = customHeader;
 		this.customFooter = customFooter;
-		this.filename = filename;
 		this.conf = conf;
 	}
+	
+	
+	/**
+	 * Constructor
+	 * @param conf configuration
+	 * @param file file of pool
+	 * @param action action on file
+	 * @since 1.0.0
+	 */
+	public SimpleCsvFilePool(final CsvBangConfiguration conf, final File file, final FileActionType action) {
+		super();
+		final CsvFileWrapper fileWrapper = new CsvFileWrapper(file, action);
+		this.file = new CsvFileContext(conf, fileWrapper, null, null);
+		this.conf = conf;
+	}
+	
+	
 
 	/**
 	 * {@inheritDoc}
@@ -118,8 +137,7 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	@Override
 	public void setCustomHeader(Object customHeader) throws CsvBangException {
 		this.customHeader = customHeader;
-		final CsvFileWrapper w = new CsvFileWrapper(filename.getNewFileName(false));
-		this.file = new CsvFileContext(conf, w, customHeader, customFooter);
+		this.file = new CsvFileContext(conf, fileWrapper, customHeader, customFooter);
 	}
 
 	/**
@@ -130,7 +148,6 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	@Override
 	public void setCustomFooter(Object customFooter) throws CsvBangException {
 		this.customFooter = customFooter;
-		final CsvFileWrapper w = new CsvFileWrapper(filename.getNewFileName(false));
-		this.file = new CsvFileContext(conf, w, customHeader, customFooter);
+		this.file = new CsvFileContext(conf, fileWrapper, customHeader, customFooter);
 	}
 }
