@@ -23,6 +23,7 @@
 package com.github.lecogiteur.csvbang.test.file;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -194,6 +195,59 @@ public class FileNameTest {
 		}
 		
 		Assert.assertEquals(0, l.size());
+	}
+	
+	@Test
+	public void filenameFilterTest() throws CsvBangException{
+		//simple
+		FileName file = new FileName("file1.csv", null);
+		FilenameFilter filter = file.generateFilter();
+		Assert.assertFalse(filter.accept(new File("/tmp/"), ""));
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file2.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "file1.csv"));
+
+		//number
+		file = new FileName("file%n.csv", null);
+		filter = file.generateFilter();
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file3a3frk.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "file2.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "file1.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "file13.csv"));
+		
+		//Date
+		file = new FileName("file_%d.csv", "dd-MM-yyyy");
+		filter = file.generateFilter();
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file3a3frk.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "file_22-12-2014.csv"));
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file_22-20-2014.csv"));
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file_22_12_2014.csv"));
+		
+		//joker
+		file = new FileName("*le1.csv", "dd-MM-yyyy");
+		filter = file.generateFilter();
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file1vcsv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "file1.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "tititile1.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/"), "le1.csv"));
+		
+		//directory
+		file = new FileName("tux/*/mydir_%d/file-%n.csv", "yyyyMMdd");
+		filter = file.generateFilter();
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file-1.csv"));
+		Assert.assertFalse(filter.accept(new File("/tmp/tux"), "file-1.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/tux/test/mydir_20141221/"), "file-123.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/tux/mydir_20141221"), "file-9.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/tux/test1/test2_test3/mydir_20141221"), "file-67.csv"));
+		
+		//directory 2
+		file = new FileName("tux*/mydir_%d/file-%n.csv", "yyyyMMdd");
+		filter = file.generateFilter();
+		Assert.assertFalse(filter.accept(new File("/tmp/"), "file-1.csv"));
+		Assert.assertFalse(filter.accept(new File("/tmp/tux"), "file-1.csv"));
+		Assert.assertFalse(filter.accept(new File("/tmp/tux/test/mydir_20141221/"), "file-123.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/tux/mydir_20141221"), "file-9.csv"));
+		Assert.assertTrue(filter.accept(new File("/tmp/tuxy/mydir_20141221"), "file-9.csv"));
+		Assert.assertFalse(filter.accept(new File("/tmp/tux/test1/test2_test3/mydir_20141221"), "file-67.csv"));
 	}
 	
 	private class RunFileName implements Runnable{

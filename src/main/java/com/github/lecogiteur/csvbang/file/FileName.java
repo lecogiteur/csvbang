@@ -23,6 +23,8 @@
 package com.github.lecogiteur.csvbang.file;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.util.CsvBangDateFormat;
@@ -42,7 +46,7 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
 /**
  * Manage filename
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  * @since 0.1.0
  */
 public class FileName implements Cloneable{
@@ -71,7 +75,13 @@ public class FileName implements Cloneable{
 		 * Date pattern
 		 * @since 0.1.0
 		 */
-		DATE
+		DATE,
+		
+		/**
+		 * Multiple characters (only use for reading files. In case of writing it replace jocker by a blank character)
+		 * @since 1.0.0
+		 */
+		JOKER
 	}
 	
 	
@@ -112,33 +122,41 @@ public class FileName implements Cloneable{
 	 */
 	private String basedir;
 	
+	/**
+	 * Pattern of file name
+	 * @since 1.0.0
+	 */
+	private Pattern filenamePattern; 
 	
 	
 	/**
-	 * <p>Manage file name. Can insert the file number or date.</p>
+	 * <p>Manage file name. Can insert the file number or date. You define an absolute path, relative path or just file name</p>
 	 * <p>
 	 * List of pattern
 	 * <ul>
 	 * 	<li>%n : the number file</li>
 	 * 	<li>%d : date format</li>
+	 * 	<li>* :  Zero or multiple characters (only use for reading files. In case of writing it replaces this joker by an empty string)</li>
 	 * </ul>
 	 * </p>
 	 * @param filename pattern of file name
 	 * @param datePattern date pattern (required if you want the date in file name). Use a {@link SimpleDateFormat}
 	 * @throws CsvBangException if no date pattern is defined or if no File name
 	 * @see SimpleDateFormat
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public FileName(final String filename, final String datePattern) throws CsvBangException{
 		final List<Integer> order = new ArrayList<Integer>();
 		pattern = new StringBuilder();
+		final StringBuilder filenamePatternS = new StringBuilder();
 		formatByOffset = new HashMap<Integer, FileName.TYPE_FORMAT>();
 		boolean containsDate = false;
 		
 		if (CsvbangUti.isStringNotBlank(filename)){
 			//retrieve all pattern
 			final int length = filename.length();
-			boolean b = false;
+			boolean b = false; //is %
+			boolean noSlashPattern = false;
 			for (int i=0; i<length; i++){
 				char c = filename.charAt(i);
 				if (c == '%'){
@@ -151,19 +169,32 @@ public class FileName implements Cloneable{
 					case 'n':
 						formatByOffset.put(pattern.length(), TYPE_FORMAT.NUMBER);
 						order.add(pattern.length());
-						break;
+						filenamePatternS.append("([0-9]+)");
+						continue;
 					case 'd':
 						formatByOffset.put(pattern.length(), TYPE_FORMAT.DATE);
 						order.add(pattern.length());
 						containsDate = true;
-						break;
-					default:
-						pattern.append("%").append(c);
+						filenamePatternS.append("(.+?)");
 						continue;
+					default:
+						pattern.append("%");
+						filenamePatternS.append("\\Q").append("%").append("\\E");
 					}
+				}
+				if (c == '*'){
+					formatByOffset.put(pattern.length(), TYPE_FORMAT.JOKER);
+					order.add(pattern.length());
+					noSlashPattern = filenamePatternS.length()>1?filenamePatternS.charAt(filenamePatternS.length() - 1) == File.separatorChar:false;
+					filenamePatternS.append("(.*?)");
 					continue;
 				}
 				pattern.append(c);
+				if (noSlashPattern && c == File.separatorChar){
+					noSlashPattern = false;
+				}else{
+					filenamePatternS.append("\\Q").append(c).append("\\E");
+				}
 			}
 		}else{
 			throw new CsvBangException("No file name is defined.");
@@ -183,6 +214,9 @@ public class FileName implements Cloneable{
 			}
 			dateFormat = null;
 		}
+		
+		//compile the file pattern
+		filenamePattern = Pattern.compile(filenamePatternS.toString());
 	}
 	
 	/**
@@ -351,6 +385,91 @@ public class FileName implements Cloneable{
 		return true;
 	}
 	
+	/**
+	 * Generate a filter for file name.
+	 * @return the filter
+	 * @since 1.0.0
+	 */
+	public FilenameFilter generateFilter(){
+		return new InternalFilenameFilter(filenamePattern, dateFormat, offsetOrdered);
+	}
 	
 	
+	private class InternalFilenameFilter implements FilenameFilter {
+
+		/**
+		 * Pattern of filename
+		 * @since 1.0.0
+		 */
+		private Pattern pattern;
+		
+		/**
+		 * Format of date
+		 * @since 1.0.0
+		 */
+		private CsvBangDateFormat format;
+		
+		/** 
+		 * list of offset where string (number, date, ...) are insert. (revert sort)
+		 * @since 1.0.0
+		 */
+		private int[] offsetOrdered;
+		
+		
+		
+		/**
+		 * Constructor
+		 * @param pattern pattern of file name
+		 * @param format format of date
+		 * @param offsetOrdered list of offset where string (number, date, ...) are insert. (revert sort)
+		 * @since 1.0.0
+		 */
+		public InternalFilenameFilter(final Pattern pattern,
+				final CsvBangDateFormat format, final int[] offsetOrdered) {
+			super();
+			this.pattern = pattern;
+			this.format = format;
+			this.offsetOrdered = offsetOrdered;
+		}
+
+
+
+		/**
+		 * {@inheritDoc}
+		 * @see java.io.FilenameFilter#accept(java.io.File, java.lang.String)
+		 * @since 1.0.0
+		 */
+		@Override
+		public boolean accept(File dir, String name) {
+			final File file = new File(dir, name);
+			final String path = file.getAbsolutePath();
+
+			final Matcher m = pattern.matcher(path);
+			int count = m.groupCount();
+			if (m.find()){
+				if (count != offsetOrdered.length){
+					return false;
+				}
+				for (final int offset:offsetOrdered){
+					final TYPE_FORMAT type = formatByOffset.get(offset);
+					switch(type){
+					case DATE:
+						try {
+							final SimpleDateFormat f = format.get();
+							final String group = m.group(count--);
+							f.setLenient(false);
+							f.parse(group);
+						} catch (ParseException e) {
+							return false;
+						}
+						default:
+							continue;
+					}
+				}
+				return true;
+			}
+			
+			return false;
+		}
+	}
 }
