@@ -23,9 +23,12 @@
 package com.github.lecogiteur.csvbang.factory;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.file.FileActionType;
 import com.github.lecogiteur.csvbang.file.FileName;
 import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.pool.MultiCsvFilePool;
@@ -37,7 +40,7 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
  * File pool factory. A file pool is used in order to delivery a CSV file 
  * to CsvBang for processing the writing and reading
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  * @since 0.1.0
  */
 public class CsvFilePoolFactory {
@@ -53,7 +56,7 @@ public class CsvFilePoolFactory {
 	 * @throws CsvBangException if a problem occurred during creation of pool
 	 * @since 0.1.0
 	 */
-	public static final CsvFilePool createPool(final CsvBangConfiguration conf, final File file, 
+	public static final CsvFilePool createPoolForWriting(final CsvBangConfiguration conf, final File file, 
 			final Object customHeader, final Object customFooter) throws CsvBangException{
 		FileName filename = null;
 		if (file != null){
@@ -71,12 +74,12 @@ public class CsvFilePoolFactory {
 		
 		if (conf.maxFileSize < 0 && conf.maxRecordByFile < 0){
 			//create a simple pool
-			return new SimpleCsvFilePool(conf, filename, customHeader, customFooter);
-		}else if (conf.isFileByFile || conf.maxFile <= 1){
-			return new OneByOneCsvFilePool(conf, filename, customHeader, customFooter);
+			return new SimpleCsvFilePool(conf, filename, customHeader, customFooter, FileActionType.WRITE_ONLY);
+		}else if (conf.isWriteFileByFile || conf.maxFile <= 1){
+			return new OneByOneCsvFilePool(conf, filename, customHeader, customFooter, FileActionType.WRITE_ONLY);
 		}
 			
-		return new MultiCsvFilePool(conf, filename, customHeader, customFooter);
+		return new MultiCsvFilePool(conf, filename, customHeader, customFooter, FileActionType.WRITE_ONLY);
 	}
 	
 	/**
@@ -89,12 +92,50 @@ public class CsvFilePoolFactory {
 	 * @throws CsvBangException if a problem occurred during creation of pool
 	 * @since 0.1.0
 	 */
-	public static final CsvFilePool createPool(final CsvBangConfiguration conf, final String file, 
+	public static final CsvFilePool createPoolForWriting(final CsvBangConfiguration conf, final String file, 
 			final Object customHeader, final Object customFooter) throws CsvBangException{
 		if (CsvbangUti.isStringNotBlank(file)){
-			return createPool(conf, new File(file), customHeader, customFooter);
+			return createPoolForWriting(conf, new File(file), customHeader, customFooter);
 		}
-		return createPool(conf, (File)null, customHeader, customFooter);
+		return createPoolForWriting(conf, (File)null, customHeader, customFooter);
+	}
+	
+	
+	/**
+	 * Create a pool of file in order to read CSV file
+	 * @param conf CsvBang configuration of CSV bean
+	 * @param paths list of directories and file to read
+	 * @return a pool of CSV file
+	 * @since 1.0.0
+	 */
+	public static final CsvFilePool createPoolJForReading(final CsvBangConfiguration conf, final Collection<File> paths){
+		if (paths != null){
+			Collection<File> files = new HashSet<File>();
+			for(final File path:paths){
+				if (path.exists()){
+					if(path.isDirectory()){
+						final Collection<File> c = CsvbangUti.getAllFiles(path, conf.fileName.generateFilter()); 
+						if (CsvbangUti.isCollectionNotEmpty(c)){
+							files.addAll(c);
+						}
+					}else{
+						files.add(path);
+					}
+				}
+
+				if (CsvbangUti.isCollectionNotEmpty(files)){
+					if (files.size() == 1){
+						//create a simple pool
+						return new SimpleCsvFilePool(conf, files.iterator().next(), FileActionType.READ_ONLY);
+					}else if (conf.isReadFileByFile){
+						return new OneByOneCsvFilePool(conf, files, FileActionType.READ_ONLY);
+					}
+
+					return new MultiCsvFilePool(conf, files, FileActionType.READ_ONLY);
+				}
+			}
+		}
+		return null;
 	}
 
 }

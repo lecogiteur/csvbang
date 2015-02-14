@@ -72,7 +72,7 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	private CsvBangConfiguration conf;
 
 	/**
-	 * Constructor
+	 * Constructor (use for writing)
 	 * @param conf the configuration
 	 * @param filename The file name generator
 	 * @param customHeader The custom header
@@ -92,7 +92,7 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	
 	
 	/**
-	 * Constructor
+	 * Constructor (use for reading)
 	 * @param conf configuration
 	 * @param file file of pool
 	 * @param action action on file

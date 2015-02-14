@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.pool;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,7 +32,9 @@ import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.file.CsvFileContext;
 import com.github.lecogiteur.csvbang.file.CsvFileWrapper;
+import com.github.lecogiteur.csvbang.file.FileActionType;
 import com.github.lecogiteur.csvbang.file.FileName;
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 /**
  * Pool which manages many file
@@ -89,21 +92,73 @@ public class MultiCsvFilePool implements CsvFilePool {
 	 */
 	private final ConcurrentLinkedQueue<CsvFileContext> allFiles = new ConcurrentLinkedQueue<CsvFileContext>();
 	
+	/**
+	 * Action on each file of pool
+	 * @since 1.0.0
+	 * @see com.github.lecogiteur.csvbang.file.FileActionType
+	 */
+	private final FileActionType action;
+	
+	/**
+	 * Maximum of record by file
+	 * @since 1.0.0
+	 */
+	private final long maxRecords;
+	
+	/**
+	 * Maximum of file in pool
+	 * @since 1.0.0
+	 */
+	private final long maxFiles;
+	
 
 	/**
-	 * Constructor
+	 * Constructor (for writing)
 	 * @param conf the configuration
 	 * @param fileName the file name generator
 	 * @param customHeader the custom header for each file
 	 * @param customFooter the custom footer for each file
+	 * @param action Action on each file of pool
 	 * @since 0.1.0
 	 */
 	public MultiCsvFilePool(final CsvBangConfiguration conf, final FileName fileName, 
-			final Object customHeader, final Object customFooter){
+			final Object customHeader, final Object customFooter, final FileActionType action){
 		this.customFooter = customFooter;
 		this.customHeader = customHeader;
 		this.conf = conf;
 		this.fileName = fileName;
+		this.action = action;
+		this.maxRecords = conf.maxRecordByFile;
+		this.maxFiles = conf.maxFile;
+	}
+	
+
+	/**
+	 * Constructor (for reading)
+	 * @param conf the configuration
+	 * @param filesToUse List of file to read
+	 * @param customHeader the custom header for each file
+	 * @param customFooter the custom footer for each file
+	 * @param action Action on each file of pool
+	 * @since 1.0.0
+	 */
+	public MultiCsvFilePool(final CsvBangConfiguration conf, final Collection<File> filesToUse,
+			final FileActionType action){
+		this.customFooter = null;
+		this.customHeader = null;
+		this.conf = conf;
+		this.action = action;
+		this.maxRecords = -1;
+		this.fileName = null;
+		this.maxFiles = filesToUse.size();
+		this.nbFiles.set(this.maxFiles);
+		if (CsvbangUti.isCollectionNotEmpty(filesToUse)){
+			for (final File file:filesToUse){
+				final WrapperCsvFileContext wrapper = generateNewFile(file);
+				files.add(wrapper);
+				allFiles.add(wrapper.file);
+			}
+		}
 	}
 
 	/**
@@ -134,11 +189,11 @@ public class MultiCsvFilePool implements CsvFilePool {
 			    //if no file in pool we verify if we can create a new file
 				final long index = nbFiles.getAndIncrement();
 				
-				if (index < conf.maxFile){
+				if (index < maxFiles){
 					//new file
 					file = generateNewFile();					
 					allFiles.add(file.file);
-				}else if (nbFilesFull.get() >= conf.maxFile){
+				}else if (nbFilesFull.get() >= maxFiles){
 					//all files are full.
 					throw new CsvBangException(String.format("No file available in pool for update. The maximum number files [%s] has been already created and are full.", conf.maxFile));
 				}else{
@@ -172,8 +227,8 @@ public class MultiCsvFilePool implements CsvFilePool {
 	 * @since 0.1.0
 	 */
 	private boolean isAllowedToModification(final WrapperCsvFileContext file, int nbRecord, int nbByte){
-		return (conf.maxRecordByFile < 0 || conf.maxRecordByFile >= file.nbRecord + nbRecord) 
-		&& (conf.maxFileSize < 0 || conf.maxFileSize >= file.nbByte + nbByte);
+		return (maxRecords < 0 || maxRecords >= file.nbRecord + nbRecord) 
+		&& (file.maxByte < 0 || file.maxByte >= file.nbByte + nbByte || (FileActionType.READ_ONLY.equals(action) && file.maxByte > file.nbByte));
 	}
 	
 
@@ -184,9 +239,24 @@ public class MultiCsvFilePool implements CsvFilePool {
 	 * @since 0.1.0
 	 */
 	private WrapperCsvFileContext generateNewFile(){
-		final CsvFileWrapper file = new CsvFileWrapper(fileName.getNewFileName(false));
+		final CsvFileWrapper file = new CsvFileWrapper(fileName.getNewFileName(false), action);
 		final WrapperCsvFileContext w = new WrapperCsvFileContext();
 		w.file = new CsvFileContext(conf, file, customHeader, customFooter);
+		w.maxByte = conf.maxFileSize;
+		return w;
+	}
+	
+	/**
+	 * Generate a new file
+	 * @param f a file
+	 * @return a new file
+	 * @since 1.0.0
+	 */
+	private WrapperCsvFileContext generateNewFile(final File f){
+		final CsvFileWrapper file = new CsvFileWrapper(f, action);
+		final WrapperCsvFileContext w = new WrapperCsvFileContext();
+		w.file = new CsvFileContext(conf, file, customHeader, customFooter);
+		w.maxByte = f.length();
 		return w;
 	}
 

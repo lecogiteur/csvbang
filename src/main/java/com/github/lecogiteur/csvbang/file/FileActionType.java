@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.pool.WappredCsvFileContext
+ *  com.github.lecogiteur.csvbang.file.FileActionType
  * 
  *  Copyright (C) 2013-2014  Tony EMMA
  *
@@ -20,40 +20,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Csvbang. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.lecogiteur.csvbang.pool;
-
-import com.github.lecogiteur.csvbang.file.CsvFileContext;
-import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
+package com.github.lecogiteur.csvbang.file;
 
 /**
- * Wrapper of file used in implementation of some pool
+ * Enumeratin of action on file
  * @author Tony EMMA
- * @version 0.1.0
- * @since 0.1.0
+ * @version 1.0.0
+ * @since 1.0.0
  */
-public class WrapperCsvFileContext {
-	
+public enum FileActionType {
+
 	/**
-	 * The file context
-	 * @since 0.1.0
-	 */
-	CsvFileContext file;
-	
-	/**
-	 * Number of records in file
-	 * @since 0.1.0
-	 */
-	long nbRecord = 0;
-	
-	/**
-	 * Size of file
-	 * @since 0.1.0
-	 */
-	long nbByte = 0;
-	
-	/**
-	 * Maximum of byte
+	 * Read only CSV files
 	 * @since 1.0.0
 	 */
-	long maxByte = IConstantsCsvBang.DEFAULT_FILE_MAX_SIZE;
+	READ_ONLY,
+	
+	/**
+	 * Write only CSV files
+	 * @since 1.0.0
+	 */
+	WRITE_ONLY;
 }
