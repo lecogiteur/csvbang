@@ -107,7 +107,7 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 	private final long maxFiles;
 	
 	/**
-	 * Constructor (for writing)
+	 * Constructor (for writing). With this constructor, the pool generates new file from the given pattern (see fileName parameter).
 	 * @param conf the configuration
 	 * @param fileName the file name
 	 * @param customHeader the custom header
@@ -129,7 +129,7 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 	
 
 	/**
-	 * Constructor (for reading)
+	 * Constructor (for reading). With this constructor, the pool doesn't generate new file. It uses a given list of file (see filesToUse parameter).
 	 * @param conf the configuration
 	 * @param filesToUse list of files to use for pool
 	 * @param action action on each file

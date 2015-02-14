@@ -72,7 +72,7 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	private CsvBangConfiguration conf;
 
 	/**
-	 * Constructor (use for writing)
+	 * Constructor (use for writing). With this constructor, the pool generates new file from the given pattern (see fileName parameter).
 	 * @param conf the configuration
 	 * @param filename The file name generator
 	 * @param customHeader The custom header
@@ -92,7 +92,7 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	
 	
 	/**
-	 * Constructor (use for reading)
+	 * Constructor (use for reading). With this constructor, the pool doesn't generate new file. It uses a given list of file (see filesToUse parameter).
 	 * @param conf configuration
 	 * @param file file of pool
 	 * @param action action on file

@@ -113,7 +113,7 @@ public class MultiCsvFilePool implements CsvFilePool {
 	
 
 	/**
-	 * Constructor (for writing)
+	 * Constructor (for writing). With this constructor, the pool generates new file from the given pattern (see fileName parameter).
 	 * @param conf the configuration
 	 * @param fileName the file name generator
 	 * @param customHeader the custom header for each file
@@ -134,7 +134,7 @@ public class MultiCsvFilePool implements CsvFilePool {
 	
 
 	/**
-	 * Constructor (for reading)
+	 * Constructor (for reading). With this constructor, the pool doesn't generate new file. It uses a given list of file (see filesToUse parameter).
 	 * @param conf the configuration
 	 * @param filesToUse List of file to read
 	 * @param customHeader the custom header for each file
