@@ -40,7 +40,7 @@ import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 /**
  * General configuration for one CSV file.
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  *
  */
 public class CsvBangConfiguration {
@@ -206,13 +206,23 @@ public class CsvBangConfiguration {
 	 */
 	public FileName fileName;
 	
+	//TODO créer les annotations pour isWriteFileByFile et isReadFileByFile
+	
 	/**
-	 * If CsvBang must process file one by one or multiple file. This option is active only if a max number of files in pool is defined.
+	 * If CsvBang must write file one by one or multiple file. This option is active only if a max number of files in pool is defined.
 	 * By default, it's value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}.
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#maxFile
 	 */
-	public boolean isFileByFile = IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
+	public boolean isWriteFileByFile = IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
+	
+	/**
+	 * If CsvBang must read file one by one or multiple file. This option is active only if we must read multiple CSV file.
+	 * By default, it's value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}.
+	 * @since 1.0.0
+	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#maxFile
+	 */
+	public boolean isReadFileByFile = IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
 	
 	/**
 	 * The pattern of date to use in file name. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_FILE_NAME_DATE_PATTERN}
@@ -226,6 +236,13 @@ public class CsvBangConfiguration {
 	 * @since 0.1.0
 	 */
 	public EndLineType defaultEndLineCharacter = IConstantsCsvBang.DEFAULT_END_LINE;
+	
+	/**
+	 * True if you search CSV files in sub directory in order to read them.
+	 * By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_READING_SUB_FOLDER}
+	 * @since 1.0.0
+	 */
+	public boolean isReadingSubFolder = IConstantsCsvBang.DEFAULT_READING_SUB_FOLDER;
 	
 	/**
 	 * Initialize the configuration
@@ -289,4 +306,6 @@ public class CsvBangConfiguration {
 			header = null;
 		}
 	}
+	
+	
 }

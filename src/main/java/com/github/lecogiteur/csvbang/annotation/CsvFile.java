@@ -138,5 +138,12 @@ public @interface CsvFile {
 	 * @since 0.1.0
 	 */
 	boolean fileByFile() default IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
+	
+	/**
+	 * True if you want that reader search all CSV files in sub-directories. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}
+	 * @return True if you want that reader search all CSV files in sub-directories.
+	 * @since 1.0.0
+	 */
+	boolean readSubFolders() default IConstantsCsvBang.DEFAULT_READING_SUB_FOLDER;
 
 }

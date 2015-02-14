@@ -32,7 +32,8 @@ import java.util.Collections;
  * 
  * General Utility class
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 1.0.0
+ * @since 0.0.1
  *
  */
 public class CsvbangUti {

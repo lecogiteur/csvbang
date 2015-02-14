@@ -157,16 +157,16 @@ public class FactoryCsvWriter {
 		}
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPool(conf, (File)null, null, null), conf, executorWriterService);
+				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf, executorWriterService);
 			}
-			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPool(conf, (File)null, null, null), conf);
+			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf);
 		}
 		
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPool(conf, (File)null, null, null), conf, executorWriterService);
+			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf, executorWriterService);
 		}
 
-		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPool(conf, (File)null, null, null), conf);
+		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf);
 	}
 	
 	/**
@@ -191,16 +191,16 @@ public class FactoryCsvWriter {
 		}
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf, executorWriterService);
+				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
 			}
-			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf);
+			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 		}
 		
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf, executorWriterService);
+			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
 		}
 
-		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf);
+		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 	}
 
 	/**
@@ -226,16 +226,16 @@ public class FactoryCsvWriter {
 
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf, executorWriterService);
+				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
 			}
-			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf);
+			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 		}
 		
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf, executorWriterService);
+			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
 		}
 
-		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPool(conf, destination, null, null), conf);
+		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 	}
 
 	/**

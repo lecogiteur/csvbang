@@ -27,7 +27,7 @@ import java.nio.charset.Charset;
 /**
  * Constants
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  *
  */
 public interface IConstantsCsvBang {
@@ -209,4 +209,12 @@ public interface IConstantsCsvBang {
 	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#maxFile
 	 */
 	public static final boolean DEFAULT_PROCESS_FILE_BY_FILE = true;
+	
+	/**
+	 * If CsvBang must reading CSV of subdirectory of base directory. The base directory is defined in CsvFactoryReader
+	 * By default, it's value is {@value}.
+	 * @since 1.0.0
+	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#isReadingSubFolder
+	 */
+	public static final boolean DEFAULT_READING_SUB_FOLDER = false;
 }

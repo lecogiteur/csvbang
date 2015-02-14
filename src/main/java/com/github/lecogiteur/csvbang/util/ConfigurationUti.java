@@ -65,7 +65,8 @@ import com.github.lecogiteur.csvbang.formatter.NumberCsvFormatter;
 /**
  * Utility class in order to load and parse configuration of a CSV bean
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
+ * @since 0.0.1
  *
  */
 public class ConfigurationUti {
@@ -356,8 +357,8 @@ public class ConfigurationUti {
 				conf.maxFile = csvFile.maxFileNumber();
 				conf.maxFileSize = csvFile.maxFileSize();
 				conf.maxRecordByFile = csvFile.maxRecordByFile();
-				conf.isFileByFile = csvFile.fileByFile();
-				
+				conf.isWriteFileByFile = csvFile.fileByFile();
+				conf.isReadingSubFolder = csvFile.readSubFolders();
 			}
 			
 			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields);
