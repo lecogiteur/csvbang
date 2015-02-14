@@ -35,7 +35,7 @@ import com.github.lecogiteur.csvbang.file.CsvFileContext;
 import com.github.lecogiteur.csvbang.file.CsvFileWrapper;
 import com.github.lecogiteur.csvbang.file.FileActionType;
 import com.github.lecogiteur.csvbang.file.FileName;
-
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
 /**
  * Implementation of pool. Manage file by file
  * @author Tony EMMA
@@ -92,7 +92,7 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 	 * List of files to use for pool. This list initialize the pool file with a specific list of files.
 	 * @since 1.0.0
 	 */
-	private final ConcurrentLinkedQueue<File> filesToUse;
+	private final ConcurrentLinkedQueue<WrapperCsvFileContext> filesToUse;
 	
 	/**
 	 * Maximum of record by file
@@ -141,9 +141,19 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 		this.conf = conf;
 		this.fileName = null;
 		this.action = action;
-		this.filesToUse = new ConcurrentLinkedQueue<File>(filesToUse);
+		this.filesToUse = new ConcurrentLinkedQueue<WrapperCsvFileContext>();
 		this.maxFiles = filesToUse.size();
 		this.maxRecords = -1;
+		if (CsvbangUti.isCollectionNotEmpty(filesToUse)){
+			for(final File file:filesToUse){
+				final CsvFileContext f = generateNewFile(file);
+				list.add(f);
+				final WrapperCsvFileContext w = new WrapperCsvFileContext();
+				w.file = f;
+				w.maxByte = file.length();
+				this.filesToUse.add(w);
+			}
+		}
 	}
 
 	/**
@@ -175,18 +185,18 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 				continue;
 			}else if (filesToUse != null && filesToUse.size() > 0){
 				//use the initialization list in order to give a new file
-				final File file = filesToUse.peek();
-				if (file != null){
+				newData = filesToUse.poll();
+				if (newData != null){
 					newData.nbByte = nbByte;
 					newData.nbRecord = nbRecord;
-					newData.file = generateNewFile(file);
-					newData.maxByte = file.length();
 					if (reference.compareAndSet(data, newData)){
-						filesToUse.poll(); 
 						list.add(newData.file);
 						return newData.file;
+					}else{
+						filesToUse.add(newData);
 					}
 				}
+				//hoops, not lucky another thread already creates new file, we must retry
 				continue;
 			}else if ((maxFiles < 0 || list.size() < maxFiles) && isAllowedToModification(null, null, nbRecord, nbByte)){
 				//can't modify this file. This file is full. We generate a new file
