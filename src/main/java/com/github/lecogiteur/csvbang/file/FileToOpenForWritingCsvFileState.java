@@ -44,19 +44,19 @@ public class FileToOpenForWritingCsvFileState implements CsvFileState {
 	 * The configuration
 	 * @since 0.1.0
 	 */
-	private CsvBangConfiguration conf;
+	private final CsvBangConfiguration conf;
 	
 	/**
 	 * The CSV file
 	 * @since 0.1.0
 	 */
-	private CsvFileWrapper csvFile;
+	private final CsvFileWrapper csvFile;
 	
 	/**
 	 * The file context
 	 * @since 0.1.0
 	 */
-	private CsvFileContext context;
+	private final CsvFileContext context;
 	
 	/**
 	 * True if the file is opened

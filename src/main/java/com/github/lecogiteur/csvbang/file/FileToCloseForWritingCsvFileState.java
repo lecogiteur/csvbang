@@ -42,13 +42,13 @@ public class FileToCloseForWritingCsvFileState implements CsvFileState {
 	 * The CSV file
 	 * @since 0.1.0
 	 */
-	private CsvFileWrapper csvFile;
+	private final CsvFileWrapper csvFile;
 	
 	/**
 	 * The configuration
 	 * @since 0.1.0
 	 */
-	private CsvBangConfiguration conf;
+	private final CsvBangConfiguration conf;
 	
 	/**
 	 * True if the file is closed

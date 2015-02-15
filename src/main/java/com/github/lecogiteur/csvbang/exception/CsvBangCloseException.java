@@ -55,6 +55,16 @@ public class CsvBangCloseException extends ClosedChannelException {
 	public CsvBangCloseException(String message){
 		initCause(new CsvBangIOException(message));
 	}
+	
+	/**
+	 * Constructor
+	 * @param message message of exception
+	 * @param cause cause of exception
+	 * @since 1.0.0
+	 */
+	public CsvBangCloseException(String message, Exception cause){
+		initCause(new CsvBangIOException(message, cause));
+	}
 
 	
 }

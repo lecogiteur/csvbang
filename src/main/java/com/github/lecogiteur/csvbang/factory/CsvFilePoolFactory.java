@@ -44,7 +44,7 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
  * @since 0.1.0
  */
 public class CsvFilePoolFactory {
-	
+	//TODO verifier si les customHeader et footer sont réellement nécessaire, il semble qu'il soient toujours initialisé à null.
 	
 	/**
 	 * Create a pool of file for a CSV bean
@@ -104,17 +104,18 @@ public class CsvFilePoolFactory {
 	/**
 	 * Create a pool of file in order to read CSV file
 	 * @param conf CsvBang configuration of CSV bean
-	 * @param paths list of directories and file to read
+	 * @param paths list of directories and file to read. No warranty on order when we processed files
+	 * @param fileNameFilter the file name to use in order to retrieve file to read. Can be null. If null, we use the {@link com.github.lecogiteur.csvbang.annotation.CsvFile#fileName()} definition. 
 	 * @return a pool of CSV file
 	 * @since 1.0.0
 	 */
-	public static final CsvFilePool createPoolJForReading(final CsvBangConfiguration conf, final Collection<File> paths){
+	public static final CsvFilePool createPoolForReading(final CsvBangConfiguration conf, final Collection<File> paths, final FileName fileNameFilter){
 		if (paths != null){
 			Collection<File> files = new HashSet<File>();
 			for(final File path:paths){
 				if (path.exists()){
 					if(path.isDirectory()){
-						final Collection<File> c = CsvbangUti.getAllFiles(path, conf.fileName.generateFilter()); 
+						final Collection<File> c = CsvbangUti.getAllFiles(path, fileNameFilter == null?conf.fileName.generateFilter():fileNameFilter.generateFilter()); 
 						if (CsvbangUti.isCollectionNotEmpty(c)){
 							files.addAll(c);
 						}

@@ -43,37 +43,37 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 * The CSV file
 	 * @since 0.1.0
 	 */
-	private CsvFileWrapper csvFile;
+	private final CsvFileWrapper csvFile;
 	
 	/**
 	 * The instance of channel. Because the getter of channel is synchronized
 	 * @since 0.1.0
 	 */
-	private FileChannel channel;
+	private final FileChannel channel;
 	
 	/**
 	 * CSV configuration
 	 * @since 0.1.0
 	 */
-	private CsvBangConfiguration conf;
+	private final CsvBangConfiguration conf;
 	
 	/**
 	 * The file context
 	 * @since 0.1.0
 	 */
-	private CsvFileContext context;
+	private final CsvFileContext context;
 	
 	/**
 	 * Isn't file closed
 	 * @since 0.1.0
 	 */
-	private boolean isNotClosed = true;
+	private volatile boolean isNotClosed = true;
 	
 	/**
 	 * Number of thread writing in file
 	 * @since 0.1.0
 	 */
-	private AtomicInteger workers = new AtomicInteger(0);
+	private final AtomicInteger workers = new AtomicInteger(0);
 	
 	
 	/**
@@ -108,7 +108,10 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 * @since 0.1.0
 	 */
 	@Override
-	public void write(final Object customHeader, final String content) throws CsvBangException {
+	public void write(final Object customHeader, final String content) throws CsvBangException, CsvBangCloseException {
+		if (!isNotClosed){
+			throw new CsvBangCloseException(String.format("The file [%s] is being closed. We can't write file because it is closed.", csvFile.getFile().getAbsolutePath()));
+		}
 		workers.incrementAndGet();
 		if (content.length() > 0){
 			byte[] bTab = null;

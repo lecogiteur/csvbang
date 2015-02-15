@@ -217,4 +217,11 @@ public interface IConstantsCsvBang {
 	 * @see com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration#isReadingSubFolder
 	 */
 	public static final boolean DEFAULT_READING_SUB_FOLDER = false;
+	
+	
+	/**
+	 * Size of byte array used in order to read (8ko). 
+	 * @since 1.0.0
+	 */
+	public static final int DEFAULT_BYTE_BLOCK_SIZE = 8192;
 }

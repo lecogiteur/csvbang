@@ -23,6 +23,7 @@
 package com.github.lecogiteur.csvbang.file;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
@@ -40,6 +41,12 @@ public class CsvFileWrapper {
 	 * @since 0.1.0
 	 */
 	private FileOutputStream out;
+	
+	/**
+	 * File Reader
+	 * @since 0.1.0
+	 */
+	private FileInputStream in;
 	
 	/**
 	 * Csv File
@@ -106,6 +113,28 @@ public class CsvFileWrapper {
 	public FileOutputStream getOutPutStream(){	
 		return out;
 	}
+	
+	/**
+	 * Set the input stream of file
+	 * @param out the input stream
+	 * @throws CsvBangException if the file is null or if we can't modify it
+	 * @since 0.1.0
+	 */
+	public void setInputStream(final FileInputStream in) throws CsvBangException{
+		this.in = in;
+	}
+
+
+	/**
+	 * get the input stream
+	 * @param conf Configuration of CSV bean
+	 * @return the input stream
+	 * @exception CsvBangException if the file is null or if we can't modify it
+	 * @since 0.1.0
+	 */
+	public FileInputStream getInputStream(){	
+		return in;
+	}
 
 
 	/**
@@ -134,4 +163,6 @@ public class CsvFileWrapper {
 	public FileActionType getAction() {
 		return action;
 	}
+	
+	
 }

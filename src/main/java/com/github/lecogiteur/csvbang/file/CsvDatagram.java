@@ -34,25 +34,33 @@ public class CsvDatagram {
 	 * Offset of datagram in CSV file
 	 * @since 1.0.0
 	 */
-	private long offset = 0;
+	private final long offset;
 	
 	/**
-	 * The datagram belongs to a CSV file. It is its identifiant.
+	 * The datagram belongs to a CSV file. It is its ID.
 	 * @since 1.0.0
 	 */
-	private int fileHashCode = 0;
-	
-	/**
-	 * The number of datagram in CSV file.
-	 * @since 1.0.0
-	 */
-	private int number = 0;
+	private final int fileHashCode;
 	
 	/**
 	 * Content of datagram
 	 * @since 1.0.0
 	 */
-	private byte[] content;
+	private final byte[] content;
+
+	/**
+	 * Constructor
+	 * @param offset Offset of datagram in CSV file
+	 * @param fileHashCode The datagram belongs to a CSV file. It is its ID.
+	 * @param content Content of datagram
+	 * @since 1.0.0
+	 */
+	public CsvDatagram(long offset, int fileHashCode, byte[] content) {
+		super();
+		this.offset = offset;
+		this.fileHashCode = fileHashCode;
+		this.content = content;
+	}
 
 	/**
 	 * Get the offset
@@ -64,15 +72,6 @@ public class CsvDatagram {
 	}
 
 	/**
-	 * Set the offset
-	 * @param offset the offset to set
-	 * @since 1.0.0
-	 */
-	public void setOffset(long offset) {
-		this.offset = offset;
-	}
-
-	/**
 	 * Get the fileHashCode
 	 * @return the fileHashCode
 	 * @since 1.0.0
@@ -81,32 +80,6 @@ public class CsvDatagram {
 		return fileHashCode;
 	}
 
-	/**
-	 * Set the fileHashCode
-	 * @param fileHashCode the fileHashCode to set
-	 * @since 1.0.0
-	 */
-	public void setFileHashCode(int fileHashCode) {
-		this.fileHashCode = fileHashCode;
-	}
-
-	/**
-	 * Get the number
-	 * @return the number
-	 * @since 1.0.0
-	 */
-	public int getNumber() {
-		return number;
-	}
-
-	/**
-	 * Set the number
-	 * @param number the number to set
-	 * @since 1.0.0
-	 */
-	public void setNumber(int number) {
-		this.number = number;
-	}
 
 	/**
 	 * Get the content
@@ -115,14 +88,5 @@ public class CsvDatagram {
 	 */
 	public byte[] getContent() {
 		return content;
-	}
-
-	/**
-	 * Set the content
-	 * @param content the content to set
-	 * @since 1.0.0
-	 */
-	public void setContent(byte[] content) {
-		this.content = content;
 	}
 }
