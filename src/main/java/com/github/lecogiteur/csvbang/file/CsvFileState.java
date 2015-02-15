@@ -23,6 +23,8 @@
 package com.github.lecogiteur.csvbang.file;
 
 
+import java.util.Collection;
+
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
@@ -49,10 +51,19 @@ public interface CsvFileState{
 	 * @param customHeader the custom header
 	 * @param content the content to write
 	 * @throws CsvBangException if a problem has occurred during the writing
-	 * @throws CsvBangCloseException if the file is close and you want write content
+	 * @throws CsvBangCloseException if the file is close and you want to write content
 	 * @since 0.1.0
 	 */
 	public void write(final Object customHeader, final String content) throws CsvBangException, CsvBangCloseException;
+	
+	/**
+	 * Read a part of CSV file
+	 * @return A part of content of file
+	 * @throws CsvBangException if a problem has occurred during the reading
+	 * @throws CsvBangCloseException if the file is close and you want to read content
+	 * @since 1.0.0
+	 */
+	public CsvDatagram read() throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * Close a file

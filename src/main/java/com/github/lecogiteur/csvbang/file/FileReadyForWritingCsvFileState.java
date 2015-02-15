@@ -28,11 +28,13 @@ import java.nio.channels.FileChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
 /**
  * Describe the state of CSV file when it is ready for writing
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  * @since 0.1.0
  */
 public class FileReadyForWritingCsvFileState implements CsvFileState {
@@ -130,7 +132,7 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 * @since 0.1.0
 	 */
 	@Override
-	public void close(final Object customFooter) throws CsvBangException {
+	public void close(final Object customFooter) throws CsvBangException, CsvBangIOException {
 		if (!isNotClosed){
 			//already closed
 			return;
@@ -148,6 +150,11 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 				//wait that all writings terminate
 				i = workers.get();
 			}
+			try {
+				channel.close();
+			} catch (IOException e) {
+				new CsvBangIOException(String.format("Can't close file [%s].", csvFile.getFile().getAbsolutePath()), e);
+			}
 			final FileToCloseForWritingCsvFileState state = new FileToCloseForWritingCsvFileState(csvFile, conf);
 			state.close(customFooter);
 			context.setCsvFileState(state);
@@ -161,7 +168,16 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 	 */
 	@Override
 	public boolean isOpen() {
-		return true;
+		return isNotClosed;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read()
+	 * @since 1.0.0
+	 */
+	@Override
+	public CsvDatagram read() throws CsvBangException, CsvBangCloseException {
+		throw new CsvBangException("You cannot read a file with a writer !");
+	}
 }
