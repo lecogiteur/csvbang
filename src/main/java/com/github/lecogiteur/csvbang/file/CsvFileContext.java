@@ -65,7 +65,7 @@ public class CsvFileContext implements Channel{
 	 * @since 0.1.0
 	 */
 	public CsvFileContext(final CsvBangConfiguration configuration, final CsvFileWrapper file, final Object customHeader, final Object customFooter){
-		fileState = new FileToOpenForWritingCsvFileState(configuration, file, this);
+		this.fileState = new FileToOpenCsvFileState(configuration, file, this);
 		this.customHeader = customHeader;
 		this.customFooter = customFooter;
 	}
@@ -99,6 +99,17 @@ public class CsvFileContext implements Channel{
 	 */
 	public void write(final String content) throws CsvBangException, CsvBangCloseException{
 		fileState.write(customHeader, content);
+	}
+	
+	/**
+	 * Read a art of CSV file
+	 * @return part of CSV file
+	 * @throws CsvBangException if a problem has occurred when we read the file
+	 * @throws CsvBangCloseException if file is closed
+	 * @since 1.0.0
+	 */
+	public CsvDatagram read() throws CsvBangException, CsvBangCloseException{
+		return fileState.read();
 	}
 	
 	/**
