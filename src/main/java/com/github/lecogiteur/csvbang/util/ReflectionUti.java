@@ -33,6 +33,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 /**
  * Utility class on reflection
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
+ * @since 0.0.1
  *
  */
 public class ReflectionUti {
@@ -335,6 +337,46 @@ public class ReflectionUti {
 		}
 		return null;
 	}
+	
+	/**
+	 * Retrieve the setter method for a field
+	 * @param field field
+	 * @param c class of field
+	 * @return the member which can be use in order to set a CSV field 
+	 * @throws CsvBangException if the field is final.
+	 * @since 1.0.0
+	 */
+	//TODO pour les méthode annoté CsvField, on doit indiquer le nom méthode setter et getter
+	public static final AnnotatedElement getSetterMethod(final AnnotatedElement field, final Class<?> c) 
+			throws CsvBangException{
+		if (field != null && field instanceof Field){
+			final Field f = (Field)field;
+			if (Modifier.isFinal(f.getModifiers())){
+				throw new CsvBangException(String.format("The field [%s] of class [%s] is final. We can't set it.", f.getName(), c));
+			}
+			
+			if (Modifier.isPublic(f.getModifiers())){
+				//public field we can set it
+				return f;
+			}
+			
+			//search a setter method
+			BeanInfo info;
+			try {
+				info = Introspector.getBeanInfo(c);
+			} catch (IntrospectionException e) {
+				throw new CsvBangException(String.format("Cannot inspect %s", c), e);
+			}
+			for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+				if (pd.getWriteMethod() != null && pd.getName().equals(f.getName())){
+					return pd.getWriteMethod();
+				}
+			}
+		}
+		return null;
+	}
+	
+	
 	
 	/**
 	 * Retrieve the CsvType annotation

@@ -138,6 +138,11 @@ public class ConfigurationUti {
 		for (final AnnotatedElement member:members){
 			final CsvField csvField = ReflectionUti.getCsvFieldAnnotation(member.getDeclaredAnnotations());
 			final CsvComment csvComment = ReflectionUti.getCsvCommentAnnotation(member.getDeclaredAnnotations());
+
+			if (csvField == null && csvComment == null){
+				//No Csv Field
+				continue;
+			}
 			
 			//Retrieve getter of value
 			AnnotatedElement getter = member;
@@ -171,10 +176,6 @@ public class ConfigurationUti {
 				commentFields.get(direction).remove(internName);
 			}
 			
-			if (csvField == null){
-				//No Csv Field
-				continue;
-			}
 			
 			CsvFieldConfiguration conf = mapConf.get(internName);
 			if (conf == null){

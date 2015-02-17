@@ -180,6 +180,65 @@ public class ReflectionUtiTest {
 		Assert.assertEquals("protectedFieldsubclass", ReflectionUti.getValue(method, child));
 	}
 	
+
+	@Test
+	public void getSetterMethodTest() throws IntrospectionException, CsvBangException, SecurityException, NoSuchFieldException{
+		Assert.assertNull(ReflectionUti.getSetterMethod(null, BeanReflectionUtiTest.class));
+		
+		//public field
+		final Field publicfield = BeanReflectionUtiTest.class.getDeclaredField("publicField");
+		AnnotatedElement element = ReflectionUti.getSetterMethod(publicfield, BeanReflectionUtiTest.class);
+		Assert.assertNotNull(element);
+		Assert.assertEquals(publicfield, element);
+		
+		//simple setter
+		final Field privateField = BeanReflectionUtiTest.class.getDeclaredField("privateField");
+		element = ReflectionUti.getSetterMethod(privateField, BeanReflectionUtiTest.class);
+		Assert.assertNotNull(element);
+		Assert.assertNotEquals(publicfield, element);
+		Assert.assertTrue(element instanceof Method);
+		Assert.assertEquals("setPrivateField", ((Method)element).getName());
+		
+		//no setter defined
+		final Field protectedField = BeanReflectionUtiTest.class.getDeclaredField("protectedField");
+		element = ReflectionUti.getSetterMethod(protectedField, BeanReflectionUtiTest.class);
+		Assert.assertNull(element);
+		
+		//final field
+		final Field finalField = BeanReflectionUtiTest.class.getDeclaredField("finalField");
+		try{
+			element = ReflectionUti.getSetterMethod(finalField, BeanReflectionUtiTest.class);
+			Assert.fail("The field is final so an exception must be thrown");
+		}catch(CsvBangException e){
+			//good !!
+		}
+		
+		//child class
+		//public field
+		final Field subpublicfield = BeanReflectionUtiTest.class.getDeclaredField("publicField");
+		element = ReflectionUti.getSetterMethod(subpublicfield, ChildBeanReflectionUtiTest.class);
+		Assert.assertNotNull(element);
+		Assert.assertEquals(subpublicfield, element);
+
+		//simple setter
+		final Field subprivateField = BeanReflectionUtiTest.class.getDeclaredField("privateField");
+		element = ReflectionUti.getSetterMethod(subprivateField, ChildBeanReflectionUtiTest.class);
+		Assert.assertNotNull(element);
+		Assert.assertNotEquals(subprivateField, element);
+		Assert.assertTrue(element instanceof Method);
+		Assert.assertEquals("setPrivateField", ((Method)element).getName());
+		
+		
+		final Field subprotField = BeanReflectionUtiTest.class.getDeclaredField("protectedField");
+		element = ReflectionUti.getSetterMethod(subprotField, ChildBeanReflectionUtiTest.class);
+		Assert.assertNotNull(element);
+		Assert.assertNotEquals(subprotField, element);
+		Assert.assertTrue(element instanceof Method);
+		Assert.assertEquals("setProtectedField", ((Method)element).getName());
+		
+		
+	}
+	
 	@Test
 	public void getCsvTypeAnnotationTest(){
 		Annotation[] annotations = BeanReflectionUtiTest.class.getAnnotations();
