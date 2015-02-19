@@ -42,8 +42,10 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.test.bean.reflection.BeanReflectionUtiTest;
+import com.github.lecogiteur.csvbang.test.bean.reflection.BeanSetValue;
 import com.github.lecogiteur.csvbang.test.bean.reflection.ChildBeanReflectionUtiTest;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
+import com.github.lecogiteur.csvbang.util.ObjectGenerator;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
 
 
@@ -352,7 +354,7 @@ public class ReflectionUtiTest {
 	}
 	
 	@Test
-	public void getSetterType() throws SecurityException, NoSuchFieldException, CsvBangException{
+	public void getSetterTypeTest() throws SecurityException, NoSuchFieldException, CsvBangException{
 		//for field
 		final Field publicfield = BeanReflectionUtiTest.class.getDeclaredField("publicField");
 		final AnnotatedElement fieldsetter = ReflectionUti.getSetterMethod(publicfield, BeanReflectionUtiTest.class);
@@ -377,5 +379,40 @@ public class ReflectionUtiTest {
 		final Class<?> methodtype = ReflectionUti.getSetterType(methodsetter);
 		Assert.assertNotNull(methodtype);
 		Assert.assertEquals(String.class, methodtype);
+	}
+	
+	@Test
+	public void setValueTest() throws CsvBangException, SecurityException, NoSuchFieldException{
+		final Field fieldvalue1 = BeanSetValue.class.getDeclaredField("value1");
+		final Field fieldvalue2 = BeanSetValue.class.getDeclaredField("value2");
+		final Field fieldvalue3 = BeanSetValue.class.getDeclaredField("value3");
+		
+		final AnnotatedElement setter1 = ReflectionUti.getSetterMethod(fieldvalue1, BeanSetValue.class);
+		final AnnotatedElement setter2 = ReflectionUti.getSetterMethod(fieldvalue2, BeanSetValue.class);
+		final AnnotatedElement setter3 = ReflectionUti.getSetterMethod(fieldvalue3, BeanSetValue.class);
+		
+		final Class<?> type1 = ReflectionUti.getSetterType(setter1);
+		final Class<?> type2 = ReflectionUti.getSetterType(setter2);
+		final Class<?> type3 = ReflectionUti.getSetterType(setter3);
+		
+		final ObjectGenerator<?> generator1 = ReflectionUti.createTypeGenerator(type1, null, null);
+		final ObjectGenerator<?> generator2 = ReflectionUti.createTypeGenerator(type2, null, null);
+		final ObjectGenerator<?> generator3 = ReflectionUti.createTypeGenerator(type3, null, null);
+		
+		BeanSetValue bean = new BeanSetValue();
+		ReflectionUti.setValue(setter1, generator1, bean, null);
+		Assert.assertNull(bean.getValue1());
+		ReflectionUti.setValue(setter1, generator1, bean, "345");
+		Assert.assertEquals(new Integer(345), bean.getValue1());
+		
+		ReflectionUti.setValue(setter2, generator2, bean, null);
+		Assert.assertNull(bean.getValue2());
+		ReflectionUti.setValue(setter2, generator2, bean, "345");
+		Assert.assertEquals(new Long(345), bean.getValue2());
+		
+		ReflectionUti.setValue(setter3, generator3, bean, null);
+		Assert.assertNull(bean.getValue3());
+		ReflectionUti.setValue(setter3, generator3, bean, "345");
+		Assert.assertEquals("345", bean.getValue3());
 	}
 }

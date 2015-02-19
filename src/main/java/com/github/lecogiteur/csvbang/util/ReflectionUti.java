@@ -432,16 +432,61 @@ public class ReflectionUti {
 				return null;
 			}
 			
-			//if no factory, we search static method
-			generator = StaticMethodObjectGenerator.newInstance(type);
+			//if no factory, we search static method with standard name
+			generator = StaticMethodObjectGenerator.newInstance(type, "valueOf");
+			if (generator != null){
+				return generator;
+			}
+			generator = StaticMethodObjectGenerator.newInstance(type, "newInstance");
 			if (generator != null){
 				return generator;
 			}
 			
 			//if no static methods are defined, we search some constructors
 			generator = ConstructorObjectGenerator.newInstance(type);
+			if (generator != null){
+				return generator;
+			}
+			
+			//if no constructor, we search static method
+			generator = StaticMethodObjectGenerator.newInstance(type, null);
 		}
 		throw new CsvBangException(String.format("No generator is defined for Type [%s]. You must defined a constructor, static method in order to generate a new instance of %s", type, type));
+	}
+	
+	/**
+	 * Set a value of field to a CSV bean 
+	 * @param setter the setter of CSV bean
+	 * @param generator the generator of object to use in order to set the CSV bean with the type of field
+	 * @param beanCSV the bean CSV 
+	 * @param value the value to set
+	 * @throws CsvBangException if a problem has occurred when we set the value to the bean
+	 * @since 1.0.0
+	 */
+	public static final <T> void setValue(final AnnotatedElement setter, ObjectGenerator<T> generator, 
+			final Object beanCSV, final Object value) throws CsvBangException{
+		if (value == null){
+			//no need to set it
+			return;
+		}
+		
+		Object result = value;
+		if (generator != null){
+			//if a generator is defined we transform the value in the type of CSV field (parameter of setter).
+			result = generator.generate(value);
+		}
+		
+		try {
+			//set the value to the bean
+			if (setter instanceof Field){
+				((Field)setter).set(beanCSV, result);
+			}else if (setter instanceof Method){
+				((Method)setter).invoke(beanCSV, result);
+			}
+		} catch (Exception e) {
+			throw new CsvBangException(String.format("A problem has occurred when we set value [%s] in bean of type [%s] with setter: %s", 
+					value, beanCSV.getClass(), ((Member)setter).getName()));
+		}
 	}
 	
 	/**

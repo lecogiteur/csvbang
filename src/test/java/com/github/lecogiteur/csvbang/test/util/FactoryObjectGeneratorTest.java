@@ -111,7 +111,7 @@ public class FactoryObjectGeneratorTest {
 	}
 	
 	@Test
-	public void noMethodTest(){
+	public void noMethodTest() throws CsvBangException{
 		final FactoryObjectGenerator<Integer> generator2 = FactoryObjectGenerator.newInstance(Integer.class, 
 				OGFactorySimpleBean.class, "valueIntOfNotExist");
 		Assert.assertNull(generator2);

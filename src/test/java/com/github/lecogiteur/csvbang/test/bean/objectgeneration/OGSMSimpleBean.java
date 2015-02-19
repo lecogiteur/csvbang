@@ -71,7 +71,7 @@ public class OGSMSimpleBean {
 		return new OGSMSimpleBean(s);
 	}
 	
-	public static final OGSMSimpleBean valueOf(Integer i){
+	public static final OGSMSimpleBean valueIntOf(Integer i){
 		return new OGSMSimpleBean(i);
 	}
 

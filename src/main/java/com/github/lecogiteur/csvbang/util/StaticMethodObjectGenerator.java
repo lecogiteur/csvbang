@@ -89,7 +89,7 @@ public class StaticMethodObjectGenerator<T> implements ObjectGenerator<T> {
 				}
 			}
 			if (method == null){
-				throw new CsvBangException(String.format("A problem has occurred when we generate value [%s] of a field of type. "
+				throw new CsvBangException(String.format("A problem has occurred when we generate value [%s] for a field type. "
 					+ "No method found with parameter type [%s].", value, value.getClass()));
 			}
 		}
@@ -117,10 +117,11 @@ public class StaticMethodObjectGenerator<T> implements ObjectGenerator<T> {
 	/**
 	 * Generate a new instance of generator for a type of CSV field
 	 * @param clazz type of CSV field
+	 * @param methodName filter by the name of static method
 	 * @return a new instance of generator for this type
 	 * @since 1.0.0
 	 */
-	public static <U> StaticMethodObjectGenerator<U> newInstance(final Class<U> clazz){
+	public static <U> StaticMethodObjectGenerator<U> newInstance(final Class<U> clazz, final String methodName){
 		if (clazz != null){
 			//verify if class is interface
 			if (clazz.isInterface()){
@@ -133,7 +134,8 @@ public class StaticMethodObjectGenerator<T> implements ObjectGenerator<T> {
 				//select only constructor with 1 parameter (the value)
 				final Map<Class<?>, Method> map = new HashMap<Class<?>, Method>(array.length);
 				for (final Method m:array){
-					if (Modifier.isPublic(m.getModifiers()) && Modifier.isStatic(m.getModifiers())){
+					if (Modifier.isPublic(m.getModifiers()) && Modifier.isStatic(m.getModifiers())
+							&& (methodName == null || methodName.equalsIgnoreCase(m.getName()))){
 						final Class<?>[] parameters = m.getParameterTypes();
 						if (parameters.length == 1 && m.getReturnType() != null 
 								&& m.getReturnType().isAssignableFrom(clazz)){
