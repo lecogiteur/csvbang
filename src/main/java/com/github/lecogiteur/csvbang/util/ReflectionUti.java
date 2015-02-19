@@ -346,7 +346,7 @@ public class ReflectionUti {
 	 * @throws CsvBangException if the field is final.
 	 * @since 1.0.0
 	 */
-	//TODO pour les méthode annoté CsvField, on doit indiquer le nom méthode setter et getter. Il faut modifier l'annotation CsvField
+	//TODO pour les méthode annoté CsvField, on doit pouvoir indiquer le nom de la méthode setter et getter (surtout pour les méthodes annotées CsvField). Il faut modifier l'annotation CsvField
 	public static final AnnotatedElement getSetterMethod(final AnnotatedElement field, final Class<?> c) 
 			throws CsvBangException{
 		if (field != null && field instanceof Field){

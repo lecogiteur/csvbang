@@ -350,4 +350,32 @@ public class ReflectionUtiTest {
 			}
 		}
 	}
+	
+	@Test
+	public void getSetterType() throws SecurityException, NoSuchFieldException, CsvBangException{
+		//for field
+		final Field publicfield = BeanReflectionUtiTest.class.getDeclaredField("publicField");
+		final AnnotatedElement fieldsetter = ReflectionUti.getSetterMethod(publicfield, BeanReflectionUtiTest.class);
+		
+		Assert.assertNotNull(fieldsetter);
+		Assert.assertTrue(fieldsetter instanceof Field);
+		Assert.assertEquals("publicField", ((Field)fieldsetter).getName());
+		
+		final Class<?> fieldtype = ReflectionUti.getSetterType(fieldsetter);
+		Assert.assertNotNull(fieldtype);
+		Assert.assertEquals(String.class, fieldtype);
+		
+		
+		//for method
+		final Field privatefield = BeanReflectionUtiTest.class.getDeclaredField("privateField");
+		final AnnotatedElement methodsetter = ReflectionUti.getSetterMethod(privatefield, BeanReflectionUtiTest.class);
+		
+		Assert.assertNotNull(methodsetter);
+		Assert.assertTrue(methodsetter instanceof Method);
+		Assert.assertEquals("setPrivateField", ((Method)methodsetter).getName());
+		
+		final Class<?> methodtype = ReflectionUti.getSetterType(methodsetter);
+		Assert.assertNotNull(methodtype);
+		Assert.assertEquals(String.class, methodtype);
+	}
 }
