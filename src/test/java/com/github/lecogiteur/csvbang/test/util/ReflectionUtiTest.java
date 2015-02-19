@@ -155,7 +155,7 @@ public class ReflectionUtiTest {
 		
 	}
 	
-
+	//TODO vérifier dans la génération de la configuration lorsqu'une méthode annoter CsvField et quel une visibilité à private cela lance une erreur.
 	@Test
 	public void getGetterMethodTest() throws IntrospectionException, CsvBangException{
 		Assert.assertNull("If null field, result is null", ReflectionUti.getGetterMethod(BeanReflectionUtiTest.class, null));

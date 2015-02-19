@@ -49,6 +49,8 @@ public class BeanReflectionUtiTest {
 	protected String protectedField = "protectedField";
 
 	protected String othrProtectedField = "othrProtectedField";
+
+	public final String finalField = "finalField";
 	
 	@CsvComment
 	public Integer comment;
@@ -88,6 +90,15 @@ public class BeanReflectionUtiTest {
 	
 	public String getOther(){
 		return otherPrivateField;
+	}
+
+	/**
+	 * Set the privateField
+	 * @param privateField the privateField to set
+	 * @since 1.0.0
+	 */
+	public void setPrivateField(String privateField) {
+		this.privateField = privateField;
 	}
 	
 	

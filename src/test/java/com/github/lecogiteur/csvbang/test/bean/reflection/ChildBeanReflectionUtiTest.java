@@ -46,6 +46,10 @@ public class ChildBeanReflectionUtiTest extends BeanReflectionUtiTest {
 	public String getProtectedField() {
 		return protectedField + "subclass";
 	}
+	
+	public void setProtectedField(String protectedField){
+		this.protectedField = protectedField;
+	}
 
 	/**
 	 * {@inheritDoc}

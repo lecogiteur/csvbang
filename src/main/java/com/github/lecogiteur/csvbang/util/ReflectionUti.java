@@ -346,7 +346,7 @@ public class ReflectionUti {
 	 * @throws CsvBangException if the field is final.
 	 * @since 1.0.0
 	 */
-	//TODO pour les méthode annoté CsvField, on doit indiquer le nom méthode setter et getter
+	//TODO pour les méthode annoté CsvField, on doit indiquer le nom méthode setter et getter. Il faut modifier l'annotation CsvField
 	public static final AnnotatedElement getSetterMethod(final AnnotatedElement field, final Class<?> c) 
 			throws CsvBangException{
 		if (field != null && field instanceof Field){
@@ -371,6 +371,33 @@ public class ReflectionUti {
 				if (pd.getWriteMethod() != null && pd.getName().equals(f.getName())){
 					return pd.getWriteMethod();
 				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the type of field in order to set it.
+	 * @param setter a setter (can be a property or method)
+	 * @return the type of field
+	 * @throws CsvBangException If in case of a method, the number of parameter is not correct 
+	 * @since 1.0.0
+	 */
+	public static final Class<?> getSetterType(final AnnotatedElement setter)
+			throws CsvBangException{
+		if (setter != null){
+			if (setter instanceof Field){
+				return ((Field) setter).getType();
+			}else if (setter instanceof Method){
+				final Class<?>[] types = ((Method)setter).getParameterTypes();
+				if (types == null || types.length == 0){
+					throw new CsvBangException(String.format("The setter method [%s] has no parameter. So we can't set value to field.", 
+							((Method)setter).getName()));
+				}else if (types.length > 1){
+					throw new CsvBangException(String.format("The setter method [%s] has multiples parameters. So we can't set value to field.", 
+							((Method)setter).getName()));
+				}
+				return types[0];
 			}
 		}
 		return null;
