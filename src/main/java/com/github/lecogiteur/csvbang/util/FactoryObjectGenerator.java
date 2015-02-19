@@ -157,7 +157,7 @@ public class FactoryObjectGenerator<T> implements ObjectGenerator<T> {
 				//select only constructor with 1 parameter (the value)
 				final Map<Class<?>, Method> map = new HashMap<Class<?>, Method>(array.length);
 				for (final Method m:array){
-					if (Modifier.isPublic(m.getModifiers()) && (factoryMethod == null || m.getName().equals(factoryMethod))){
+					if (Modifier.isPublic(m.getModifiers()) && (CsvbangUti.isStringBlank(factoryMethod) || m.getName().equals(factoryMethod))){
 						final Class<?>[] parameters = m.getParameterTypes();
 						if (parameters.length == 1 && m.getReturnType() != null 
 								&& m.getReturnType().isAssignableFrom(clazz)){

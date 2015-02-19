@@ -127,12 +127,14 @@ public class ConfigurationUti {
 	 * @param mapConf all configuration of each field (with configuration of class parent). KEY: name of member || VALUE: its configuration
 	 * @param commentFields map which contains comment members. KEY: {@link CsvComment#direction()} || VALUE = [[Map with  KEY: name of member || VALUE: its getter]]
 
+	 * @param generators list of existing generators by type generated
 	 * @throws CsvBangException <p>if we can't retrieve getter method of field</p>
 	 * 							<p>if we can't create an instance of custom formatter</p>
 	 * @since 0.1.0
 	 */
 	private static void loadCsvFieldConfiguration(final Class<?> finalClass, final Class<?> clazz, 
-			final Map<String, CsvFieldConfiguration> mapConf, final Map<DIRECTION, Map<String, AnnotatedElement>> commentFields) 
+			final Map<String, CsvFieldConfiguration> mapConf, 
+			final Map<DIRECTION, Map<String, AnnotatedElement>> commentFields, final Map<Class<?>, ObjectGenerator<?>> generators) 
 	throws CsvBangException {
 		final List<AnnotatedElement> members = ReflectionUti.getMembers(clazz);
 		for (final AnnotatedElement member:members){
@@ -186,9 +188,31 @@ public class ConfigurationUti {
 			
 			conf.position = getParameterValue(conf.position, csvField.position(), IConstantsCsvBang.DEFAULT_FIELD_POSITION);
 			conf.isDeleteFieldIfNull = csvField.deleteIfNull();
-			conf.memberBean = getter;
+			conf.getter = getter;
 			conf.nullReplaceString = csvField.defaultIfNull();
 			
+			if (CsvbangUti.isStringNotBlank(csvField.customMethodNameSetter())){
+				conf.setter = ReflectionUti.getMethod(finalClass, csvField.customMethodNameSetter());
+			}
+			if (conf.setter == null){
+				conf.setter = ReflectionUti.getSetterMethod(member, finalClass);
+			}
+			if (conf.setter == null){
+				LOGGER.warning(String.format("No way in order to set %s in class %s. You must define a getter method or change the modifier of field.", conf.name, finalClass));
+				continue;
+			}else{
+				final Class<?> type = ReflectionUti.getSetterType(conf.setter);
+				ObjectGenerator<?> generator = generators.get(type);
+				if (generator == null || csvField.factory() != null){
+					generator = ReflectionUti.createTypeGenerator(type, csvField.factory(), csvField.factoryMethodName());
+					if (csvField.factory() == null){
+						generators.put(type, generator);
+					}
+				}
+				conf.generator = generator;
+			}
+			
+			//retrieve name of field
 			String realName = csvField.name();
 			if (CsvbangUti.isStringBlank(realName)){
 				realName = ((Member)member).getName();
@@ -200,6 +224,7 @@ public class ConfigurationUti {
 				}
 			}
 			conf.name = getParameterValue(conf.name, realName, IConstantsCsvBang.DEFAULT_FIELD_NAME);
+			
 			
 			final CsvFormatter format = loadCsvFormat(member);
 			if (DEFAULT_FORMAT.equals(format) && conf.format != null){
@@ -304,6 +329,7 @@ public class ConfigurationUti {
 		final CsvBangConfiguration conf = new CsvBangConfiguration();
 		final Map<String, CsvFieldConfiguration> mapFieldConf = new HashMap<String, CsvFieldConfiguration>();
 		final Map<DIRECTION, Map<String, AnnotatedElement>> mapCommentFields = new HashMap<CsvComment.DIRECTION, Map<String,AnnotatedElement>>();
+		final Map<Class<?>, ObjectGenerator<?>> generators = new HashMap<Class<?>, ObjectGenerator<?>>();
 		
 		mapCommentFields.put(DIRECTION.BEFORE_RECORD, new HashMap<String, AnnotatedElement>());
 		mapCommentFields.put(DIRECTION.AFTER_RECORD, new HashMap<String, AnnotatedElement>());
@@ -362,7 +388,7 @@ public class ConfigurationUti {
 				conf.isReadingSubFolder = csvFile.readSubFolders();
 			}
 			
-			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields);
+			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields, generators);
 		}
 		
 		if (!hasCsvTypeDefined){

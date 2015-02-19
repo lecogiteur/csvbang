@@ -377,6 +377,23 @@ public class ReflectionUti {
 	}
 	
 	/**
+	 * Get method of class
+	 * @param clazz the class
+	 * @param name the method name
+	 * @return the method
+	 * @since 1.0.0
+	 */
+	public static final Method getMethod(final Class<?> clazz, final String name){
+		final Method[] methods = clazz.getMethods();
+		for (final Method method:methods){
+			if (method.getName().equals(name)){
+				return method;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Retrieve the type of field in order to set it.
 	 * @param setter a setter (can be a property or method)
 	 * @return the type of field

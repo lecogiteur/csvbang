@@ -26,12 +26,14 @@ import java.lang.reflect.AnnotatedElement;
 
 import com.github.lecogiteur.csvbang.formatter.CsvFormatter;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
+import com.github.lecogiteur.csvbang.util.ObjectGenerator;
 
 
 /**
  * Configuration of field
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 1.0.0
+ * @since 0.0.1
  */
 public class CsvFieldConfiguration {
 	
@@ -48,10 +50,10 @@ public class CsvFieldConfiguration {
 	public int position = IConstantsCsvBang.DEFAULT_FIELD_POSITION;
 	
 	/**
-	 * property or method of bean
-	 * @since 0.0.1
+	 * Getter of field. Property or method of bean
+	 * @since 1.0.0
 	 */
-	public AnnotatedElement memberBean;
+	public AnnotatedElement getter;
 	
 	/**
 	 * String which replace null value
@@ -70,4 +72,16 @@ public class CsvFieldConfiguration {
 	 * @since 0.0.1
 	 */
 	public CsvFormatter format;
+	
+	/**
+	 * Generator of object of CSV type in order to set the field 
+	 * @since 1.0.0
+	 */
+	public ObjectGenerator<?> generator;
+	
+	/**
+	 * The setter of field. Property or method of bean
+	 * @since 1.0.0
+	 */
+	public AnnotatedElement setter;
 }

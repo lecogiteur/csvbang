@@ -218,10 +218,15 @@ public interface IConstantsCsvBang {
 	 */
 	public static final boolean DEFAULT_READING_SUB_FOLDER = false;
 	
-	
 	/**
 	 * Size of byte array used in order to read (8ko). 
 	 * @since 1.0.0
 	 */
 	public static final int DEFAULT_BYTE_BLOCK_SIZE = 8192;
+	
+	/**
+	 * The name of default custom setter for CSV field. The default value is {@value}.
+	 * @since 1.0.0
+	 */
+	public static final String DEFAULT_FIELD_SETTER = "";
 }
