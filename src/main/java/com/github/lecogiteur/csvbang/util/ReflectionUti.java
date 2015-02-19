@@ -403,7 +403,46 @@ public class ReflectionUti {
 		return null;
 	}
 	
-	
+	/**
+	 * Creates a generator for a type in order to create new object of this type. When we read a CSV file, we must set the CSV bean with each types fo CSV field.
+	 * This method select to best generator for a given type.
+	 * It is possible to use factory, static methods or constructor. If the type is String (and no factory defined), no generator is necessary so we return null.
+	 * @param type type of a CSV field.
+	 * @param factory a factory to use for creating object. Can be null.
+	 * @param factoryMethodName name of the factory method of factory class to use.
+	 * @return a generator of object. If the type is String (and no factory defined), no generator is necessary so we return null.
+	 * @throws CsvBangException If a problem occurred during creation.
+	 * @since 1.0.0
+	 */
+	//TODO faire les tests unitaires pour cette méthode. Necessite la création des annotations factory et factory méthode
+	public static final <T> ObjectGenerator<T> createTypeGenerator(final Class<T> type, 
+			final Class<?> factory, final String factoryMethodName) throws CsvBangException{
+		ObjectGenerator<T> generator = null;
+		if (type != null){
+			if (factory != null){
+				//if a factory is defined
+				generator = FactoryObjectGenerator.newInstance(type, factory, factoryMethodName);
+				if (generator != null){
+					return generator;
+				}
+			}
+			
+			if (String.class.equals(type)){
+				//CsvBang manages natively String, so no need to generate again
+				return null;
+			}
+			
+			//if no factory, we search static method
+			generator = StaticMethodObjectGenerator.newInstance(type);
+			if (generator != null){
+				return generator;
+			}
+			
+			//if no static methods are defined, we search some constructors
+			generator = ConstructorObjectGenerator.newInstance(type);
+		}
+		throw new CsvBangException(String.format("No generator is defined for Type [%s]. You must defined a constructor, static method in order to generate a new instance of %s", type, type));
+	}
 	
 	/**
 	 * Retrieve the CsvType annotation

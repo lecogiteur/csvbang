@@ -138,10 +138,14 @@ public class FactoryObjectGenerator<T> implements ObjectGenerator<T> {
 	 * @param factory the class factory which generates some. The factory must have a default constructor.
 	 * @param factoryMethod the name of factory method. If null, the generator selects the all methods which return the type of CSV field 
 	 * @return a new instance of generator for this type
+	 * @throws CsvBangException If no factory is defined.
 	 * @since 1.0.0
 	 */
-	public static <U> FactoryObjectGenerator<U> newInstance(final Class<U> clazz, final Class<?> factory, final String factoryMethod){
-		if (clazz != null && factory != null){
+	public static <U> FactoryObjectGenerator<U> newInstance(final Class<U> clazz, final Class<?> factory, final String factoryMethod) throws CsvBangException{
+		if (factory == null){
+			throw new CsvBangException(String.format("You want a factory generator for type [%s]. But you don't have defined a factory", clazz));
+		}
+		if (clazz != null){
 			//verify if factory is interface
 			if (factory.isInterface()){
 				LOGGER.warning(String.format("The factory [%s] for type [%s] is an interface.", clazz, factory));
