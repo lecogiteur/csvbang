@@ -152,6 +152,7 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 		workers.incrementAndGet();
 		//get current offset
 		final long offset = currentOffset.getAndAdd(sizeBlock);
+		boolean isLastDatagram = offset + sizeBlock == totalBytes;
 		
 		if (offset >= totalBytes){
 			//We have read all file, we can close it
@@ -169,6 +170,7 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 		int size = sizeBlock;
 		if (offset + sizeBlock > totalBytes){
 			size = (int) (totalBytes - offset); //in fact, size < sizeBlock, so it's a int
+			isLastDatagram = true;
 		}
 		final ByteBuffer buffer = ByteBuffer.allocate(size);
 		
@@ -182,7 +184,7 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 			workers.decrementAndGet();
 		}
 		
-		return new CsvDatagram(offset, fileHashCode, buffer.array());
+		return new CsvDatagram(offset, fileHashCode, buffer.array(), isLastDatagram);
 	}
 
 	/**

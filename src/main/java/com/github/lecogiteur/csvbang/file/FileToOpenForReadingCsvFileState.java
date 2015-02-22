@@ -25,9 +25,7 @@ package com.github.lecogiteur.csvbang.file;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.nio.ByteBuffer;
 
-import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;
@@ -105,6 +103,7 @@ public class FileToOpenForReadingCsvFileState implements CsvFileState {
 		//size of byte block 
 		int sizeBlock = IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE;
 		
+		//TODO faire des constantes
 		if (totalByte < (long) IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE){
 			//it's a little file
 			sizeBlock = ((int)totalByte) / 4;

@@ -229,4 +229,37 @@ public interface IConstantsCsvBang {
 	 * @since 1.0.0
 	 */
 	public static final String DEFAULT_FIELD_SETTER = "";
+	
+	/**
+	 * <p>The factory is used in order to set CSV bean. When CsvBang read a CSV file, it generate field with String type. 
+	 * But, each field can define its type in CSV bean.</p> 
+	 * <p>By default, in order to generate a new instance of field type, CsvBang searches by priority:
+	 * <ul>
+	 * 	<li>A custom factory</li>
+	 * 	<li>Static method in class of CSV field type named "valueOf"</li>
+	 * 	<li>Static method in class of CSV field type named "newInstance"</li>
+	 * 	<li>constructor in class of CSV field type</li>
+	 * 	<li>Static methods in class of CSV field type with custom method name</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * CsvBang stops to a step when it finds some static methods or constructor with one parameter. 
+	 * If the type of CSV is String and there is no factory defined, CsvBang sets directly the field in CSV bean.
+	 * </p>
+	 * </BR>
+	 * <p>
+	 * "factory" permit you to define a custom factory in order to generate a new instance of type of CSV field with a String parameter. 
+	 * The factory must contains some static methods or non-static methods with String parameter. In case of non-static method you must define a default constructor for your factory. 
+	 * </p>
+	 * @since 1.0.0
+	 */
+	public static final Class<?> DEFAULT_FIELD_FACTORY = Void.class;
+	
+	/**
+	 * The name of method to use in factory. If the name is not defined, CsvBang searches automatically all methods with one parameter.
+	 * @return the name method. By default, no method is defined
+	 * @since 1.0.0
+	 * @see {@link com.github.lecogiteur.csvbang.annotation.CsvField#factory()}
+	 */
+	public static final String DEFAULT_FIELD_FACTORY_METHOD_NAME = "";
 }

@@ -47,19 +47,27 @@ public class CsvDatagram {
 	 * @since 1.0.0
 	 */
 	private final byte[] content;
+	
+	/**
+	 * True, if it's the last CSV datagram of CSV file
+	 * @since 1.0.0
+	 */
+	private final boolean isLastDatagram;
 
 	/**
 	 * Constructor
 	 * @param offset Offset of datagram in CSV file
 	 * @param fileHashCode The datagram belongs to a CSV file. It is its ID.
 	 * @param content Content of datagram
+	 * @param isLastDatagram True, if it's the last CSV datagram of CSV file
 	 * @since 1.0.0
 	 */
-	public CsvDatagram(long offset, int fileHashCode, byte[] content) {
+	public CsvDatagram(final long offset, final int fileHashCode, final byte[] content, final boolean isLastDatagram) {
 		super();
 		this.offset = offset;
 		this.fileHashCode = fileHashCode;
 		this.content = content;
+		this.isLastDatagram = isLastDatagram;
 	}
 
 	/**
@@ -88,5 +96,14 @@ public class CsvDatagram {
 	 */
 	public byte[] getContent() {
 		return content;
+	}
+
+	/**
+	 * Get the isLastDatagram
+	 * @return the isLastDatagram
+	 * @since 1.0.0
+	 */
+	public boolean isLastDatagram() {
+		return isLastDatagram;
 	}
 }

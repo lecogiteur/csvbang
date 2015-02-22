@@ -118,7 +118,7 @@ public @interface CsvField {
 	 * @return the factory of value for field Type
 	 * @since 1.0.0
 	 */
-	Class<?> factory();
+	Class<?> factory() default Void.class;
 	
 	/**
 	 * The name of method to use in factory. If the name is not defined, CsvBang searches automatically all methods with one parameter.
@@ -126,7 +126,7 @@ public @interface CsvField {
 	 * @since 1.0.0
 	 * @see {@link com.github.lecogiteur.csvbang.annotation.CsvField#factory()}
 	 */
-	String factoryMethodName();
+	String factoryMethodName() default IConstantsCsvBang.DEFAULT_FIELD_FACTORY_METHOD_NAME;
 	
 	
 }

@@ -170,6 +170,7 @@ public class CsvBangConfiguration {
 	 * Start string for comment
 	 * @since 0.1.0
 	 */
+	//TODO ne semble utilisé nulle part.
 	public String startComment = "";
 	
 	/**
@@ -287,7 +288,7 @@ public class CsvBangConfiguration {
 				
 				String n = field.name;
 				if (!(n != null && n.length() > 0)){
-					n = ((Member)field.memberBean).getName();
+					n = ((Member)field.getter).getName();
 				}
 				h.append(n).append(delimiter);
 			}
