@@ -519,7 +519,7 @@ public class CsvParser<T> {
 			if (!lastAction.add(a)){
 				executeAction(listOfBeans, stack, a, null);
 				final GrammarAction<?> tmp = stack.pollLast();
-				if (tmp != null && tmp.equals(a)){
+				if (a.equals(tmp)){
 					stack.add(tmp);
 					break;
 				}else{
