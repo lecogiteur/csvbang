@@ -121,14 +121,15 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	@Override
 	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException {
 		if (word != null){
-			isTerminatedRecord = isTerminatedRecord || word.isLastAction();
 			switch (word.getType()) {
 			case FIELD:
 				//add a field
 				fields.add(word);
 				endOffset = word.getEndOffset();
+				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
 				return true;
 			case END:
+				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
 				return true;
 			default:
 				return false;
@@ -162,17 +163,17 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 				return null;
 			}
 			if (conf.fields.size() != fields.size()){
-				throw new CsvBangException(String.format("The number of fields configurated [%s] is different than the number of field find in file [%s] for type [%s].", 
-						conf.fields.size(), fields.size(), beanClass));
+				throw new CsvBangException(String.format("A problem has occurred between offset [%s] and [%s] for a record. The number of fields configurated [%s] is different than the number of field find in file [%s] for type [%s].", 
+						startOffset, endOffset, conf.fields.size(), fields.size(), beanClass));
 			}
 			
 			//create new CSV bean
 			try {
 				bean = beanClass.newInstance();
 			} catch (InstantiationException e) {
-				throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s].", beanClass));
+				throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
 			} catch (IllegalAccessException e) {
-				throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s].", beanClass));
+				throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
 			}
 			
 			//set all field to CSV bean

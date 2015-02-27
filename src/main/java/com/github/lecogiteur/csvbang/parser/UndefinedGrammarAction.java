@@ -123,12 +123,12 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 	@Override
 	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException {
 		if (word != null){
-			isTerminate = isTerminate || word.isLastAction();
 			switch (word.getType()) {
 			case UNDEFINED:
 				final UndefinedGrammarAction undefinedAction = (UndefinedGrammarAction)word;
 				final byte[] table = undefinedAction.execute();
 				if (table == null || table.length == 0){
+					isTerminate = isTerminate || word.isLastAction();
 					return true;
 				}
 				if (word.getEndOffset() == startOffset){
@@ -138,6 +138,7 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 					index += table.length;
 					content = tmp;
 					startOffset = word.getStartOffset();
+					isTerminate = isTerminate || word.isLastAction();
 					return true;
 				}else if (word.getStartOffset() == endOffset){
 					byte[] tmp = new byte[table.length + content.length];
@@ -145,12 +146,15 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 					System.arraycopy(table, 0, tmp, index, table.length);
 					index += table.length;
 					endOffset = word.getEndOffset();
+					isTerminate = isTerminate || word.isLastAction();
 					return true;
 				}
 				return false;
 			case NOTHING_TO_DO:
+				isTerminate = isTerminate || word.isLastAction();
 				return true;
 			case END:
+				isTerminate = isTerminate || word.isLastAction();
 				return true;
 			default:
 				return false;

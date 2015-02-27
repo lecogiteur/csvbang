@@ -26,7 +26,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -299,7 +301,7 @@ public class CsvParserTest {
 	}
 	
 	@Test
-	public void bigDataTest() throws CsvBangException{
+	public void zbigDataTest() throws CsvBangException{
 		final String content = "12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
 				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
 				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
@@ -342,7 +344,7 @@ public class CsvParserTest {
 	}
 	
 	@Test
-	public void bigDataWithReverseSortDatagramTest() throws CsvBangException{
+	public void zbigDataWithReverseSortDatagramTest() throws CsvBangException{
 		final String content = "12,azerty,65.78,\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
 				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
 				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
@@ -366,15 +368,15 @@ public class CsvParserTest {
 				
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BigDataCsvParser.class);
 		final CsvParser<BigDataCsvParser> parser = new CsvParser<BigDataCsvParser>(BigDataCsvParser.class, conf);
-		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final List<CsvDatagram> datagrams = new ArrayList<CsvDatagram>(generator(content, 0, 5, conf.charset));
 		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>();
 		
 		Collections.reverse(list);
 		
 		int index = 2;
-		int end = list.size() - 5;
+		int end = datagrams.size() - 5;
 		for (int i=index; i< end; i+=3){
-			list.add(list.remove(i));
+			datagrams.add(datagrams.remove(i));
 		}
 		
 		for (final CsvDatagram datagram:datagrams){
@@ -400,5 +402,147 @@ public class CsvParserTest {
 				Assert.assertTrue(o.getField4());				
 			}
 		}
+	}
+	
+	@Test
+	public void zbigDataWithMultipleFileDatagramTest() throws CsvBangException{
+		//200
+		final String content1 = "12,azerty,65.78,\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azzzzzzzzzzzerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" +
+				"12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n12,azerty,65.78,true\n" ;
+				
+		
+		//80
+		final String content2 = "33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n" +
+				"33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n33,poiu,34.0,false\n";
+				
+				
+		//110
+		final String content3 = "894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
+				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n";
+				
+		
+		
+		
+		
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BigDataCsvParser.class);
+		final CsvParser<BigDataCsvParser> parser = new CsvParser<BigDataCsvParser>(BigDataCsvParser.class, conf);
+		final List<CsvDatagram> datagrams = new ArrayList<CsvDatagram>(generator(content1, 0, 5, conf.charset));
+		datagrams.addAll(generator(content2, 1, 5, conf.charset));
+		datagrams.addAll(generator(content3, 2, 5, conf.charset));
+		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>();
+		
+		Collections.reverse(list);
+		
+		int index = 2;
+		int end = datagrams.size() - 5;
+		for (int i=index; i< end; i+=3){
+			datagrams.add(datagrams.remove(i));
+		}
+		/*for (int j=0; j<100; j++){
+			int i1 = (int)(datagrams.size() * Math.random());
+			int i2 = datagrams.size() - 2 -(int)(i1 * Math.random());
+			end = Math.max(i1, i2);
+			index = Math.min(i1, i2);
+			for (int i=index; i< end; i+=7){
+				datagrams.add(datagrams.remove(i));
+			}
+		}*/
+		
+		for (final CsvDatagram datagram:datagrams){
+			list.addAll(parser.parse(datagram));
+		}
+		list.addAll(parser.flush());
+		
+		
+		Map<String, Integer> count = new HashMap<String, Integer>(); 
+		count.put("894857", 0);
+		count.put("nbjhiyutof", 0);
+		count.put("23.098", 0);
+		count.put("true", 0);
+		count.put("33", 0);
+		count.put("poiu", 0);
+		count.put("34.0", 0);
+		count.put("false", 0);
+		count.put("12", 0);
+		count.put("azerty", 0);
+		count.put("65.78", 0);
+		count.put("azzzzzzzzzzzerty", 0);
+		count.put("null", 0);
+		
+		Assert.assertEquals(390, list.size());
+		for (BigDataCsvParser o:list){
+			Assert.assertNotNull(o);
+			if (o.getField1() == null){
+				count.put("null", count.get("null") + 1);
+			}else{
+				Assert.assertTrue(count.containsKey(o.getField1().toString()));
+				count.put(o.getField1().toString(), count.get(o.getField1().toString()) + 1);
+			}
+			if (o.getField2() == null){
+				count.put("null", count.get("null") + 1);
+			}else{
+				Assert.assertTrue(count.containsKey(o.getField2().toString()));
+				count.put(o.getField2().toString(), count.get(o.getField2().toString()) + 1);
+			}
+			if (o.getField3() == null){
+				count.put("null", count.get("null") + 1);
+			}else{
+				Assert.assertTrue(count.containsKey(o.getField3().toString()));
+				count.put(o.getField3().toString(), count.get(o.getField3().toString()) + 1);
+			}
+			if (o.getField4() == null){
+				count.put("null", count.get("null") + 1);
+			}else{
+				Assert.assertTrue(count.containsKey(o.getField4().toString()));
+				count.put(o.getField4().toString(), count.get(o.getField4().toString()) + 1);
+			}
+		}
+		
+		Assert.assertEquals(new Integer(110), count.get("894857"));
+		Assert.assertEquals(new Integer(110), count.get("nbjhiyutof"));
+		Assert.assertEquals(new Integer(109), count.get("23.098"));
+		Assert.assertEquals(new Integer(309), count.get("true"));
+		Assert.assertEquals(new Integer(80), count.get("33"));
+		Assert.assertEquals(new Integer(80), count.get("poiu"));
+		Assert.assertEquals(new Integer(80), count.get("34.0"));
+		Assert.assertEquals(new Integer(80), count.get("false"));
+		Assert.assertEquals(new Integer(200), count.get("12"));
+		Assert.assertEquals(new Integer(199), count.get("azerty"));
+		Assert.assertEquals(new Integer(200), count.get("65.78"));
+		Assert.assertEquals(new Integer(1), count.get("azzzzzzzzzzzerty"));
+		Assert.assertEquals(new Integer(2), count.get("null"));
 	}
 }

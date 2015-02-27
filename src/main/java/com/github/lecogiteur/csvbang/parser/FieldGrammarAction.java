@@ -94,9 +94,12 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 	@Override
 	public boolean add(CsvGrammarAction<?> word) throws CsvBangException {
 		if (word != null){
-			isFieldTerminated = isFieldTerminated || word.isLastAction();
 			switch (word.getType()) {
+			case RECORD:
+				isFieldTerminated = isFieldTerminated || word.isLastAction();
+				return false;
 			case END:
+				isFieldTerminated = isFieldTerminated || word.isLastAction();
 				return true;
 			default:
 				return false;
