@@ -27,6 +27,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * 
@@ -75,7 +76,7 @@ public class CsvbangUti {
 	 * @since 0.0.1
 	 */
 	public static final boolean isCollectionEmpty(final Collection<?> c){
-		return c == null || c.size() == 0;
+		return c == null || c.isEmpty();
 	}
 	
 	/**
@@ -85,7 +86,27 @@ public class CsvbangUti {
 	 * @since 0.0.1
 	 */
 	public static final boolean isCollectionNotEmpty(final Collection<?> c){
-		return c != null && c.size() > 0;
+		return c != null && !c.isEmpty();
+	}
+	
+	/**
+	 * Verify if a map is empty
+	 * @param map a map
+	 * @return True if map is empty
+	 * @since 1.0.0
+	 */
+	public static final boolean isCollectionEmpty(final Map<?, ?> map){
+		return map == null || map.isEmpty();
+	}
+	
+	/**
+	 * Verify if a map is not empty
+	 * @param map a map
+	 * @return True if map is not empty
+	 * @since 1.0.0
+	 */
+	public static final boolean isCollectionNotEmpty(final Map<?, ?> map){
+		return map != null && !map.isEmpty();
 	}
 	
 	

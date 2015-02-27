@@ -29,11 +29,23 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class EndGrammarAction implements GrammarAction<Void> {
+public class EndGrammarAction implements CsvGrammarAction<Void> {
+	
+	/**
+	 * Start offset of this action in CSV file
+	 * @since 1.0.0
+	 */
+	private long startOffset = -1;
+	
+	/**
+	 * End offset of this action in CSV file
+	 * @since 1.0.0
+	 */
+	private long endOffset = -1;
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#getType()
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getType()
 	 * @since 1.0.0
 	 */
 	@Override
@@ -43,7 +55,7 @@ public class EndGrammarAction implements GrammarAction<Void> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#add(byte)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(byte)
 	 * @since 1.0.0
 	 */
 	@Override
@@ -53,17 +65,17 @@ public class EndGrammarAction implements GrammarAction<Void> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#add(com.github.lecogiteur.csvbang.parser.GrammarAction)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(com.github.lecogiteur.csvbang.parser.CsvGrammarAction)
 	 * @since 1.0.0
 	 */
 	@Override
-	public boolean add(GrammarAction<?> word) throws CsvBangException {
+	public boolean add(CsvGrammarAction<?> word) throws CsvBangException {
 		return false;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#isActionCompleted(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isActionCompleted(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType)
 	 * @since 1.0.0
 	 */
 	@Override
@@ -73,12 +85,64 @@ public class EndGrammarAction implements GrammarAction<Void> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#execute()
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#execute()
 	 * @since 1.0.0
 	 */
 	@Override
 	public Void execute() throws CsvBangException {
 		return null;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
+	 * @since 1.0.0
+	 */
+	@Override
+	public long getStartOffset() {
+		return startOffset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
+	 * @since 1.0.0
+	 */
+	@Override
+	public long getEndOffset() {
+		return endOffset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
+	 * @since 1.0.0
+	 */
+	@Override
+	public void setStartOffset(long offset) {
+		startOffset = offset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
+	 * @since 1.0.0
+	 */
+	@Override
+	public void setEndOffset(long offset) {
+		endOffset = offset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isLastAction() {
+		return true;
+	}
+
+
 
 }

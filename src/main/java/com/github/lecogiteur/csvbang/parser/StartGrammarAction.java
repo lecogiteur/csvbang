@@ -31,14 +31,14 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class StartGrammarAction implements GrammarAction<GrammarAction<?>>{
+public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>{
 	
 	/**
 	 * When we read file, we doesn't know what action we must to execute. 
 	 * So, start action defines and delegate works to another specific action.
 	 * @since 1.0.0
 	 */
-	private final GrammarAction<?> delegatedAction;
+	private final CsvGrammarAction<?> delegatedAction;
 	
 	/**
 	 * Constructor
@@ -48,11 +48,12 @@ public class StartGrammarAction implements GrammarAction<GrammarAction<?>>{
 	 */
 	public <T> StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf){
 		delegatedAction = new RecordGrammarAction<T>(beanClass, conf);
+		delegatedAction.setStartOffset(0);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#getType()
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getType()
 	 * @since 1.0.0
 	 */
 	@Override
@@ -62,7 +63,7 @@ public class StartGrammarAction implements GrammarAction<GrammarAction<?>>{
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#add(byte)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(byte)
 	 * @since 1.0.0
 	 */
 	@Override
@@ -72,17 +73,17 @@ public class StartGrammarAction implements GrammarAction<GrammarAction<?>>{
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#add(com.github.lecogiteur.csvbang.parser.GrammarAction)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(com.github.lecogiteur.csvbang.parser.CsvGrammarAction)
 	 * @since 1.0.0
 	 */
 	@Override
-	public boolean add(final GrammarAction<?> word) throws CsvBangException {
+	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException {
 		return delegatedAction.add(word);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#isActionCompleted(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isActionCompleted(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType)
 	 * @since 1.0.0
 	 */
 	@Override
@@ -92,11 +93,61 @@ public class StartGrammarAction implements GrammarAction<GrammarAction<?>>{
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#execute()
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#execute()
 	 * @since 1.0.0
 	 */
 	@Override
-	public GrammarAction<?> execute() throws CsvBangException {
+	public CsvGrammarAction<?> execute() throws CsvBangException {
 		return delegatedAction;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
+	 * @since 1.0.0
+	 */
+	@Override
+	public long getStartOffset() {
+		return delegatedAction.getStartOffset();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
+	 * @since 1.0.0
+	 */
+	@Override
+	public long getEndOffset() {
+		return delegatedAction.getEndOffset();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
+	 * @since 1.0.0
+	 */
+	@Override
+	public void setStartOffset(long offset) {
+		delegatedAction.setStartOffset(offset);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
+	 * @since 1.0.0
+	 */
+	@Override
+	public void setEndOffset(long offset) {
+		delegatedAction.setEndOffset(offset);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isLastAction() {
+		return delegatedAction.isLastAction();
 	}
 }

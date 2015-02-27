@@ -99,9 +99,16 @@ public class CsvParserTest {
 		final Collection<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>();
 		
 		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
+			Collection<OneFieldCsvParserBean> l = parser.parse(datagram);
+			if (l != null){
+				list.addAll(l);
+			}
 		}
-		list.addAll(parser.flush());
+		
+		Collection<OneFieldCsvParserBean> l = parser.flush();
+		if (l != null){
+			list.addAll(l);
+		}
 		
 		Assert.assertEquals(0, list.size());
 	}

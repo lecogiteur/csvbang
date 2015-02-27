@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.parser.GrammarAction
+ *  com.github.lecogiteur.csvbang.parser.CsvGrammarAction
  * 
  *  Copyright (C) 2013-2015  Tony EMMA
  *
@@ -30,7 +30,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public interface GrammarAction<T> {
+public interface CsvGrammarAction<T> {
 	
 	/**
 	 * Get type of action to do.
@@ -54,15 +54,22 @@ public interface GrammarAction<T> {
 	 * @throws CsvBangException if a problem occurred when we add a word for action
 	 * @since 1.0.0
 	 */
-	public boolean add(final GrammarAction<?> word) throws CsvBangException;
+	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException;
 	
 	/**
-	 * Verify if the action is completed
+	 * Verify if the action is completed compared to the next action
 	 * @param next the next action
 	 * @return True if the action is completed and ready for execution
 	 * @since 1.0.0
 	 */
 	public boolean isActionCompleted(final CsvGrammarActionType next);
+	
+	/**
+	 * Verify if it's the last action of the CSV file. No action after this action to execute.
+	 * @return True if it's the last action.
+	 * @since 1.0.0
+	 */
+	public boolean isLastAction();
 	
 	/**
 	 * Execute the action
@@ -71,5 +78,33 @@ public interface GrammarAction<T> {
 	 * @since 1.0.0
 	 */
 	public T execute() throws CsvBangException;
+	
+	/**
+	 * Get the start offset in CSV file of action
+	 * @return the start offset
+	 * @since 1.0.0
+	 */
+	public long getStartOffset();
+	
+	/**
+	 * Get the end offset in CSV file of action
+	 * @return the end offset
+	 * @since 1.0.0
+	 */
+	public long getEndOffset();
+	
+	/**
+	 * Set the start offset in CSV file of action 
+	 * @param offset the start offset
+	 * @since 1.0.0
+	 */
+	public void setStartOffset(final long offset);
+	
+	/**
+	 * Set the end offset in CSV file of action 
+	 * @param offset the end offset
+	 * @since 1.0.0
+	 */
+	public void setEndOffset(final long offset);
 
 }

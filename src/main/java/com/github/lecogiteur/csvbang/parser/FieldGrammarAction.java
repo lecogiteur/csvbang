@@ -30,7 +30,19 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class FieldGrammarAction implements GrammarAction<String> {
+public class FieldGrammarAction implements CsvGrammarAction<String> {
+	
+	/**
+	 * Start offset of this action in CSV file
+	 * @since 1.0.0
+	 */
+	private long startOffset = -1;
+	
+	/**
+	 * End offset of this action in CSV file
+	 * @since 1.0.0
+	 */
+	private long endOffset = -1;
 	
 	/**
 	 * Content of field
@@ -56,7 +68,7 @@ public class FieldGrammarAction implements GrammarAction<String> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#getType()
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getType()
 	 * @since 1.0.0
 	 */
 	@Override
@@ -66,7 +78,7 @@ public class FieldGrammarAction implements GrammarAction<String> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#add(byte)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(byte)
 	 * @since 1.0.0
 	 */
 	@Override
@@ -76,39 +88,93 @@ public class FieldGrammarAction implements GrammarAction<String> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#add(com.github.lecogiteur.csvbang.parser.GrammarAction)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(com.github.lecogiteur.csvbang.parser.CsvGrammarAction)
 	 * @since 1.0.0
 	 */
 	@Override
-	public boolean add(GrammarAction<?> word) throws CsvBangException {
+	public boolean add(CsvGrammarAction<?> word) throws CsvBangException {
 		if (word != null){
-			if (CsvGrammarActionType.END.equals(word.getType())){
-				isFieldTerminated = true;
+			isFieldTerminated = isFieldTerminated || word.isLastAction();
+			switch (word.getType()) {
+			case END:
+				return true;
+			default:
+				return false;
 			}
-			return false;
-			//throw new CsvBangException(String.format("We cannot add this type [%s] to a content of field", word.getType()));
 		}
 		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#isActionCompleted(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType)
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isActionCompleted(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType)
 	 * @since 1.0.0
 	 */
 	@Override
 	public boolean isActionCompleted(CsvGrammarActionType next) {
-		return isFieldTerminated || (next != null && !CsvGrammarActionType.NOTHING_TO_DO.equals(next));
+		return isFieldTerminated || (next != null && !(CsvGrammarActionType.NOTHING_TO_DO.equals(next) || CsvGrammarActionType.UNDEFINED.equals(next)));
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.GrammarAction#execute()
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#execute()
 	 * @since 1.0.0
 	 */
 	@Override
 	public String execute() {
 		return content.length() == 0?null:content.toString();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
+	 * @since 1.0.0
+	 */
+	@Override
+	public long getStartOffset() {
+		return startOffset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
+	 * @since 1.0.0
+	 */
+	@Override
+	public long getEndOffset() {
+		return endOffset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
+	 * @since 1.0.0
+	 */
+	@Override
+	public void setStartOffset(long offset) {
+		startOffset = offset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
+	 * @since 1.0.0
+	 */
+	@Override
+	public void setEndOffset(long offset) {
+		endOffset = offset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isLastAction() {
+		return isFieldTerminated;
+	}
+
+
 
 }
