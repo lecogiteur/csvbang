@@ -343,7 +343,7 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		//for each field
 		for (final CsvFieldConfiguration f:conf.fields){
 			// get value
-			final Object v = ReflectionUti.getValue(f.memberBean, line);
+			final Object v = ReflectionUti.getValue(f.getter, line);
 			
 			//add value
 			if (v != null){
