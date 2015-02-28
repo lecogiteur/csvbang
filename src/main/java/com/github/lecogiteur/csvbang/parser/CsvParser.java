@@ -30,7 +30,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -140,14 +139,13 @@ public class CsvParser<T> {
 		}
 		
 		if (LOGGER.isLoggable(Level.FINEST)){
-			LOGGER.finest(String.format("Parse offset [%s]", startOffset));
+			LOGGER.finest(String.format("Parse offset [%s] - stack contains %s actions- file ID: %s - Last datagram", 
+					startOffset, stack.size(), fileID, isLastDatagram ));
 		}
-		
 		
 		//init
 		byte[] content = csvContent;
 		long fileOffset = startOffset;
-		long backupFileOffset = -1;
 		boolean mustContinue = false;
 		boolean isLast = isLastDatagram;
 		
@@ -160,14 +158,6 @@ public class CsvParser<T> {
 
 				//load stack
 				initStack(stack, fileID, fileOffset);
-
-				//TODO à supprimer
-				for (CsvGrammarAction<?> aze:stack){
-					if (3353 == aze.getStartOffset() && 3355 == aze.getEndOffset()){
-						System.out.println("INIT Stack : start = " + stack.getFirst().getStartOffset() + " - end = " + stack.getLast().getEndOffset() );
-					}
-				}
-				
 
 				//has inital stack?
 				final boolean hasInitialStack = !stack.isEmpty();
@@ -232,26 +222,16 @@ public class CsvParser<T> {
 						//generate the new action
 						final CsvGrammarAction<?> a = generateAction(newAction, content.length > contentOffset?content.length-contentOffset:0);
 						a.setStartOffset(startActionOffset);
-						action.setEndOffset(startActionOffset);
 						if (isUndefinedAction){
+							//if the action is undefined we add the keyword to content of action
 							a.add(content[contentOffset++]);
 							++fileOffset;
 						}
 
-						//create stack of actions
-						if (action != null && !action.isActionCompleted(newAction)){
-							// the previous action is not terminated, so we stock it in the stack
-							stack.add(action);
-						}else if (!stack.isEmpty()){
-							//the previous action is terminated and the stack is not empty.
-							//We try to clear the stack
-							tryClearStack(listOfBeans, stack, action, newAction);
-						}else{
-							//the action is terminated and there is not action in stack. 
-							//We execute the action
-							executeAction(listOfBeans, stack, action);
-						}
-
+						//add action to the the stack
+						action.setEndOffset(startActionOffset);
+						stack.add(action);
+						
 						//we set the new current action
 						action = a;
 					}
@@ -267,123 +247,39 @@ public class CsvParser<T> {
 
 				if (isLast && !CsvGrammarActionType.END.equals(action.getType())){
 					//it's the last datagramm for this file
-					if (!stack.isEmpty()){
-						tryClearStack(listOfBeans, stack, stack.pollLast(), CsvGrammarActionType.END);
-					}
 					action = generateAction(CsvGrammarActionType.END, 0);
 					action.setStartOffset(fileOffset);
 					action.setEndOffset(fileOffset);
 					stack.add(action);
 				}
-
-				//TODO à supprimer
-				for (CsvGrammarAction<?> aze:stack){
-					if (3353 == aze.getStartOffset() && 3355 == aze.getEndOffset()){
-						System.out.println("Stack : start = " + stack.getFirst().getStartOffset() + " - end = " + stack.getLast().getEndOffset() );
-					}
-				}
-				
-			/*	tryToGroupAndClearStack(listOfBeans, stack, fileID, fileOffset);
-
-				if (!stack.isEmpty()){
-					if (backupFileOffset != fileOffset && CsvGrammarActionType.UNDEFINED.equals(stack.getLast().getType())){							//perhaps we can analyze another part of the stack, we try
-							final UndefinedGrammarAction a = (UndefinedGrammarAction)action;
-							content = a.execute();
-							fileOffset = a.getStartOffset();
-							backupFileOffset = content != null?fileOffset + content.length:fileOffset; //in order to not loop
-							mustContinue = true;
-					}else{
-						//stack is not empty, save it
-						stackByOffset.put(generateID(fileID, stack.getFirst().getStartOffset(), stack.getLast().getEndOffset()), stack);
-					}
-				}*/
 				
 				mustContinue = false;
 				if (!stack.isEmpty()){
 					
-					Deque<CsvGrammarAction<?>> stackToSave = new ArrayDeque<CsvGrammarAction<?>>(stack.size());
-					if (!CsvGrammarActionType.UNDEFINED.equals(stack.getFirst().getType())){
-						action = stack.removeFirst();
-						long start = action.getStartOffset();
-						while (!stack.isEmpty()){
-							if (action.isLastAction()){
-								tryClearStack(listOfBeans, stackToSave, action, CsvGrammarActionType.END);
-								action = null;
-								break;
-							}else if (action.isActionCompleted(stack.getFirst().getType())){
-								tryClearStack(listOfBeans, stackToSave, action, stack.getFirst().getType());
-								action = stack.removeFirst();
-							}else{
-								stackToSave.addLast(action);
-								action = stack.removeFirst();
-							}
-						}
-						if (action != null){
-							if (action.isLastAction()){
-								tryClearStack(listOfBeans, stackToSave, action, CsvGrammarActionType.END);
-							}else{
-								stackToSave.addLast(action);
-							}
-						}else if (stackToSave.isEmpty() || (stackToSave.size() == 1 && CsvGrammarActionType.END.equals(stackToSave.getFirst().getType()))){
-							action = generateAction(CsvGrammarActionType.END, 0);
-							action.setStartOffset(start);
-							action.setEndOffset(start);
-							stackToSave.clear();
-							stackToSave.add(action);
-							initStack(stackToSave, fileID, start);
-						}
+					//try to execute all action in stack
+					tryExecuteStack(stack, listOfBeans, fileID);
 					
-						stack.clear();
-						stack.addAll(stackToSave);
-					}
-					
-					
-					
-					stackToSave = new ArrayDeque<CsvGrammarAction<?>>(stack.size());
+					//retrieve the last undefined action in order to try to execute again the undefined action
+					final Deque<CsvGrammarAction<?>> stackToSave = new ArrayDeque<CsvGrammarAction<?>>(stack.size());
 					action = stack.removeLast();
 					while (!stack.isEmpty() && !CsvGrammarActionType.UNDEFINED.equals(action.getType())){
 						stackToSave.addFirst(action);
 						action = stack.removeLast();
 					}
 					
-				/*	if (!stackToSave.isEmpty()){
-						Iterator<CsvGrammarAction<?>> iterator = stackToSave.iterator();
-						final Deque<CsvGrammarAction<?>> stackToSave2 = new ArrayDeque<CsvGrammarAction<?>>(stackToSave.size());
-						stackToSave2.add(iterator.next());
-						CsvGrammarAction<?> a1 = iterator.hasNext()?iterator.next():null;
-						if (a1 != null && a1.isLastAction()){
-							tryClearStack(listOfBeans, stackToSave2, a1, CsvGrammarActionType.END);
-						}
-						while (iterator.hasNext()){
-							CsvGrammarAction<?> aa = iterator.next();
-							if (a1.isActionCompleted(aa.getType())){
-								tryClearStack(listOfBeans, stackToSave2, a1, aa.getType());
-								a1 = aa;
-							}else if (a1.isLastAction()){
-								tryClearStack(listOfBeans, stackToSave2, a1, CsvGrammarActionType.END);
-								a1 = aa;
-							}else{
-								stackToSave2.addLast(a1);
-								a1 = aa;
-							}
-						}
-						if (a1 != null){
-							stackToSave2.addLast(a1);
-						}
-						stackToSave = stackToSave2;
-					}*/
-					
 					if (fileOffset != action.getEndOffset() && !stack.isEmpty()){ //do not loop
+						//we find an undefined action. We try to parse again its content
 						final UndefinedGrammarAction a = (UndefinedGrammarAction)action;
 						content = a.execute();
 						fileOffset = a.getStartOffset();
 						mustContinue = true;
 						isLast = a.isLastAction();
-						//stack is not empty, save it
 						if (!stackToSave.isEmpty()){
+							//a part of stack (after the undefined action) is not empty, save it
 							stackByOffset.put(generateID(fileID, stackToSave.getFirst().getStartOffset(), stackToSave.getLast().getEndOffset()), stackToSave);
 						}
 					}else if (fileOffset != action.getEndOffset() && stack.isEmpty()){
+						//stack is not empty, save it
 						stackToSave.addFirst(action);
 						stackByOffset.put(generateID(fileID, stackToSave.getFirst().getStartOffset(), stackToSave.getLast().getEndOffset()), stackToSave);
 					}else if (stackToSave.isEmpty()){
@@ -404,6 +300,59 @@ public class CsvParser<T> {
 	}
 	
 	/**
+	 * Try to execute all actions of the stack
+	 * @param stack the stack
+	 * @param listOfBeans list of CSV bean generated
+	 * @param fileID the file ID
+	 * @throws CsvBangException if a problem has occurred when we execute an action
+	 * @since 1.0.0
+	 */
+	private void tryExecuteStack(final Deque<CsvGrammarAction<?>> stack, final Collection<T> listOfBeans, final int fileID) 
+			throws CsvBangException{
+		//init stack
+		final Deque<CsvGrammarAction<?>> stackToSave = new ArrayDeque<CsvGrammarAction<?>>(stack.size());
+		
+		//retrieve first action of stack
+		CsvGrammarAction<?> action = stack.removeFirst();
+		final long startOffset = action.getStartOffset();
+		while (!stack.isEmpty()){
+			if (action.isLastAction()){
+				//It's the last action
+				tryClearStack(listOfBeans, stackToSave, action, CsvGrammarActionType.END);
+				action = null;
+				break;
+			}else if (action.isActionCompleted(stack.getFirst().getType())){
+				//the action is terminated
+				tryClearStack(listOfBeans, stackToSave, action, stack.getFirst().getType());
+				action = stack.removeFirst();
+			}else{
+				//the action is not terminated, so we get the next action 
+				stackToSave.addLast(action);
+				action = stack.removeFirst();
+			}
+		}
+
+		stack.clear();
+		if (action != null){
+			//
+			if (action.isLastAction()){
+				tryClearStack(listOfBeans, stackToSave, action, CsvGrammarActionType.END);
+			}else{
+				stackToSave.addLast(action);
+			}
+		}else if (stackToSave.isEmpty() || (stackToSave.size() == 1 && CsvGrammarActionType.END.equals(stackToSave.getFirst().getType()))){
+			//all stack is Empty and the last action is the last action of file, so we add END action
+			action = generateAction(CsvGrammarActionType.END, 0);
+			action.setStartOffset(startOffset);
+			action.setEndOffset(startOffset);
+			stack.add(action);
+			return;
+		}
+
+		stack.addAll(stackToSave);
+	}
+	
+	/**
 	 * Flush content. Becareful, this method is blocking until all content is parsed.
 	 * @return the list of CSV bean
 	 * @throws CsvBangException if a problem has occurred when CsvBang parsed the CSV file
@@ -413,15 +362,6 @@ public class CsvParser<T> {
 		
 		//list of CSV beans which are completed.
 		final Collection<T> listOfBeans = new ArrayList<T>(100);
-		
-		//TODO à supprimer
-		for (final Entry<ActionKey, Deque<CsvGrammarAction<?>>> entry:stackByOffset.entrySet()){
-			for (CsvGrammarAction<?> action:entry.getValue()){
-				if (3353 == action.getStartOffset() && 3355 == action.getEndOffset()){
-					System.out.println("Stack : start = " + entry.getKey().startOffset + " - end = " + entry.getKey().endOffset);
-				}
-			}
-		}
 		
 		//for each stack which are not terminated
 		while (!stackByOffset.isEmpty()){
@@ -437,7 +377,6 @@ public class CsvParser<T> {
 			}
 			
 			//true, if the last action of stack is the last action to execute in file
-			boolean isLast = stack.getValue().getLast().isLastAction();
 			if (CsvGrammarActionType.END.equals(stack.getValue().getLast().getType())){
 				//it's the last action
 				final CsvGrammarAction<?> end = stack.getValue().removeLast();
@@ -472,119 +411,6 @@ public class CsvParser<T> {
 			}
 		}
 		return listOfBeans;
-	}
-
-	/**
-	 * We try to execute and clear all actions in stack
-	 * @param csvBeans list of CSV bean which can be created
-	 * @param stack stack of action
-	 * @param fileID file ID 
-	 * @param fileOffset offset in file
-	 * @throws CsvBangException if a problem has occurred when we try to execute action 
-	 * @since 1.0.0
-	 */
-	private void tryToGroupAndClearStack2(final Collection<T> csvBeans, final Deque<CsvGrammarAction<?>> stack, 
-			final int fileID, final long fileOffset) throws CsvBangException{
-		if (CsvbangUti.isCollectionEmpty(stack)){
-			return;
-		}
-		
-		if (stack.getLast().isLastAction()){
-			//the last action is terminated
-			tryClearStack(csvBeans, stack, stack.pollLast(), CsvGrammarActionType.END);
-		}
-		
-		//try to clear the initial stack
-		final Deque<CsvGrammarAction<?>> currentStack = new ArrayDeque<CsvGrammarAction<?>>(stack);
-		stack.clear();
-		CsvGrammarAction<?> lastAction = null;
-		while(!currentStack.isEmpty()){
-			final CsvGrammarAction<?> a = currentStack.removeFirst();
-			if (lastAction != null && lastAction.isActionCompleted(a.getType())){
-				tryClearStack(csvBeans, stack, stack.pollLast(), a.getType());
-			}else if(a.isLastAction()){
-				tryClearStack(csvBeans, stack, a, CsvGrammarActionType.END);
-				lastAction = a;	
-				continue;
-			}
-			stack.addLast(a);
-			lastAction = a;				
-		}
-		
-		//init - we search stack after the specified stack
-		ActionKey key = generateID(fileID, fileOffset, -1);
-		Deque<CsvGrammarAction<?>> stackToAdd = stackByOffset.remove(key);
-		
-		while (CsvbangUti.isCollectionNotEmpty(stackToAdd)){
-			//we add all elements of the stack after the specified stack
-			final Iterator<CsvGrammarAction<?>> iterator = stackToAdd.iterator();
-			while(iterator.hasNext()){
-				final CsvGrammarAction<?> action = iterator.next();
-				if (stack.getLast().isActionCompleted(action.getType())){
-					tryClearStack(csvBeans, stack, stack.pollLast(), action.getType());
-					stack.addLast(action);
-				}else if (action.isLastAction()){
-					tryClearStack(csvBeans, stack, action, CsvGrammarActionType.END);
-				}else{
-					stack.addLast(action);
-				}
-			}
-			//search next stack
-			key = generateID(fileID, stack.getLast().getEndOffset(), -1);
-			stackToAdd = stackByOffset.remove(key);
-		}
-	}
-	
-	/**
-	 * We try to execute and clear all actions in stack
-	 * @param csvBeans list of CSV bean which can be created
-	 * @param stack stack of action
-	 * @param fileID file ID 
-	 * @param fileOffset offset in file
-	 * @throws CsvBangException if a problem has occurred when we try to execute action 
-	 * @since 1.0.0
-	 */
-	private void tryToGroupAndClearStack(final Collection<T> csvBeans, final Deque<CsvGrammarAction<?>> stack, 
-			final int fileID, final long fileOffset) throws CsvBangException{
-		if (CsvbangUti.isCollectionEmpty(stack)){
-			return;
-		}
-		
-		if (stack.getLast().isLastAction()){
-			//the last action is terminated
-			tryClearStack(csvBeans, stack, stack.pollLast(), CsvGrammarActionType.END);
-		}
-		
-		//init - we search stack after the specified stack
-		Deque<CsvGrammarAction<?>> stackToAdd = new ArrayDeque<CsvGrammarAction<?>>(stack);
-		stack.clear();
-		
-		while (CsvbangUti.isCollectionNotEmpty(stackToAdd)){
-			//we add all elements of the stack after the specified stack
-			while(!stackToAdd.isEmpty()){
-				final CsvGrammarAction<?> action = stackToAdd.removeFirst();
-				if (stack.isEmpty()){
-					stack.add(action);
-				}else if (CsvGrammarActionType.UNDEFINED.equals(action.getType())){
-					stack.addLast(action);
-					if (!stackToAdd.isEmpty()){
-						stackByOffset.put(generateID(fileID, stackToAdd.getFirst().getStartOffset(), 
-								stackToAdd.getLast().getEndOffset()), stackToAdd);
-					}
-					return;
-				}else if (stack.getLast().isActionCompleted(action.getType())){
-					tryClearStack(csvBeans, stack, stack.pollLast(), action.getType());
-					stack.addLast(action);
-				}else if (action.isLastAction()){
-					tryClearStack(csvBeans, stack, action, CsvGrammarActionType.END);
-				}else{
-					stack.addLast(action);
-				}
-			}
-			//search next stack
-			final ActionKey key = generateID(fileID, stack.getLast().getEndOffset(), -1);
-			stackToAdd = stackByOffset.remove(key);
-		}
 	}
 	
 	/**
@@ -655,30 +481,28 @@ public class CsvParser<T> {
 		keywordSortedByLength.add(conf.delimiter);
 		
 		//end record
-		if (hasEndRecord && !keywordSortedByLength.contains(conf.endRecord)){
-			keywordSortedByLength.add(conf.endRecord);
-		}
+		sortKeyword(keywordSortedByLength, conf.endRecord);
 		
 		//start record
-		if (CsvbangUti.isStringNotBlank(conf.startRecord) && !keywordSortedByLength.contains(conf.startRecord)){
-			keywordSortedByLength.add(conf.startRecord);
-		}
+		sortKeyword(keywordSortedByLength, conf.startRecord);
 		
 		//the footer
-		if (CsvbangUti.isStringNotBlank(conf.footer) && !keywordSortedByLength.contains(conf.footer)){
-			keywordSortedByLength.add(conf.footer);
-		}
+		sortKeyword(keywordSortedByLength, conf.footer);
 		
 		//the header
-		if (CsvbangUti.isStringNotBlank(conf.header) && !keywordSortedByLength.contains(conf.header)){
-			keywordSortedByLength.add(conf.header);
-		}
+		sortKeyword(keywordSortedByLength, conf.header);
 		
-		//a comment
-		final StringBuilder comment = new StringBuilder(5);
-		comment.append(conf.defaultEndLineCharacter.toString()).append(conf.commentCharacter);
-		if (hasCommentChar && !keywordSortedByLength.contains(comment.toString())){
-			keywordSortedByLength.add(comment.toString());
+
+		final StringBuilder startComment = new StringBuilder(5);
+		final StringBuilder endComment = new StringBuilder(5);
+		if (hasCommentChar){
+			//start comment
+			startComment.append(conf.defaultEndLineCharacter.toString()).append(conf.commentCharacter);
+			sortKeyword(keywordSortedByLength, startComment.toString());
+
+			//END comment
+			endComment.append(conf.defaultEndLineCharacter.toString()).append(conf.startRecord);
+			sortKeyword(keywordSortedByLength, endComment.toString());
 		}
 		
 		//sort by length. Put in first the longest string 
@@ -705,9 +529,10 @@ public class CsvParser<T> {
 		//the header
 		addKeyword(keywordSortedByLength, table, actionList, conf.header, CsvGrammarActionType.NOTHING_TO_DO);
 		
-		//a start comment
+		//start comment
 		if (hasCommentChar){
-			addKeyword(keywordSortedByLength, table, actionList, comment.toString(), CsvGrammarActionType.COMMENT);
+			addKeyword(keywordSortedByLength, table, actionList, startComment.toString(), CsvGrammarActionType.COMMENT);
+			addKeyword(keywordSortedByLength, table, actionList, endComment.toString(), CsvGrammarActionType.RECORD);
 		}
 
 		index = keywordSortedByLength.size();
@@ -749,6 +574,18 @@ public class CsvParser<T> {
 	}
 	
 	/**
+	 * Sort keyword
+	 * @param sortedKeyword list of sorted keywords
+	 * @param keyword the keyword to sort
+	 * @since 1.0.0
+	 */
+	private void sortKeyword(final List<String> sortedKeywords, final String keyword){
+		if (CsvbangUti.isStringNotBlank(keyword) && !sortedKeywords.contains(keyword)){
+			sortedKeywords.add(keyword);
+		}
+	}
+	
+	/**
 	 * Add a keyword to the keyword table and action list
 	 * @param keywordSortedByLength the list of keyword sorted by length
 	 * @param tableKeyword the table of keyword
@@ -764,7 +601,7 @@ public class CsvParser<T> {
 		int index = keywordSortedByLength.indexOf(keyword);
 		if (index >= 0){
 			tableKeyword[index] = keyword.getBytes(conf.charset);
-			if (!actionList.get(index).equals(CsvGrammarActionType.NOTHING_TO_DO)){
+			if (!actionList.get(index).equals(CsvGrammarActionType.NOTHING_TO_DO) && !actionList.get(index).equals(action)){
 				throw new CsvBangException(String.format("The CSv grammar contains already an action [%s] with the same keyword [%s]. We can't add action [%s]. We can't read this CSV file", 
 						actionList.get(index), keyword, action));
 			}
@@ -842,55 +679,6 @@ public class CsvParser<T> {
 		default:
 			//undefined action
 			return new UndefinedGrammarAction(contentLength);
-		}
-	}
-	
-	/**
-	 * Try to clean the stack of actions which are not terminated
-	 * @param listOfBeans list of beans which are completed
-	 * @param stack stack of action which are not terminated
-	 * @param action current action which is terminated
-	 * @param actionType current new action type
-	 * @throws CsvBangException if a problem has occurred.
-	 * @since 1.0.0
-	 */
-	private void tryClearStack2(final Collection<T> listOfBeans, final Deque<CsvGrammarAction<?>> stack, 
-			final CsvGrammarAction<?> action, final CsvGrammarActionType actionType) throws CsvBangException{
-		CsvGrammarAction<?> a = action;
-		boolean isEmptyStack = stack.isEmpty();
-		CsvGrammarActionType currentActionType = actionType;
-		//we take the last action in stack
-		CsvGrammarAction<?> lastAction = stack.pollLast();
-		while (!isEmptyStack && lastAction != null){
-			//we add the current action which is terminated to the previous action
-			if (!lastAction.add(a)){
-				stack.addLast(lastAction);
-				if (executeAction(listOfBeans, stack, a)){
-					currentActionType = a.getType();
-					a = stack.pollLast();
-					lastAction = stack.pollLast();
-					isEmptyStack = lastAction == null;
-					continue;
-				}else{
-					break;
-				}
-			}else if (lastAction.isActionCompleted(currentActionType)){
-				//the previous action is now terminated. So we add it to its previous action
-				a = lastAction;
-				lastAction = stack.pollLast();
-			}else{
-				//the previous action is not terminated so we put it again in stack.
-				//not necessary to continue to empty the stack. 
-				//We must to wait that new sub action is completed in order to try to terminate this action
-				stack.add(lastAction);
-				lastAction = null;
-			}
-			isEmptyStack = stack.isEmpty();
-		}
-
-		//the action is terminated
-		if (isEmptyStack){
-			executeAction(listOfBeans, stack, a);
 		}
 	}
 	

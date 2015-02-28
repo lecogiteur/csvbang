@@ -98,21 +98,6 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 			content = copy;
 		}
 		content[index++] = b;
-		ismycontent();
-	}
-	
-	//TODO a supprimer
-	private boolean ismycontent(){
-		byte[] toto = new byte[]{10, 54, 53, 46, 55, 56, 54};
-		if (toto.length > index){
-			return false;
-		}
-		for (int i=0; i<toto.length; i++){
-			if (content[i] != toto[i]){
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**
