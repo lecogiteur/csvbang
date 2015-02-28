@@ -30,6 +30,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -138,8 +139,8 @@ public class CsvParser<T> {
 			return null;
 		}
 		
-		if (LOGGER.isLoggable(Level.FINE)){
-			LOGGER.fine(String.format("Parse offset [%s]", startOffset));
+		if (LOGGER.isLoggable(Level.FINEST)){
+			LOGGER.finest(String.format("Parse offset [%s]", startOffset));
 		}
 		
 		
@@ -159,6 +160,14 @@ public class CsvParser<T> {
 
 				//load stack
 				initStack(stack, fileID, fileOffset);
+
+				//TODO à supprimer
+				for (CsvGrammarAction<?> aze:stack){
+					if (3353 == aze.getStartOffset() && 3355 == aze.getEndOffset()){
+						System.out.println("INIT Stack : start = " + stack.getFirst().getStartOffset() + " - end = " + stack.getLast().getEndOffset() );
+					}
+				}
+				
 
 				//has inital stack?
 				final boolean hasInitialStack = !stack.isEmpty();
@@ -267,6 +276,13 @@ public class CsvParser<T> {
 					stack.add(action);
 				}
 
+				//TODO à supprimer
+				for (CsvGrammarAction<?> aze:stack){
+					if (3353 == aze.getStartOffset() && 3355 == aze.getEndOffset()){
+						System.out.println("Stack : start = " + stack.getFirst().getStartOffset() + " - end = " + stack.getLast().getEndOffset() );
+					}
+				}
+				
 			/*	tryToGroupAndClearStack(listOfBeans, stack, fileID, fileOffset);
 
 				if (!stack.isEmpty()){
@@ -364,7 +380,9 @@ public class CsvParser<T> {
 						mustContinue = true;
 						isLast = a.isLastAction();
 						//stack is not empty, save it
-						stackByOffset.put(generateID(fileID, stackToSave.getFirst().getStartOffset(), stackToSave.getLast().getEndOffset()), stackToSave);
+						if (!stackToSave.isEmpty()){
+							stackByOffset.put(generateID(fileID, stackToSave.getFirst().getStartOffset(), stackToSave.getLast().getEndOffset()), stackToSave);
+						}
 					}else if (fileOffset != action.getEndOffset() && stack.isEmpty()){
 						stackToSave.addFirst(action);
 						stackByOffset.put(generateID(fileID, stackToSave.getFirst().getStartOffset(), stackToSave.getLast().getEndOffset()), stackToSave);
@@ -395,6 +413,15 @@ public class CsvParser<T> {
 		
 		//list of CSV beans which are completed.
 		final Collection<T> listOfBeans = new ArrayList<T>(100);
+		
+		//TODO à supprimer
+		for (final Entry<ActionKey, Deque<CsvGrammarAction<?>>> entry:stackByOffset.entrySet()){
+			for (CsvGrammarAction<?> action:entry.getValue()){
+				if (3353 == action.getStartOffset() && 3355 == action.getEndOffset()){
+					System.out.println("Stack : start = " + entry.getKey().startOffset + " - end = " + entry.getKey().endOffset);
+				}
+			}
+		}
 		
 		//for each stack which are not terminated
 		while (!stackByOffset.isEmpty()){
@@ -896,6 +923,7 @@ public class CsvParser<T> {
 					currentActionType = current.getType();
 					current = stack.pollLast();
 					lastAction = stack.peekLast();
+					isEmptyStack = lastAction == null;
 					continue;
 				}else{
 					isEmptyStack = false;

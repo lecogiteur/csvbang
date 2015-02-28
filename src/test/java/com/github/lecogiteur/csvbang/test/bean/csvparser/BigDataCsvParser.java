@@ -116,6 +116,17 @@ public class BigDataCsvParser {
 	public void setField4(Boolean field4) {
 		this.field4 = field4;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see java.lang.Object#toString()
+	 * @since 1.0.0
+	 */
+	@Override
+	public String toString() {
+		return "BigDataCsvParser [field2=" + field2 + ", field4=" + field4
+				+ "]";
+	}
 	
 	
 }

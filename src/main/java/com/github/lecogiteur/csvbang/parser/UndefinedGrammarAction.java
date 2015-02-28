@@ -145,6 +145,7 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 					System.arraycopy(content, 0, tmp, 0, index);
 					System.arraycopy(table, 0, tmp, index, table.length);
 					index += table.length;
+					content = tmp;
 					endOffset = word.getEndOffset();
 					isTerminate = isTerminate || word.isLastAction();
 					return true;

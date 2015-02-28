@@ -459,8 +459,9 @@ public class CsvParserTest {
 		
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BigDataCsvParser.class);
 		final CsvParser<BigDataCsvParser> parser = new CsvParser<BigDataCsvParser>(BigDataCsvParser.class, conf);
-		final List<CsvDatagram> datagrams = new ArrayList<CsvDatagram>(generator(content1, 0, 5, conf.charset));
-		datagrams.addAll(generator(content2, 1, 5, conf.charset));
+		final List<CsvDatagram> datagrams = new ArrayList<CsvDatagram>();
+		datagrams.addAll(generator(content1, 0, 7, conf.charset));
+		datagrams.addAll(generator(content2, 1, 6, conf.charset));
 		datagrams.addAll(generator(content3, 2, 5, conf.charset));
 		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>();
 		
@@ -471,7 +472,7 @@ public class CsvParserTest {
 		for (int i=index; i< end; i+=3){
 			datagrams.add(datagrams.remove(i));
 		}
-		/*for (int j=0; j<100; j++){
+		for (int j=0; j<100; j++){
 			int i1 = (int)(datagrams.size() * Math.random());
 			int i2 = datagrams.size() - 2 -(int)(i1 * Math.random());
 			end = Math.max(i1, i2);
@@ -479,7 +480,7 @@ public class CsvParserTest {
 			for (int i=index; i< end; i+=7){
 				datagrams.add(datagrams.remove(i));
 			}
-		}*/
+		}
 		
 		for (final CsvDatagram datagram:datagrams){
 			list.addAll(parser.parse(datagram));
@@ -531,6 +532,7 @@ public class CsvParserTest {
 			}
 		}
 		
+		Assert.assertEquals(new Integer(80), count.get("false"));
 		Assert.assertEquals(new Integer(110), count.get("894857"));
 		Assert.assertEquals(new Integer(110), count.get("nbjhiyutof"));
 		Assert.assertEquals(new Integer(109), count.get("23.098"));
@@ -538,7 +540,6 @@ public class CsvParserTest {
 		Assert.assertEquals(new Integer(80), count.get("33"));
 		Assert.assertEquals(new Integer(80), count.get("poiu"));
 		Assert.assertEquals(new Integer(80), count.get("34.0"));
-		Assert.assertEquals(new Integer(80), count.get("false"));
 		Assert.assertEquals(new Integer(200), count.get("12"));
 		Assert.assertEquals(new Integer(199), count.get("azerty"));
 		Assert.assertEquals(new Integer(200), count.get("65.78"));
