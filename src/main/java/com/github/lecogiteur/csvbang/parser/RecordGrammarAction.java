@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +59,18 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	private final List<CsvGrammarAction<?>> fields;
 	
 	/**
+	 * List of comments before record
+	 * @since 1.0.0
+	 */
+	private final List<CsvGrammarAction<?>> commentsBefore;
+	
+	/**
+	 * List of comments after record
+	 * @since 1.0.0
+	 */
+	private final List<CsvGrammarAction<?>> commentsAfter;
+	
+	/**
 	 * CSV bean class
 	 * @since 1.0.0
 	 */
@@ -87,6 +100,8 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		this.conf = conf;
 		this.fields = new ArrayList<CsvGrammarAction<?>>();
 		this.fields.add(new FieldGrammarAction(100));
+		this.commentsAfter = CsvbangUti.isCollectionNotEmpty(conf.commentsAfter)?new ArrayList<CsvGrammarAction<?>>(conf.commentsAfter.size()):null;
+		this.commentsBefore = CsvbangUti.isCollectionNotEmpty(conf.commentsBefore)?new ArrayList<CsvGrammarAction<?>>(conf.commentsBefore.size()):null;
 	}
 
 	/**
@@ -137,6 +152,24 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		}
 		return true;
 	}
+	
+	/**
+	 * Verify if it's an after comment of bean 
+	 * @param action the comment action
+	 * @return True if it's an after comment
+	 * @since 1.0.0
+	 */
+	private boolean addAfterCommentField(final CommentGrammarAction action){
+		if (commentsAfter != null && conf.commentsAfter.size() != commentsAfter.size()){
+			commentsAfter.add(action);
+			action.setIsFieldComment(true);
+			endOffset = action.getEndOffset();
+			return true;
+		}else{
+			action.setIsFieldComment(true);
+			return false;
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -145,7 +178,8 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	 */
 	@Override
 	public boolean isActionCompleted(final CsvGrammarActionType next) {
-		return isTerminatedRecord || conf.fields.size() == fields.size() || CsvGrammarActionType.RECORD.equals(next) || CsvGrammarActionType.END.equals(next);
+		return isTerminatedRecord || conf.fields.size() == fields.size() || CsvGrammarActionType.RECORD.equals(next) 
+				|| CsvGrammarActionType.END.equals(next) || CsvGrammarActionType.COMMENT.equals(next);
 	}
 
 	/**

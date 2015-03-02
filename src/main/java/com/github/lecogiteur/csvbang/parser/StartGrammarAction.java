@@ -24,6 +24,7 @@ package com.github.lecogiteur.csvbang.parser;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 /**
  * Action to do at the start of a CSV file
@@ -31,14 +32,32 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>{
+public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<?>>{
 	
 	/**
 	 * When we read file, we doesn't know what action we must to execute. 
 	 * So, start action defines and delegate works to another specific action.
 	 * @since 1.0.0
 	 */
-	private final CsvGrammarAction<?> delegatedAction;
+	private CsvGrammarAction<?> delegatedAction;
+	
+	/**
+	 * Type of CSV bean
+	 * @since 1.0.0
+	 */
+	private final Class<T> beanClass;
+	
+	/**
+	 * The configuration of CSV bean
+	 * @since 1.0.0
+	 */
+	private final CsvBangConfiguration conf;
+	
+	/**
+	 * The end offset of start action
+	 * @since 1.0.0
+	 */
+	private long endOffset = -1;
 	
 	/**
 	 * Constructor
@@ -46,9 +65,32 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 * @param conf configuration of CSV bean
 	 * @since 1.0.0
 	 */
-	public <T> StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf){
-		delegatedAction = new RecordGrammarAction<T>(beanClass, conf);
+	public StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf){
+		this.beanClass = beanClass;
+		this.conf = conf;
+	}
+	
+	/**
+	 * Initialize the delegated action
+	 * @param actionType the action type
+	 * @since 1.0.0
+	 */
+	private void initDelegatedAction(final CsvGrammarActionType actionType){
+		switch(actionType){
+		case COMMENT:
+			delegatedAction = new CommentGrammarAction(100);
+			((CommentGrammarAction)delegatedAction).setIsFieldComment(CsvbangUti.isCollectionNotEmpty(conf.commentsBefore));
+			break;
+		case RECORD:
+			delegatedAction = new RecordGrammarAction<T>(beanClass, conf);
+			break;
+		default:
+			return;
+		}
 		delegatedAction.setStartOffset(0);
+		if (endOffset > 0){
+			delegatedAction.setEndOffset(endOffset);
+		}
 	}
 
 	/**
@@ -68,6 +110,16 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public void add(final byte b) throws CsvBangException {
+		if (delegatedAction == null){
+			if (conf.commentCharacter == (char)b){
+				//it's a comment
+				initDelegatedAction(CsvGrammarActionType.COMMENT);
+				return;
+			}else{
+				//it's a record
+				initDelegatedAction(CsvGrammarActionType.RECORD);
+			}
+		}
 		delegatedAction.add(b);
 	}
 
@@ -78,6 +130,15 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException {
+		if (word != null && delegatedAction == null){
+			if (CsvGrammarActionType.FIELD.equals(word.getType())){
+				//we try to add a field. So the start action is a record
+				initDelegatedAction(CsvGrammarActionType.RECORD);
+				delegatedAction.add(word);
+				return true;
+			}
+			return false;
+		}
 		return delegatedAction.add(word);
 	}
 
@@ -88,7 +149,7 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public boolean isActionCompleted(final CsvGrammarActionType next) {
-		return delegatedAction.isActionCompleted(next);
+		return delegatedAction != null && delegatedAction.isActionCompleted(next);
 	}
 
 	/**
@@ -108,7 +169,7 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public long getStartOffset() {
-		return delegatedAction.getStartOffset();
+		return 0;
 	}
 
 	/**
@@ -118,6 +179,9 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public long getEndOffset() {
+		if (delegatedAction == null){
+			return endOffset;
+		}
 		return delegatedAction.getEndOffset();
 	}
 
@@ -128,7 +192,7 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public void setStartOffset(long offset) {
-		delegatedAction.setStartOffset(offset);
+		//nothing to do
 	}
 
 	/**
@@ -138,7 +202,12 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public void setEndOffset(long offset) {
-		delegatedAction.setEndOffset(offset);
+		if (delegatedAction != null){
+			delegatedAction.setEndOffset(offset);
+			this.endOffset = -1;
+		}else{
+			this.endOffset = offset;
+		}
 	}
 	
 	/**
@@ -148,6 +217,6 @@ public class StartGrammarAction implements CsvGrammarAction<CsvGrammarAction<?>>
 	 */
 	@Override
 	public boolean isLastAction() {
-		return delegatedAction.isLastAction();
+		return delegatedAction != null && delegatedAction.isLastAction();
 	}
 }

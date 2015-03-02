@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.parser;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
 /**
+ * End file action
  * @author Tony EMMA
  * @version 1.0.0
  * @since 1.0.0
