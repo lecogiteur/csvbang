@@ -40,7 +40,10 @@ import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.file.CsvDatagram;
 import com.github.lecogiteur.csvbang.parser.CsvParser;
+import com.github.lecogiteur.csvbang.parser.CsvParsingResult;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.BeforeCommentCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BigDataCsvParser;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleCommentsCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
@@ -93,26 +96,36 @@ public class CsvParserTest {
 		return list;
 	}
 	
+	@Ignore
+	private <T> CsvParsingResult<T> parse(Collection<CsvDatagram> datagrams, CsvParser<T> parser ) 
+			throws CsvBangException{
+		CsvParsingResult<T> result = new CsvParsingResult<T>();
+		for (final CsvDatagram datagram:datagrams){
+			CsvParsingResult<T> l = parser.parse(datagram);
+			if (l != null){
+				result.getCsvBeans().addAll(l.getCsvBeans());
+				result.getComments().addAll(l.getComments());
+			}
+		}
+		
+		CsvParsingResult<T> l = parser.flush();
+		if (l != null){
+			result.getCsvBeans().addAll(l.getCsvBeans());
+			result.getComments().addAll(l.getComments());
+		}
+		return result;
+	}
+	
 	@Test
 	public void noContentTest() throws CsvBangException{
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneFieldCsvParserBean.class);
 		final CsvParser<OneFieldCsvParserBean> parser = new CsvParser<OneFieldCsvParserBean>(OneFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator(null, 0, 10, conf.charset);
-		final Collection<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			Collection<OneFieldCsvParserBean> l = parser.parse(datagram);
-			if (l != null){
-				list.addAll(l);
-			}
-		}
-		
-		Collection<OneFieldCsvParserBean> l = parser.flush();
-		if (l != null){
-			list.addAll(l);
-		}
+		final CsvParsingResult<OneFieldCsvParserBean> result = parse(datagrams, parser);
+		final Collection<OneFieldCsvParserBean> list = result.getCsvBeans();
 		
 		Assert.assertEquals(0, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 	}
 	
 	@Test
@@ -120,15 +133,12 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneFieldCsvParserBean.class);
 		final CsvParser<OneFieldCsvParserBean> parser = new CsvParser<OneFieldCsvParserBean>(OneFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azerty", 0, 10, conf.charset);
-		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<OneFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(1, list.size());
 		Assert.assertNotNull(list.get(0));
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertEquals("azerty", list.get(0).getField());
 	}
 	
@@ -137,15 +147,12 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneFieldCsvParserBean.class);
 		final CsvParser<OneFieldCsvParserBean> parser = new CsvParser<OneFieldCsvParserBean>(OneFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azertyuiop", 0, 10, conf.charset);
-		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<OneFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(1, list.size());
 		Assert.assertNotNull(list.get(0));
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertEquals("azertyuiop", list.get(0).getField());
 	}
 	
@@ -154,15 +161,12 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneFieldCsvParserBean.class);
 		final CsvParser<OneFieldCsvParserBean> parser = new CsvParser<OneFieldCsvParserBean>(OneFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azertyuiopQSDFG", 0, 10, conf.charset);
-		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<OneFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(1, list.size());
 		Assert.assertNotNull(list.get(0));
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertEquals("azertyuiopQSDFG", list.get(0).getField());
 	}
 	
@@ -171,14 +175,11 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneFieldCsvParserBean.class);
 		final CsvParser<OneFieldCsvParserBean> parser = new CsvParser<OneFieldCsvParserBean>(OneFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azerty\nnbjhklopoiurcfjhfj\nnbvcxw", 0, 10, conf.charset);
-		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<OneFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<OneFieldCsvParserBean> list = new ArrayList<OneFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(3, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertNotNull(list.get(0));
 		Assert.assertNotNull(list.get(1));
 		Assert.assertNotNull(list.get(2));
@@ -194,14 +195,11 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azerty,123,54.89", 0, 10, conf.charset);
-		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(1, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertNotNull(list.get(0));
 		Assert.assertEquals("azerty", list.get(0).getField1());
 		Assert.assertEquals(new Integer(123), list.get(0).getField2());
@@ -213,14 +211,11 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("a,1,6.0", 0, 10, conf.charset);
-		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(1, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertNotNull(list.get(0));
 		Assert.assertEquals("a", list.get(0).getField1());
 		Assert.assertEquals(new Integer(1), list.get(0).getField2());
@@ -232,14 +227,12 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azerty,1,1", 0, 10, conf.charset);
-		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>();
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
 		
 		Assert.assertEquals(1, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertNotNull(list.get(0));
 		Assert.assertEquals("azerty", list.get(0).getField1());
 		Assert.assertEquals(new Integer(1), list.get(0).getField2());
@@ -251,14 +244,11 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator("azerty,354,56.097\nnbj,34567,12345678\nFQDSFQDSFQFQDFQDSF,234,76.98\n", 0, 10, conf.charset);
-		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(3, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertNotNull(list.get(0));
 		Assert.assertNotNull(list.get(1));
 		Assert.assertNotNull(list.get(2));
@@ -278,14 +268,11 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator(",354,56.097\nnbj,,12345678\nFQDSFQDSFQFQDFQDSF,234,\n", 0, 10, conf.charset);
-		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> list = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertEquals(3, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		Assert.assertNotNull(list.get(0));
 		Assert.assertNotNull(list.get(1));
 		Assert.assertNotNull(list.get(2));
@@ -326,14 +313,11 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BigDataCsvParser.class);
 		final CsvParser<BigDataCsvParser> parser = new CsvParser<BigDataCsvParser>(BigDataCsvParser.class, conf);
 		final Collection<CsvDatagram> datagrams = generator(content, 0, 10, conf.charset);
-		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>();
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+		final CsvParsingResult<BigDataCsvParser> result = parse(datagrams, parser);
+		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>(result.getCsvBeans());
 		
 		Assert.assertEquals(200, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		for (BigDataCsvParser o:list){
 			Assert.assertNotNull(o);
 			Assert.assertEquals(new Integer(12), o.getField1());
@@ -369,22 +353,20 @@ public class CsvParserTest {
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BigDataCsvParser.class);
 		final CsvParser<BigDataCsvParser> parser = new CsvParser<BigDataCsvParser>(BigDataCsvParser.class, conf);
 		final List<CsvDatagram> datagrams = new ArrayList<CsvDatagram>(generator(content, 0, 5, conf.charset));
-		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>();
 		
-		Collections.reverse(list);
+		Collections.reverse(datagrams);
 		
 		int index = 2;
 		int end = datagrams.size() - 5;
 		for (int i=index; i< end; i+=3){
 			datagrams.add(datagrams.remove(i));
 		}
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+
+		final CsvParsingResult<BigDataCsvParser> result = parse(datagrams, parser);
+		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>(result.getCsvBeans());
 		
 		Assert.assertEquals(200, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		boolean isFirstString = true;
 		boolean isFirstBool = true;
 		for (BigDataCsvParser o:list){
@@ -463,9 +445,8 @@ public class CsvParserTest {
 		datagrams.addAll(generator(content1, 0, 7, conf.charset));
 		datagrams.addAll(generator(content2, 1, 6, conf.charset));
 		datagrams.addAll(generator(content3, 2, 5, conf.charset));
-		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>();
 		
-		Collections.reverse(list);
+		Collections.reverse(datagrams);
 		
 		int index = 2;
 		int end = datagrams.size() - 5;
@@ -481,11 +462,9 @@ public class CsvParserTest {
 				datagrams.add(datagrams.remove(i));
 			}
 		}
-		
-		for (final CsvDatagram datagram:datagrams){
-			list.addAll(parser.parse(datagram));
-		}
-		list.addAll(parser.flush());
+
+		final CsvParsingResult<BigDataCsvParser> result = parse(datagrams, parser);
+		final List<BigDataCsvParser> list = new ArrayList<BigDataCsvParser>(result.getCsvBeans());
 		
 		
 		Map<String, Integer> count = new HashMap<String, Integer>(); 
@@ -504,6 +483,7 @@ public class CsvParserTest {
 		count.put("null", 0);
 		
 		Assert.assertEquals(390, list.size());
+		Assert.assertEquals(0, result.getComments().size());
 		for (BigDataCsvParser o:list){
 			Assert.assertNotNull(o);
 			if (o.getField1() == null){
@@ -545,5 +525,113 @@ public class CsvParserTest {
 		Assert.assertEquals(new Integer(200), count.get("65.78"));
 		Assert.assertEquals(new Integer(1), count.get("azzzzzzzzzzzerty"));
 		Assert.assertEquals(new Integer(2), count.get("null"));
+	}
+	
+	@Test
+	public void singleCommentTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
+		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#a comment", 0, 10, conf.charset);
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<String> comments = new ArrayList<String>(result.getComments());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertEquals(0, result.getCsvBeans().size());
+		Assert.assertEquals(1, comments.size());
+		Assert.assertEquals("a comment", comments.get(0));
+	}
+	
+	@Test
+	public void multipleCommentTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
+		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#a comment\n#another comment", 0, 10, conf.charset);
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<String> comments = new ArrayList<String>(result.getComments());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertEquals(0, result.getCsvBeans().size());
+		Assert.assertEquals(2, comments.size());
+		Assert.assertEquals("a comment", comments.get(0));
+		Assert.assertEquals("another comment", comments.get(1));
+	}
+	
+	@Test
+	public void commentBeforeTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeforeCommentCsvParserBean.class);
+		final CsvParser<BeforeCommentCsvParserBean> parser = new CsvParser<BeforeCommentCsvParserBean>(BeforeCommentCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#18\nmy Field\nfield 2\n#coconuts\nfield3\n#commentTest\n#456\nfield4\n#56", 0, 10, conf.charset);
+		final CsvParsingResult<BeforeCommentCsvParserBean> result = parse(datagrams, parser);
+		final List<String> comments = new ArrayList<String>(result.getComments());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertEquals(5, result.getCsvBeans().size());
+		Assert.assertEquals(2, comments.size());
+		
+		for(String comment:comments){
+			Assert.assertTrue("coconuts".equals(comment) || "commentTest".equals(comment));
+		}
+		
+		for (BeforeCommentCsvParserBean bean:result.getCsvBeans()){
+			Assert.assertTrue(
+					("my Field".equals(bean.field1) && new Integer(18).equals(bean.myComment))
+					|| ("field 2".equals(bean.field1) && bean.myComment == null)
+					|| ("field3".equals(bean.field1) && bean.myComment == null)
+					|| ("field4".equals(bean.field1) && new Integer(456).equals(bean.myComment))
+					|| (bean.field1 == null && new Integer(56).equals(bean.myComment))		
+					);
+		}
+	}
+	
+	@Test
+	public void commentAfterTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeforeCommentCsvParserBean.class);
+		final CsvParser<BeforeCommentCsvParserBean> parser = new CsvParser<BeforeCommentCsvParserBean>(BeforeCommentCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#18\nmy Field\nfield 2\n#coconuts\nfield3\n#commentTest\n#456\nfield4\n#56", 0, 10, conf.charset);
+		final CsvParsingResult<BeforeCommentCsvParserBean> result = parse(datagrams, parser);
+		final List<String> comments = new ArrayList<String>(result.getComments());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertEquals(5, result.getCsvBeans().size());
+		Assert.assertEquals(2, comments.size());
+		
+		for(String comment:comments){
+			Assert.assertTrue("coconuts".equals(comment) || "commentTest".equals(comment));
+		}
+		
+		for (BeforeCommentCsvParserBean bean:result.getCsvBeans()){
+			Assert.assertTrue(
+					("field3".equals(bean.field1) && new Integer(456).equals(bean.myComment))
+					|| ("field 2".equals(bean.field1) && bean.myComment == null)
+					|| ("my Field".equals(bean.field1) && bean.myComment == null)
+					|| ("field4".equals(bean.field1) && new Integer(56).equals(bean.myComment))
+					|| (bean.field1 == null && new Integer(18).equals(bean.myComment))		
+					);
+		}
+	}
+	//TODO faire des tests avec des lignes vides
+	@Test
+	public void multipleCommentFieldTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleCommentsCsvParserBean.class);
+		final CsvParser<MultipleCommentsCsvParserBean> parser = new CsvParser<MultipleCommentsCsvParserBean>(MultipleCommentsCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#18\nmyComment\nMyField\n#endComment\n\n#coconuts\n#345\n#comment2\nfield2\n#azerty\nfield3\n#endcommenttt\n", 0, 10, conf.charset);
+		final CsvParsingResult<MultipleCommentsCsvParserBean> result = parse(datagrams, parser);
+		final List<String> comments = new ArrayList<String>(result.getComments());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertEquals(1, result.getCsvBeans().size());
+		Assert.assertEquals(1, comments.size());
+		
+		for(String comment:comments){
+			Assert.assertTrue("coconuts".equals(comment));
+		}
+		
+		for (MultipleCommentsCsvParserBean bean:result.getCsvBeans()){
+			Assert.assertTrue(
+					("MyField".equals(bean.field) && new Integer(18).equals(bean.comment1) && "myComment".equals(bean.comment3)  && "endComment".equals(bean.comment2))
+					|| ("field2".equals(bean.field) && new Integer(345).equals(bean.comment1) && "comment2".equals(bean.comment3)  && "azerty".equals(bean.comment2))
+					|| ("field3".equals(bean.field) && bean.comment1 == null && "endcommenttt".equals(bean.comment3)  && "azerty".equals(bean.comment3))
+					);
+		}
 	}
 }
