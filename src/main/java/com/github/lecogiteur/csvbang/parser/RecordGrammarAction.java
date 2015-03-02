@@ -22,7 +22,6 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 

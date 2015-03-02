@@ -78,7 +78,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private void initDelegatedAction(final CsvGrammarActionType actionType){
 		switch(actionType){
 		case COMMENT:
-			delegatedAction = new CommentGrammarAction(100);
+			delegatedAction = new CommentGrammarAction(100, CsvbangUti.isCollectionNotEmpty(conf.commentsAfter) || CsvbangUti.isCollectionNotEmpty(conf.commentsBefore) );
 			((CommentGrammarAction)delegatedAction).setIsFieldComment(CsvbangUti.isCollectionNotEmpty(conf.commentsBefore));
 			break;
 		case RECORD:

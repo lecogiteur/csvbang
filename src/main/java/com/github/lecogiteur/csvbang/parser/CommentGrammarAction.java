@@ -69,8 +69,11 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	 * @param initialContentSize initial content size for comment
 	 * @since 1.0.0
 	 */
-	public CommentGrammarAction(final int initialContentSize) {
+	public CommentGrammarAction(final int initialContentSize, final boolean hasCommentField) {
 		this.comment = new StringBuilder(initialContentSize);
+		if (!hasCommentField){
+			this.isFieldComment = hasCommentField;
+		}
 	}
 
 	/**

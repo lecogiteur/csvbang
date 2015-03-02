@@ -676,10 +676,12 @@ public class CsvParser<T> {
 			return new FieldGrammarAction(contentLength);
 		case RECORD:
 			return new RecordGrammarAction<T>(classOfCSVBean, conf);
+		case COMMENT:
+			return new CommentGrammarAction(contentLength, CsvbangUti.isCollectionNotEmpty(conf.commentsAfter) || CsvbangUti.isCollectionNotEmpty(conf.commentsBefore) );
 		case END:
 			return new EndGrammarAction();
 		case START:
-			return new StartGrammarAction(classOfCSVBean, conf);
+			return new StartGrammarAction<T>(classOfCSVBean, conf);
 		default:
 			//undefined action
 			return new UndefinedGrammarAction(contentLength);
@@ -750,7 +752,7 @@ public class CsvParser<T> {
 	 * @throws CsvBangException if a problem has occurred when we execute the action.
 	 * @since 1.0.0
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	private boolean executeAction(final CsvParsingResult<T> result, final Deque<CsvGrammarAction<?>> stack, 
 			final CsvGrammarAction<?> action) throws CsvBangException{
 		switch (action.getType()) {
@@ -778,7 +780,7 @@ public class CsvParser<T> {
 			addEndAction(stack, action);
 			return true;
 		case START:
-			return executeAction(result, stack, ((StartGrammarAction)action).execute());
+			return executeAction(result, stack, ((StartGrammarAction<T>)action).execute());
 		default:
 			stack.add(action);
 			return false;
