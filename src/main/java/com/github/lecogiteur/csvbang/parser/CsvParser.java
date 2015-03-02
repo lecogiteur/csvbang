@@ -24,7 +24,6 @@ package com.github.lecogiteur.csvbang.parser;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -113,7 +112,7 @@ public class CsvParser<T> {
 	 * @throws CsvBangException if a problem has occurred when CsvBang parsed the CSV file
 	 * @since 1.0.0
 	 */
-	public Collection<T> parse(final CsvDatagram csvDatagram) throws CsvBangException{
+	public CsvParsingResult<T> parse(final CsvDatagram csvDatagram) throws CsvBangException{
 		return internalParse(csvDatagram.getContent(), new ArrayDeque<CsvGrammarAction<?>>(10), 
 				csvDatagram.getOffset(), csvDatagram.getFileHashCode(), csvDatagram.isLastDatagram());
 	}
@@ -131,7 +130,7 @@ public class CsvParser<T> {
 	 * @see {@link com.github.lecogiteur.csvbang.parser.CsvGrammarAction}
 	 * @since 1.0.0
 	 */
-	public Collection<T> internalParse(final byte[] csvContent, final Deque<CsvGrammarAction<?>> stack, final long startOffset, 
+	public CsvParsingResult<T> internalParse(final byte[] csvContent, final Deque<CsvGrammarAction<?>> stack, final long startOffset, 
 			final int fileID, final boolean isLastDatagram) throws CsvBangException{
 		if (stack.isEmpty() && (csvContent == null || csvContent.length == 0)){
 			//no data to analyze
@@ -150,7 +149,7 @@ public class CsvParser<T> {
 		boolean isLast = isLastDatagram;
 		
 		//list of CSV beans which are completed.
-		final Collection<T> listOfBeans = new ArrayList<T>(100);
+		final CsvParsingResult<T> resultParsing = new CsvParsingResult<T>();
 		try{
 			do{
 				//init
@@ -257,7 +256,7 @@ public class CsvParser<T> {
 				if (!stack.isEmpty()){
 					
 					//try to execute all action in stack
-					tryExecuteStack(stack, listOfBeans, fileID);
+					tryExecuteStack(stack, resultParsing, fileID);
 					
 					//retrieve the last undefined action in order to try to execute again the undefined action
 					final Deque<CsvGrammarAction<?>> stackToSave = new ArrayDeque<CsvGrammarAction<?>>(stack.size());
@@ -296,18 +295,18 @@ public class CsvParser<T> {
 			throw new CsvBangException(String.format("A problem has occurred when we parse CSV file [%s] at offset [%s].", 
 					fileID, startOffset), e);
 		}
-		return listOfBeans;
+		return resultParsing;
 	}
 	
 	/**
 	 * Try to execute all actions of the stack
 	 * @param stack the stack
-	 * @param listOfBeans list of CSV bean generated
+	 * @param result list of CSV bean generated
 	 * @param fileID the file ID
 	 * @throws CsvBangException if a problem has occurred when we execute an action
 	 * @since 1.0.0
 	 */
-	private void tryExecuteStack(final Deque<CsvGrammarAction<?>> stack, final Collection<T> listOfBeans, final int fileID) 
+	private void tryExecuteStack(final Deque<CsvGrammarAction<?>> stack, final CsvParsingResult<T> result, final int fileID) 
 			throws CsvBangException{
 		//init stack
 		final Deque<CsvGrammarAction<?>> stackToSave = new ArrayDeque<CsvGrammarAction<?>>(stack.size());
@@ -318,12 +317,12 @@ public class CsvParser<T> {
 		while (!stack.isEmpty()){
 			if (action.isLastAction()){
 				//It's the last action
-				tryClearStack(listOfBeans, stackToSave, action, CsvGrammarActionType.END);
+				tryClearStack(result, stackToSave, action, CsvGrammarActionType.END);
 				action = null;
 				break;
 			}else if (action.isActionCompleted(stack.getFirst().getType())){
 				//the action is terminated
-				tryClearStack(listOfBeans, stackToSave, action, stack.getFirst().getType());
+				tryClearStack(result, stackToSave, action, stack.getFirst().getType());
 				action = stack.removeFirst();
 			}else{
 				//the action is not terminated, so we get the next action 
@@ -336,7 +335,7 @@ public class CsvParser<T> {
 		if (action != null){
 			//
 			if (action.isLastAction()){
-				tryClearStack(listOfBeans, stackToSave, action, CsvGrammarActionType.END);
+				tryClearStack(result, stackToSave, action, CsvGrammarActionType.END);
 			}else{
 				stackToSave.addLast(action);
 			}
@@ -358,10 +357,10 @@ public class CsvParser<T> {
 	 * @throws CsvBangException if a problem has occurred when CsvBang parsed the CSV file
 	 * @since 1.0.0
 	 */
-	public Collection<T> flush() throws CsvBangException{
+	public CsvParsingResult<T> flush() throws CsvBangException{
 		
 		//list of CSV beans which are completed.
-		final Collection<T> listOfBeans = new ArrayList<T>(100);
+		final CsvParsingResult<T> result = new CsvParsingResult<T>();
 		
 		//for each stack which are not terminated
 		while (!stackByOffset.isEmpty()){
@@ -402,15 +401,20 @@ public class CsvParser<T> {
 			}
 			
 			//parse content
-			final Collection<T> list = internalParse(content, stack.getValue(), startOffset, 
+			final CsvParsingResult<T> r = internalParse(content, stack.getValue(), startOffset, 
 					stack.getKey().fileId, true);
 			
 			//add result
-			if (CsvbangUti.isCollectionNotEmpty(list)){
-				listOfBeans.addAll(list);
+			if (r != null){
+				if (CsvbangUti.isCollectionNotEmpty(r.getCsvBeans())){
+					result.getCsvBeans().addAll(r.getCsvBeans());
+				}
+				if (CsvbangUti.isCollectionNotEmpty(r.getComments())){
+					result.getComments().addAll(r.getComments());
+				}
 			}
 		}
-		return listOfBeans;
+		return result;
 	}
 	
 	/**
@@ -684,19 +688,19 @@ public class CsvParser<T> {
 	
 	/**
 	 * Try to clean the stack of actions which are not terminated
-	 * @param listOfBeans list of beans which are completed
+	 * @param result list of beans which are completed
 	 * @param stack stack of action which are not terminated
 	 * @param action current action which is terminated
 	 * @param actionType current new action type
 	 * @throws CsvBangException if a problem has occurred.
 	 * @since 1.0.0
 	 */
-	private void tryClearStack(final Collection<T> listOfBeans, final Deque<CsvGrammarAction<?>> stack, 
+	private void tryClearStack(final CsvParsingResult<T> result, final Deque<CsvGrammarAction<?>> stack, 
 			final CsvGrammarAction<?> action, final CsvGrammarActionType actionType) throws CsvBangException{
 		boolean isEmptyStack = stack.isEmpty();
 		if (isEmptyStack){
 			//case where is no stack we verify if this action is terminated
-			executeAction(listOfBeans, stack, action);
+			executeAction(result, stack, action);
 			return;
 		}
 		
@@ -707,7 +711,7 @@ public class CsvParser<T> {
 		while (!isEmptyStack && lastAction != null){
 			//we add the current action which is terminated to the previous action
 			if (!lastAction.add(current)){
-				if (executeAction(listOfBeans, stack, current)){
+				if (executeAction(result, stack, current)){
 					currentActionType = current.getType();
 					current = stack.pollLast();
 					lastAction = stack.peekLast();
@@ -732,14 +736,14 @@ public class CsvParser<T> {
 
 		//the action is terminated
 		if (isEmptyStack){
-			executeAction(listOfBeans, stack, current);
+			executeAction(result, stack, current);
 		}
 	}
 	
 	
 	/**
 	 * Execute and process the result in function of type of action. If the action can't be executed we add it to the stack.
-	 * @param listOfBeans the list of CSV beans which are completed 
+	 * @param result the list of CSV beans which are completed 
 	 * @param stack stack of action
 	 * @param action the action which is terminated
 	 * @return True, if the action has been executed, false if the action is not terminated and stock in stack.
@@ -747,24 +751,34 @@ public class CsvParser<T> {
 	 * @since 1.0.0
 	 */
 	@SuppressWarnings("unchecked")
-	private boolean executeAction(final Collection<T> listOfBeans, final Deque<CsvGrammarAction<?>> stack, 
+	private boolean executeAction(final CsvParsingResult<T> result, final Deque<CsvGrammarAction<?>> stack, 
 			final CsvGrammarAction<?> action) throws CsvBangException{
 		switch (action.getType()) {
 		case RECORD:
 			final T o = ((RecordGrammarAction<T>)action).execute();
 			if (o != null){
-				listOfBeans.add(o);
+				result.getCsvBeans().add(o);
 			}
-			if (action.isLastAction()){
-				//add end action if the record is the last of file
-				final CsvGrammarAction<?> end = generateAction(CsvGrammarActionType.END, 0);
-				end.setEndOffset(action.getStartOffset());
-				end.setStartOffset(action.getStartOffset());
-				stack.add(end);
+			addEndAction(stack, action);
+			return true;
+		case COMMENT:
+			//get comment action
+			final CommentGrammarAction commentAction =(CommentGrammarAction) action;
+			if (commentAction.getIsFieldComment() == null || commentAction.getIsFieldComment()){
+				//it's a comment of CSV bean property
+				stack.add(action);
+				return false;
 			}
+			//generic comment
+			final String comment = ((CommentGrammarAction)action).execute();
+			if (comment != null){
+				//add the comment
+				result.getComments().add(comment);
+			}
+			addEndAction(stack, action);
 			return true;
 		case START:
-			return executeAction(listOfBeans, stack, ((StartGrammarAction)action).execute());
+			return executeAction(result, stack, ((StartGrammarAction)action).execute());
 		default:
 			stack.add(action);
 			return false;
@@ -772,6 +786,21 @@ public class CsvParser<T> {
 		
 	}
 	
+	/**
+	 * Add end action to the stack, if action is the last of file
+	 * @param stack stack of action
+	 * @param action an action
+	 * @since 1.0.0
+	 */
+	private void addEndAction(final Deque<CsvGrammarAction<?>> stack, final CsvGrammarAction<?> action){
+		if (action.isLastAction()){
+			//add end action if the comment is the last of file
+			final CsvGrammarAction<?> end = generateAction(CsvGrammarActionType.END, 0);
+			end.setEndOffset(action.getStartOffset());
+			end.setStartOffset(action.getStartOffset());
+			stack.add(end);
+		}
+	}
 	
 	/**
 	 * Key in order to identify an action or a stack of action
