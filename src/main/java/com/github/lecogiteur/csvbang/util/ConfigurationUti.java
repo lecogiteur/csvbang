@@ -178,6 +178,10 @@ public class ConfigurationUti {
 				commentFields.get(direction).remove(internName);
 			}
 			
+			if (csvField == null){
+				//not a field
+				continue;
+			}
 			
 			CsvFieldConfiguration conf = mapConf.get(internName);
 			if (conf == null){
@@ -186,6 +190,7 @@ public class ConfigurationUti {
 			}
 			
 			
+			//configur
 			conf.position = getParameterValue(conf.position, csvField.position(), IConstantsCsvBang.DEFAULT_FIELD_POSITION);
 			conf.isDeleteFieldIfNull = csvField.deleteIfNull();
 			conf.getter = getter;

@@ -677,7 +677,7 @@ public class CsvParser<T> {
 		case RECORD:
 			return new RecordGrammarAction<T>(classOfCSVBean, conf);
 		case COMMENT:
-			return new CommentGrammarAction(contentLength, CsvbangUti.isCollectionNotEmpty(conf.commentsAfter) || CsvbangUti.isCollectionNotEmpty(conf.commentsBefore) );
+			return new CommentGrammarAction(contentLength);
 		case END:
 			return new EndGrammarAction();
 		case START:
@@ -765,13 +765,6 @@ public class CsvParser<T> {
 			return true;
 		case COMMENT:
 			//get comment action
-			final CommentGrammarAction commentAction =(CommentGrammarAction) action;
-			if (commentAction.getIsFieldComment() == null || commentAction.getIsFieldComment()){
-				//it's a comment of CSV bean property
-				stack.add(action);
-				return false;
-			}
-			//generic comment
 			final String comment = ((CommentGrammarAction)action).execute();
 			if (comment != null){
 				//add the comment

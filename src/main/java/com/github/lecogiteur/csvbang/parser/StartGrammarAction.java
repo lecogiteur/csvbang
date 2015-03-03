@@ -24,7 +24,6 @@ package com.github.lecogiteur.csvbang.parser;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 /**
  * Action to do at the start of a CSV file
@@ -78,8 +77,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private void initDelegatedAction(final CsvGrammarActionType actionType){
 		switch(actionType){
 		case COMMENT:
-			delegatedAction = new CommentGrammarAction(100, CsvbangUti.isCollectionNotEmpty(conf.commentsAfter) || CsvbangUti.isCollectionNotEmpty(conf.commentsBefore) );
-			((CommentGrammarAction)delegatedAction).setIsFieldComment(CsvbangUti.isCollectionNotEmpty(conf.commentsBefore));
+			delegatedAction = new CommentGrammarAction(100);
 			break;
 		case RECORD:
 			delegatedAction = new RecordGrammarAction<T>(beanClass, conf);

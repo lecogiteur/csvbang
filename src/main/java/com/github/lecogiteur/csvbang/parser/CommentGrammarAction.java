@@ -56,24 +56,14 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	 * @since 1.0.0
 	 */
 	private final StringBuilder comment;
-	
-	/**
-	 * TRue, if it's a comment of record (csv Bean), else if it's a generic comment.
-	 * Null if we don't know
-	 * @since 1.0.0
-	 */
-	private Boolean isFieldComment;
 
 	/**
 	 * Constructor
 	 * @param initialContentSize initial content size for comment
 	 * @since 1.0.0
 	 */
-	public CommentGrammarAction(final int initialContentSize, final boolean hasCommentField) {
+	public CommentGrammarAction(final int initialContentSize) {
 		this.comment = new StringBuilder(initialContentSize);
-		if (!hasCommentField){
-			this.isFieldComment = hasCommentField;
-		}
 	}
 
 	/**
@@ -186,23 +176,5 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	@Override
 	public void setEndOffset(long offset) {
 		endOffset = offset;
-	}
-
-	/**
-	 * Get the isFieldComment
-	 * @return the isFieldComment
-	 * @since 1.0.0
-	 */
-	public Boolean getIsFieldComment() {
-		return isFieldComment;
-	}
-
-	/**
-	 * Set the isFieldComment
-	 * @param isFieldComment the isFieldComment to set
-	 * @since 1.0.0
-	 */
-	public void setIsFieldComment(Boolean isFieldComment) {
-		this.isFieldComment = isFieldComment;
 	}
 }

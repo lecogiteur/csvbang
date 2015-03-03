@@ -41,10 +41,8 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.file.CsvDatagram;
 import com.github.lecogiteur.csvbang.parser.CsvParser;
 import com.github.lecogiteur.csvbang.parser.CsvParsingResult;
-import com.github.lecogiteur.csvbang.test.bean.csvparser.AfterCommentCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BeforeCommentCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BigDataCsvParser;
-import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleCommentsCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
@@ -434,7 +432,7 @@ public class CsvParserTest {
 				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
 				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
 				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n" +
-				"894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n";
+				"894857,nbjhiyutof,23.098,true\n\n\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n894857,nbjhiyutof,23.098,true\n";
 				
 		
 		
@@ -542,34 +540,6 @@ public class CsvParserTest {
 		Assert.assertEquals("a comment", comments.get(0));
 	}
 	
-	@Ignore
-	public void singleBeforeCommentTest() throws CsvBangException{
-		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeforeCommentCsvParserBean.class);
-		final CsvParser<BeforeCommentCsvParserBean> parser = new CsvParser<BeforeCommentCsvParserBean>(BeforeCommentCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#190", 0, 10, conf.charset);
-		final CsvParsingResult<BeforeCommentCsvParserBean> result = parse(datagrams, parser);
-		final List<BeforeCommentCsvParserBean> list = new ArrayList<BeforeCommentCsvParserBean>(result.getCsvBeans());
-		
-		Assert.assertNotNull(result.getCsvBeans());
-		Assert.assertEquals(1, list.size());
-		Assert.assertEquals(0, result.getComments().size());
-		Assert.assertEquals(new Integer(190), list.get(0).myComment);
-	}
-	
-	@Ignore
-	public void singleAfterCommentTest() throws CsvBangException{
-		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(AfterCommentCsvParserBean.class);
-		final CsvParser<AfterCommentCsvParserBean> parser = new CsvParser<AfterCommentCsvParserBean>(AfterCommentCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#765", 0, 10, conf.charset);
-		final CsvParsingResult<AfterCommentCsvParserBean> result = parse(datagrams, parser);
-		final List<AfterCommentCsvParserBean> list = new ArrayList<AfterCommentCsvParserBean>(result.getCsvBeans());
-		
-		Assert.assertNotNull(result.getCsvBeans());
-		Assert.assertEquals(1, list.size());
-		Assert.assertEquals(0, result.getComments().size());
-		Assert.assertEquals(new Integer(765), list.get(0).myComment);
-	}
-	
 	@Test
 	public void multipleCommentTest() throws CsvBangException{
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
@@ -586,81 +556,32 @@ public class CsvParserTest {
 		}
 	}
 	
-	@Ignore
-	public void commentBeforeTest() throws CsvBangException{
+	@Test
+	public void commentsAndFieldsTest() throws CsvBangException{
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeforeCommentCsvParserBean.class);
 		final CsvParser<BeforeCommentCsvParserBean> parser = new CsvParser<BeforeCommentCsvParserBean>(BeforeCommentCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#18\nmy Field\nfield 2\n#coconuts\nfield3\n#commentTest\n#456\nfield4\n#56", 0, 10, conf.charset);
+		final Collection<CsvDatagram> datagrams = generator("#18\nmy Field\n\nfield 2\n\n#coconuts\nfield3\n#commentTest\n#456\nfield4\n#56", 0, 10, conf.charset);
 		final CsvParsingResult<BeforeCommentCsvParserBean> result = parse(datagrams, parser);
 		final List<String> comments = new ArrayList<String>(result.getComments());
 		
 		Assert.assertNotNull(result.getCsvBeans());
-		Assert.assertEquals(5, result.getCsvBeans().size());
-		Assert.assertEquals(2, comments.size());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(5, comments.size());
 		
 		for(String comment:comments){
-			Assert.assertTrue("coconuts".equals(comment) || "commentTest".equals(comment));
+			Assert.assertTrue("coconuts".equals(comment) 
+					|| "commentTest".equals(comment)
+					|| "18".equals(comment)
+					|| "456".equals(comment)
+					|| "56".equals(comment));
 		}
 		
 		for (BeforeCommentCsvParserBean bean:result.getCsvBeans()){
 			Assert.assertTrue(
-					("my Field".equals(bean.field1) && new Integer(18).equals(bean.myComment))
+					("my Field".equals(bean.field1) && bean.myComment == null)
 					|| ("field 2".equals(bean.field1) && bean.myComment == null)
 					|| ("field3".equals(bean.field1) && bean.myComment == null)
-					|| ("field4".equals(bean.field1) && new Integer(456).equals(bean.myComment))
-					|| (bean.field1 == null && new Integer(56).equals(bean.myComment))		
-					);
-		}
-	}
-	
-	@Ignore
-	public void commentAfterTest() throws CsvBangException{
-		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeforeCommentCsvParserBean.class);
-		final CsvParser<BeforeCommentCsvParserBean> parser = new CsvParser<BeforeCommentCsvParserBean>(BeforeCommentCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#18\nmy Field\nfield 2\n#coconuts\nfield3\n#commentTest\n#456\nfield4\n#56", 0, 10, conf.charset);
-		final CsvParsingResult<BeforeCommentCsvParserBean> result = parse(datagrams, parser);
-		final List<String> comments = new ArrayList<String>(result.getComments());
-		
-		Assert.assertNotNull(result.getCsvBeans());
-		Assert.assertEquals(5, result.getCsvBeans().size());
-		Assert.assertEquals(2, comments.size());
-		
-		for(String comment:comments){
-			Assert.assertTrue("coconuts".equals(comment) || "commentTest".equals(comment));
-		}
-		
-		for (BeforeCommentCsvParserBean bean:result.getCsvBeans()){
-			Assert.assertTrue(
-					("field3".equals(bean.field1) && new Integer(456).equals(bean.myComment))
-					|| ("field 2".equals(bean.field1) && bean.myComment == null)
-					|| ("my Field".equals(bean.field1) && bean.myComment == null)
-					|| ("field4".equals(bean.field1) && new Integer(56).equals(bean.myComment))
-					|| (bean.field1 == null && new Integer(18).equals(bean.myComment))		
-					);
-		}
-	}
-	//TODO faire des tests avec des lignes vides
-	@Ignore
-	public void multipleCommentFieldTest() throws CsvBangException{
-		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleCommentsCsvParserBean.class);
-		final CsvParser<MultipleCommentsCsvParserBean> parser = new CsvParser<MultipleCommentsCsvParserBean>(MultipleCommentsCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#18\nmyComment\nMyField\n#endComment\n\n#coconuts\n#345\n#comment2\nfield2\n#azerty\nfield3\n#endcommenttt\n", 0, 10, conf.charset);
-		final CsvParsingResult<MultipleCommentsCsvParserBean> result = parse(datagrams, parser);
-		final List<String> comments = new ArrayList<String>(result.getComments());
-		
-		Assert.assertNotNull(result.getCsvBeans());
-		Assert.assertEquals(1, result.getCsvBeans().size());
-		Assert.assertEquals(1, comments.size());
-		
-		for(String comment:comments){
-			Assert.assertTrue("coconuts".equals(comment));
-		}
-		
-		for (MultipleCommentsCsvParserBean bean:result.getCsvBeans()){
-			Assert.assertTrue(
-					("MyField".equals(bean.field) && new Integer(18).equals(bean.comment1) && "myComment".equals(bean.comment3)  && "endComment".equals(bean.comment2))
-					|| ("field2".equals(bean.field) && new Integer(345).equals(bean.comment1) && "comment2".equals(bean.comment3)  && "azerty".equals(bean.comment2))
-					|| ("field3".equals(bean.field) && bean.comment1 == null && "endcommenttt".equals(bean.comment3)  && "azerty".equals(bean.comment3))
+					|| ("field4".equals(bean.field1) && bean.myComment == null)
 					);
 		}
 	}
