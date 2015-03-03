@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean
+ *  com.github.lecogiteur.csvbang.test.bean.csvparser.QuoteCsvParserBean
  * 
  *  Copyright (C) 2013-2015  Tony EMMA
  *
@@ -30,34 +30,32 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
  * @version 1.0.0
  * @since 1.0.0
  */
-@CsvType(quoteCharacter="\"")
-public class MultipleFieldCsvParserBean {
-	
+@CsvType(delimiter="||", quoteCharacter="\"")
+public class QuoteCsvParserBean {
+
+
 	@CsvField(position=1)
-	private String field1;
+	public String field1;
 	
 	@CsvField(position=2)
-	private Integer field2;
+	private String field2;
 	
-	@CsvField(position=3)
-	private Double field3;
-
-	/**
-	 * Get the field1
-	 * @return the field1
-	 * @since 1.0.0
-	 */
-	public String getField1() {
-		return field1;
+	private Integer field3;
+	
+	private String field;
+	
+	@CsvField(position=3, customMethodNameSetter="setStringField3")
+	public Integer getField3(){
+		return field3;
 	}
-
-	/**
-	 * Set the field1
-	 * @param field1 the field1 to set
-	 * @since 1.0.0
-	 */
-	public void setField1(String field1) {
-		this.field1 = field1;
+	
+	public void setStringField3(String field){
+		field3 = field.length();
+		this.field = field;
+	}
+	
+	public String getField(){
+		return field;
 	}
 
 	/**
@@ -65,7 +63,7 @@ public class MultipleFieldCsvParserBean {
 	 * @return the field2
 	 * @since 1.0.0
 	 */
-	public Integer getField2() {
+	public String getField2() {
 		return field2;
 	}
 
@@ -74,29 +72,9 @@ public class MultipleFieldCsvParserBean {
 	 * @param field2 the field2 to set
 	 * @since 1.0.0
 	 */
-	public void setField2(Integer field2) {
+	public void setField2(String field2) {
 		this.field2 = field2;
 	}
-
-	/**
-	 * Get the field3
-	 * @return the field3
-	 * @since 1.0.0
-	 */
-	public Double getField3() {
-		return field3;
-	}
-
-	/**
-	 * Set the field3
-	 * @param field3 the field3 to set
-	 * @since 1.0.0
-	 */
-	public void setField3(Double field3) {
-		this.field3 = field3;
-	}
 	
 	
-	
-
 }

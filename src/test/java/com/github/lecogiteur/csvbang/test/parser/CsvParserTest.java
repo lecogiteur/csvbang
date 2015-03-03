@@ -45,6 +45,7 @@ import com.github.lecogiteur.csvbang.test.bean.csvparser.BeforeCommentCsvParserB
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BigDataCsvParser;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneFieldCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.QuoteCsvParserBean;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
@@ -565,6 +566,7 @@ public class CsvParserTest {
 		final List<String> comments = new ArrayList<String>(result.getComments());
 		
 		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(comments);
 		Assert.assertEquals(4, result.getCsvBeans().size());
 		Assert.assertEquals(5, comments.size());
 		
@@ -585,4 +587,52 @@ public class CsvParserTest {
 					);
 		}
 	}
+
+	
+	@Ignore
+	public void simpleQuoteFieldTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
+		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#a comment\n\"test\",\"18\",\"32.6\"", 0, 10, conf.charset);
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> beans = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals(1, result.getCsvBeans().size());
+		Assert.assertEquals(1, result.getComments().size());
+		for (String c:result.getComments()){
+			Assert.assertTrue("a comment".equals(c));
+		}
+		Assert.assertEquals("test", beans.get(0).getField1());
+		Assert.assertEquals(new Integer(18), beans.get(0).getField2());
+		Assert.assertEquals(new Double(32.6), beans.get(0).getField3());
+	}
+
+	
+	@Ignore
+	public void multipleQuoteFieldTest() throws CsvBangException{
+		final String content = "\"test||gogo\",234,retyu\n"
+				+ "fringe,\"6543\",youpala\n\n"
+				+ "\"nouille#fakecomment\",,\"toto say: \n \\\"I'm toto\\\"\"";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(QuoteCsvParserBean.class);
+		final CsvParser<QuoteCsvParserBean> parser = new CsvParser<QuoteCsvParserBean>(QuoteCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 10, conf.charset);
+		final CsvParsingResult<QuoteCsvParserBean> result = parse(datagrams, parser);
+		final List<QuoteCsvParserBean> beans = new ArrayList<QuoteCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		for (QuoteCsvParserBean bean:beans){
+			Assert.assertTrue(
+					("test||gogo".equals(bean.field1) && new Integer(234).equals(bean.getField2()) && "retyu".equals(bean.getField()) && new Integer(5).equals(bean.getField3())) ||
+					("fringe".equals(bean.field1) && new Integer(6543).equals(bean.getField2()) && "youpala".equals(bean.getField()) && new Integer(7).equals(bean.getField3())) ||
+					("nouille#fakecomment".equals(bean.field1) && null == bean.getField2() && "toto say: \n \\\"I'm toto\\\"".equals(bean.getField()) && new Integer(22).equals(bean.getField3()))
+					);
+		}
+	}
+	
 }
