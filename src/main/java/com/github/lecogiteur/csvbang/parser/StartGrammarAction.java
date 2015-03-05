@@ -229,6 +229,6 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	 */
 	@Override
 	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
-		return false;
+		return delegatedAction==null?false:delegatedAction.isChuck(next, keyword);
 	}
 }

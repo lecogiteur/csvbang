@@ -589,11 +589,11 @@ public class CsvParserTest {
 	}
 
 	
-	@Ignore
+	@Test
 	public void simpleQuoteFieldTest() throws CsvBangException{
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#a comment\n\"test\",\"18\",\"32.6\"", 0, 10, conf.charset);
+		final Collection<CsvDatagram> datagrams = generator("#a comment, two comments #i say: \"comment\"\n\"test\",\"18\",\"32.6\"", 0, 10, conf.charset);
 		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
 		final List<MultipleFieldCsvParserBean> beans = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
@@ -602,14 +602,13 @@ public class CsvParserTest {
 		Assert.assertEquals(1, result.getCsvBeans().size());
 		Assert.assertEquals(1, result.getComments().size());
 		for (String c:result.getComments()){
-			Assert.assertTrue("a comment".equals(c));
+			Assert.assertTrue("a comment, two comments #i say: \"comment\"".equals(c));
 		}
 		Assert.assertEquals("test", beans.get(0).getField1());
 		Assert.assertEquals(new Integer(18), beans.get(0).getField2());
 		Assert.assertEquals(new Double(32.6), beans.get(0).getField3());
 	}
 	
-	//TODO test unitaire commentaire avec mot clé comme ","
 	//TODO test unitaire avec un charactère de start crecord, idem supprimer le caractère de fin de ligne du end record
 	
 	@Test
