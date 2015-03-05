@@ -44,6 +44,12 @@ public class CsvParsingResult<T> {
 	 * @since 1.0.0
 	 */
 	private final Collection<String> comments;
+	
+	/**
+	 * The header of CSV file
+	 * @since 1.0.0
+	 */
+	private final String header;
 
 	/**
 	 * Constructor
@@ -53,6 +59,19 @@ public class CsvParsingResult<T> {
 		super();
 		this.csvBeans = new ArrayList<T>(100);
 		this.comments = new ArrayList<String>();
+		this.header = null;
+	}
+
+	/**
+	 * Constructor
+	 * @param header the header of CSV file
+	 * @since 1.0.0
+	 */
+	public CsvParsingResult(final String header) {
+		super();
+		this.csvBeans = new ArrayList<T>(100);
+		this.comments = new ArrayList<String>();
+		this.header = header;
 	}
 
 	/**
@@ -72,4 +91,14 @@ public class CsvParsingResult<T> {
 	public Collection<String> getComments() {
 		return comments;
 	}
+
+	/**
+	 * Get the header
+	 * @return the header
+	 * @since 1.0.0
+	 */
+	public String getHeader() {
+		return header;
+	}
+
 }
