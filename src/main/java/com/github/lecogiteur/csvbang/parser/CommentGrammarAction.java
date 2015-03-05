@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
+import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
 /**
@@ -56,14 +57,22 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	 * @since 1.0.0
 	 */
 	private final StringBuilder comment;
+	
+	/**
+	 * Csvbang configuration of CSV bean
+	 * @since 1.0.0
+	 */
+	private final CsvBangConfiguration conf;
 
 	/**
 	 * Constructor
+	 * @param conf Csvbang configuration of CSV bean
 	 * @param initialContentSize initial content size for comment
 	 * @since 1.0.0
 	 */
-	public CommentGrammarAction(final int initialContentSize) {
+	public CommentGrammarAction(final CsvBangConfiguration conf, final int initialContentSize) {
 		this.comment = new StringBuilder(initialContentSize);
+		this.conf = conf;
 	}
 
 	/**
@@ -176,5 +185,30 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	@Override
 	public void setEndOffset(long offset) {
 		endOffset = offset;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isChuck(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType, byte[])
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
+		if (CsvGrammarActionType.COMMENT.equals(next)){
+			return false;
+		}
+		if (!CsvGrammarActionType.RECORD.equals(next)){
+			return true;
+		}
+		final byte[] endLine = conf.defaultEndLineCharacter.toBytes(conf.charset);
+		if (endLine.length > keyword.length){
+			return true;
+		}
+		for (int i=0; i<endLine.length; i++){
+			if (endLine[i] != keyword[i]){
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -77,7 +77,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private void initDelegatedAction(final CsvGrammarActionType actionType){
 		switch(actionType){
 		case COMMENT:
-			delegatedAction = new CommentGrammarAction(100);
+			delegatedAction = new CommentGrammarAction(conf, 100);
 			break;
 		case RECORD:
 			delegatedAction = new RecordGrammarAction<T>(beanClass, conf);
@@ -129,13 +129,16 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	@Override
 	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException {
 		if (word != null && delegatedAction == null){
-			if (CsvGrammarActionType.FIELD.equals(word.getType())){
+			switch (word.getType()) {
+			case QUOTE: 
+			case FIELD:
 				//we try to add a field. So the start action is a record
 				initDelegatedAction(CsvGrammarActionType.RECORD);
 				delegatedAction.add(word);
 				return true;
+			default:
+				return false;
 			}
-			return false;
 		}
 		return delegatedAction.add(word);
 	}
@@ -216,5 +219,16 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	@Override
 	public boolean isLastAction() {
 		return delegatedAction != null && delegatedAction.isLastAction();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isChuck(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType, byte[])
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
+		return false;
 	}
 }

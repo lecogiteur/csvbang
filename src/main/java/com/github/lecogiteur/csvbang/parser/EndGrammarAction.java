@@ -145,5 +145,16 @@ public class EndGrammarAction implements CsvGrammarAction<Void> {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isChuck(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType, byte[])
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
+		return false;
+	}
+
+
 
 }

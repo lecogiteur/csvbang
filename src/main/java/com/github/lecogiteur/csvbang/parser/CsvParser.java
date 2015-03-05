@@ -218,11 +218,26 @@ public class CsvParser<T> {
 						contentOffset += keywordLength;
 						fileOffset+=keywordLength;
 
+						//chuck management
+						if (action.isChuck(newAction, isUndefinedAction?null:keywordTable[indexTableGrammar])){
+							for (int i=contentOffset-keywordLength; i<contentOffset && i < content.length; i++){
+								action.add(content[i]);
+							}
+							//it's not an action but content
+							continue;
+						}
+						
+						if (CsvGrammarActionType.NOTHING_TO_DO.equals(newAction)){
+							//nothing to do so we continue to the next element
+							continue;
+						}
+						
 						//generate the new action
 						final CsvGrammarAction<?> a = generateAction(newAction, content.length > contentOffset?content.length-contentOffset:0);
 						a.setStartOffset(startActionOffset);
 						if (isUndefinedAction){
 							//if the action is undefined we add the keyword to content of action
+							
 							a.add(content[contentOffset++]);
 							++fileOffset;
 						}
@@ -473,6 +488,7 @@ public class CsvParser<T> {
 		final List<String> keywordSortedByLength = new ArrayList<String>(); 
 		boolean hasEndRecord = CsvbangUti.isStringNotBlank(conf.endRecord);
 		final boolean hasCommentChar = CsvbangUti.isStringNotBlank(conf.commentCharacter + "");
+		final boolean hasQuoteChar = CsvbangUti.isStringNotBlank(conf.quote + "");
 		int index = 0;
 		
 		//init table
@@ -509,6 +525,15 @@ public class CsvParser<T> {
 			sortKeyword(keywordSortedByLength, endComment.toString());
 		}
 		
+
+		
+		final StringBuilder quote = new StringBuilder(5);
+		if (hasQuoteChar){
+			//a quote
+			quote.append(conf.quote);
+			sortKeyword(keywordSortedByLength, quote.toString());
+		}
+		
 		//sort by length. Put in first the longest string 
 		Collections.sort(keywordSortedByLength);
 		Collections.reverse(keywordSortedByLength);
@@ -533,31 +558,18 @@ public class CsvParser<T> {
 		//the header
 		addKeyword(keywordSortedByLength, table, actionList, conf.header, CsvGrammarActionType.NOTHING_TO_DO);
 		
-		//start comment
+		//comment
 		if (hasCommentChar){
 			addKeyword(keywordSortedByLength, table, actionList, startComment.toString(), CsvGrammarActionType.COMMENT);
 			addKeyword(keywordSortedByLength, table, actionList, endComment.toString(), CsvGrammarActionType.RECORD);
 		}
+		
+		//quote
+		if (hasQuoteChar){
+			addKeyword(keywordSortedByLength, table, actionList, quote.toString(), CsvGrammarActionType.QUOTE);
+		}
 
 		index = keywordSortedByLength.size();
-		/*table[index] = conf.defaultEndLineCharacter.toBytes(conf.charset);
-		actionList.get(index++).add(CsvGrammarActionType.NOTHING_TO_DO);*/
-		
-		//TODO à revoir la partie des quotes
-		final List<Character> characters = new ArrayList<Character>();
-		table[index] = new byte[]{(byte)conf.escapeQuoteCharacter};
-		//TODO en fonction de l'activation des quotes mettre la bonne action
-		actionList.set(index++, conf.quote != null?CsvGrammarActionType.NOTHING_TO_DO:CsvGrammarActionType.NOTHING_TO_DO);
-		characters.add(conf.escapeQuoteCharacter);
-		
-		if (conf.quote != null){ 
-			int in = characters.indexOf(conf.quote);
-			if (in < 0){
-				table[index] = new byte[]{(byte)conf.quote.charValue()};
-				in = index++;
-			}
-			actionList.set(in, CsvGrammarActionType.NOTHING_TO_DO);
-		}
 		
 		//genrate the table of keyword
 		final byte[][] dest = new byte[index][];
@@ -677,7 +689,9 @@ public class CsvParser<T> {
 		case RECORD:
 			return new RecordGrammarAction<T>(classOfCSVBean, conf);
 		case COMMENT:
-			return new CommentGrammarAction(contentLength);
+			return new CommentGrammarAction(conf, contentLength);
+		case QUOTE:
+			return new QuoteGrammarAction(contentLength);
 		case END:
 			return new EndGrammarAction();
 		case START:

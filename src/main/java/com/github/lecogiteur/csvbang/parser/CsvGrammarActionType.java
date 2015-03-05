@@ -82,7 +82,7 @@ public enum CsvGrammarActionType {
 	 * Action in order to escape content of field
 	 * @since 1.0.0
 	 */
-	ESCAPE,
+	QUOTE,
 	
 	/**
 	 * Action escape special character
@@ -95,4 +95,5 @@ public enum CsvGrammarActionType {
 	 * @since 1.0.0
 	 */
 	NOTHING_TO_DO
+	
 }

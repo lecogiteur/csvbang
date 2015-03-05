@@ -98,6 +98,11 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 			case RECORD:
 				isFieldTerminated = isFieldTerminated || word.isLastAction();
 				return false;
+			case QUOTE:
+				isFieldTerminated = isFieldTerminated || word.isLastAction();
+				content.append(word.execute());
+				endOffset = word.getEndOffset();
+				return true;
 			case END:
 				isFieldTerminated = isFieldTerminated || word.isLastAction();
 				return true;
@@ -115,7 +120,11 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 	 */
 	@Override
 	public boolean isActionCompleted(CsvGrammarActionType next) {
-		return isFieldTerminated || (next != null && !(CsvGrammarActionType.NOTHING_TO_DO.equals(next) || CsvGrammarActionType.UNDEFINED.equals(next)));
+		return isFieldTerminated || 
+				(next != null && 
+				!(CsvGrammarActionType.QUOTE.equals(next) 
+						|| CsvGrammarActionType.NOTHING_TO_DO.equals(next) 
+						|| CsvGrammarActionType.UNDEFINED.equals(next)));
 	}
 
 	/**
@@ -179,5 +188,14 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isChuck(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType, byte[])
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
+		return false;
+	}
 
 }

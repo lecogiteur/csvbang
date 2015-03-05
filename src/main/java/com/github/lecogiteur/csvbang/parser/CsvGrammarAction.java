@@ -106,5 +106,15 @@ public interface CsvGrammarAction<T> {
 	 * @since 1.0.0
 	 */
 	public void setEndOffset(final long offset);
+	
+	/**
+	 * True if the action can't have sub actions. (Example: Quote Action).
+	 * In fact this action verify if the next action can be executed or must be considered like content
+	 * @param next the next action detected
+	 * @param keyword the current keyword
+	 * @return true If this action is a chuck.
+	 * @since 1.0.0
+	 */
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword);
 
 }

@@ -128,6 +128,13 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 				endOffset = word.getEndOffset();
 				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
 				return true;
+			case QUOTE:
+				if (fields.size() == 1){
+					fields.get(0).add(word);
+					endOffset = word.getEndOffset();
+					return true;
+				}
+				return false;
 			case END:
 				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
 				return true;
@@ -240,4 +247,14 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		return isTerminatedRecord;
 	}
 
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isChuck(com.github.lecogiteur.csvbang.parser.CsvGrammarActionType, byte[])
+	 * @since 1.0.0
+	 */
+	@Override
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
+		return false;
+	}
 }
