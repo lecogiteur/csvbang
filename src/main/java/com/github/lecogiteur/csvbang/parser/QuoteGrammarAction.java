@@ -76,7 +76,7 @@ public class QuoteGrammarAction extends FieldGrammarAction {
 	 */
 	@Override
 	public boolean isActionCompleted(CsvGrammarActionType next) {
-		return !(CsvGrammarActionType.NOTHING_TO_DO.equals(next) || CsvGrammarActionType.UNDEFINED.equals(next));
+		return isLastAction() || !(CsvGrammarActionType.NOTHING_TO_DO.equals(next) || CsvGrammarActionType.UNDEFINED.equals(next));
 	}
 
 
@@ -87,8 +87,13 @@ public class QuoteGrammarAction extends FieldGrammarAction {
 	 */
 	@Override
 	public boolean isChuck(CsvGrammarActionType next, byte[] keyword) {
+		if (CsvGrammarActionType.ESCAPE_CHARACTER.equals(next)){
+			isChuck = false;
+			isNotEndQuote = false;
+			return isChuck;
+		}
 		isChuck = isChuck && isNotEndQuote;
-		isNotEndQuote = !CsvGrammarActionType.QUOTE.equals(next);
+		isNotEndQuote = !(CsvGrammarActionType.QUOTE.equals(next));
 		return isChuck;
 	}
 	
@@ -103,5 +108,7 @@ public class QuoteGrammarAction extends FieldGrammarAction {
 			super.add(b);
 		}
 	}
+	
+	
 	
 }

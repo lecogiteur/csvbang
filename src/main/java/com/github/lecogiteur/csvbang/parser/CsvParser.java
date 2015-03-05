@@ -219,7 +219,7 @@ public class CsvParser<T> {
 						fileOffset+=keywordLength;
 
 						//chuck management
-						if (action.isChuck(newAction, isUndefinedAction?null:keywordTable[indexTableGrammar])){
+						if (!isUndefinedAction && action.isChuck(newAction, isUndefinedAction?null:keywordTable[indexTableGrammar])){
 							for (int i=contentOffset-keywordLength; i<contentOffset && i < content.length; i++){
 								action.add(content[i]);
 							}
@@ -438,9 +438,11 @@ public class CsvParser<T> {
 	 * @param fileOffset the offset in file
 	 * @param contentLength length of content
 	 * @return the initial action
+	 * @throws CsvBangException if a problem has occurred when initialize an action
 	 * @since 1.0.0
 	 */
-	private CsvGrammarAction<?> initAction(final Deque<CsvGrammarAction<?>> stack, final long fileOffset, final int contentLength){
+	private CsvGrammarAction<?> initAction(final Deque<CsvGrammarAction<?>> stack, final long fileOffset, final int contentLength) 
+			throws CsvBangException{
 		if (!stack.isEmpty()){
 			//stack is not empty, so we take the last action
 			return stack.pollLast();
@@ -528,10 +530,14 @@ public class CsvParser<T> {
 
 		
 		final StringBuilder quote = new StringBuilder(5);
+		final StringBuilder escapequote = new StringBuilder(5);
 		if (hasQuoteChar){
 			//a quote
 			quote.append(conf.quote);
 			sortKeyword(keywordSortedByLength, quote.toString());
+			
+			escapequote.append(conf.escapeQuoteCharacter).append(conf.quote);
+			sortKeyword(keywordSortedByLength, escapequote.toString());
 		}
 		
 		//sort by length. Put in first the longest string 
@@ -567,6 +573,7 @@ public class CsvParser<T> {
 		//quote
 		if (hasQuoteChar){
 			addKeyword(keywordSortedByLength, table, actionList, quote.toString(), CsvGrammarActionType.QUOTE);
+			addKeyword(keywordSortedByLength, table, actionList, escapequote.toString(), CsvGrammarActionType.ESCAPE_CHARACTER);
 		}
 
 		index = keywordSortedByLength.size();
@@ -680,9 +687,10 @@ public class CsvParser<T> {
 	 * @param action the type of action to create. 
 	 * @param contentLength remaining content length
 	 * @return the new CSV action
+	 * @throws CsvBangException if a problem has occurred when initialize an action
 	 * @since 1.0.0
 	 */
-	private CsvGrammarAction<?> generateAction(final CsvGrammarActionType action, final int contentLength){
+	private CsvGrammarAction<?> generateAction(final CsvGrammarActionType action, final int contentLength) throws CsvBangException{
 		switch (action) {
 		case FIELD:
 			return new FieldGrammarAction(contentLength);
@@ -692,6 +700,8 @@ public class CsvParser<T> {
 			return new CommentGrammarAction(conf, contentLength);
 		case QUOTE:
 			return new QuoteGrammarAction(contentLength);
+		case ESCAPE_CHARACTER:
+			return new EscapeQuoteGrammarAction(contentLength, conf);
 		case END:
 			return new EndGrammarAction();
 		case START:
@@ -799,9 +809,10 @@ public class CsvParser<T> {
 	 * Add end action to the stack, if action is the last of file
 	 * @param stack stack of action
 	 * @param action an action
+	 * @throws CsvBangException if a problem has occurred when initialize an action
 	 * @since 1.0.0
 	 */
-	private void addEndAction(final Deque<CsvGrammarAction<?>> stack, final CsvGrammarAction<?> action){
+	private void addEndAction(final Deque<CsvGrammarAction<?>> stack, final CsvGrammarAction<?> action) throws CsvBangException{
 		if (action.isLastAction()){
 			//add end action if the comment is the last of file
 			final CsvGrammarAction<?> end = generateAction(CsvGrammarActionType.END, 0);

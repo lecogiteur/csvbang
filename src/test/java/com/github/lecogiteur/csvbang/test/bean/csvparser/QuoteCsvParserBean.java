@@ -38,7 +38,7 @@ public class QuoteCsvParserBean {
 	public String field1;
 	
 	@CsvField(position=2)
-	private String field2;
+	private Integer field2;
 	
 	private Integer field3;
 	
@@ -63,7 +63,7 @@ public class QuoteCsvParserBean {
 	 * @return the field2
 	 * @since 1.0.0
 	 */
-	public String getField2() {
+	public Integer getField2() {
 		return field2;
 	}
 
@@ -72,7 +72,7 @@ public class QuoteCsvParserBean {
 	 * @param field2 the field2 to set
 	 * @since 1.0.0
 	 */
-	public void setField2(String field2) {
+	public void setField2(Integer field2) {
 		this.field2 = field2;
 	}
 	

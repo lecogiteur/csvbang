@@ -98,6 +98,7 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 			case RECORD:
 				isFieldTerminated = isFieldTerminated || word.isLastAction();
 				return false;
+			case ESCAPE_CHARACTER:
 			case QUOTE:
 				isFieldTerminated = isFieldTerminated || word.isLastAction();
 				content.append(word.execute());
@@ -123,6 +124,7 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 		return isFieldTerminated || 
 				(next != null && 
 				!(CsvGrammarActionType.QUOTE.equals(next) 
+						|| CsvGrammarActionType.ESCAPE_CHARACTER.equals(next) 
 						|| CsvGrammarActionType.NOTHING_TO_DO.equals(next) 
 						|| CsvGrammarActionType.UNDEFINED.equals(next)));
 	}

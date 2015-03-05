@@ -609,7 +609,10 @@ public class CsvParserTest {
 		Assert.assertEquals(new Double(32.6), beans.get(0).getField3());
 	}
 	
-	//TODO test unitaire avec un charactère de start crecord, idem supprimer le caractère de fin de ligne du end record
+	//TODO test unitaire avec un charactère de start crecord, idem supprimer le caractère de fin de ligne du end record 
+	//TODO idem mettre un quote et désactiver le caractère de quote . Normalement le caractère doit apparraitre dans le contenu du champs
+	
+	//TODO tester un csv pourri
 	
 	@Test
 	public void simpleQuoteField2Test() throws CsvBangException{
@@ -629,12 +632,12 @@ public class CsvParserTest {
 	}
 
 	
-	@Ignore
+	@Test
 	public void multipleQuoteFieldTest() throws CsvBangException{
-		final String content = "\"test||gogo\",234,retyu\n"
-				+ "fringe,\"6543\",youpala\n\n"
-				+ "fringe2,\"65434\",\"toto tutu\"\n\n"
-				+ "\"nouille#fakecomment\",,\"toto say: \n \\\"I'm toto\\\"\"";
+		final String content = "\"test||gogo\"||234||retyu\n"
+				+ "fringe||\"6543\"||youpala\n\n"
+				+ "fringe2||\"65434\"||\"toto tutu\"\n\n"
+				+ "\"nouille#fakecomment\"||||\"toto say: \n \\\"I'm toto\\\"...\\\"\"";
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(QuoteCsvParserBean.class);
 		final CsvParser<QuoteCsvParserBean> parser = new CsvParser<QuoteCsvParserBean>(QuoteCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator(content, 0, 10, conf.charset);
@@ -643,7 +646,7 @@ public class CsvParserTest {
 		
 		Assert.assertNotNull(result.getCsvBeans());
 		Assert.assertNotNull(result.getComments());
-		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(4, result.getCsvBeans().size());
 		Assert.assertEquals(0, result.getComments().size());
 		
 		for (QuoteCsvParserBean bean:beans){
@@ -651,7 +654,7 @@ public class CsvParserTest {
 					("test||gogo".equals(bean.field1) && new Integer(234).equals(bean.getField2()) && "retyu".equals(bean.getField()) && new Integer(5).equals(bean.getField3())) ||
 					("fringe".equals(bean.field1) && new Integer(6543).equals(bean.getField2()) && "youpala".equals(bean.getField()) && new Integer(7).equals(bean.getField3())) ||
 					("fringe2".equals(bean.field1) && new Integer(65434).equals(bean.getField2()) && "toto tutu".equals(bean.getField()) && new Integer(9).equals(bean.getField3())) ||
-					("nouille#fakecomment".equals(bean.field1) && null == bean.getField2() && "toto say: \n \\\"I'm toto\\\"".equals(bean.getField()) && new Integer(22).equals(bean.getField3()))
+					("nouille#fakecomment".equals(bean.field1) && null == bean.getField2() && "toto say: \n \"I'm toto\"...\"".equals(bean.getField()) && new Integer(26).equals(bean.getField3()))
 					);
 		}
 	}

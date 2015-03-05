@@ -131,6 +131,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 		if (word != null && delegatedAction == null){
 			switch (word.getType()) {
 			case QUOTE: 
+			case ESCAPE_CHARACTER: 
 			case FIELD:
 				//we try to add a field. So the start action is a record
 				initDelegatedAction(CsvGrammarActionType.RECORD);
