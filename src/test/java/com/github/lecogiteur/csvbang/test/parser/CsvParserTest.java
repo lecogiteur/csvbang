@@ -819,7 +819,6 @@ public class CsvParserTest {
 		for (String c:result.getComments()){
 			Assert.assertTrue("#a comment\n".equals(c) || "a comment & a comment".equals(c));
 		}
-		Assert.assertEquals("a comment & a comment", result.getComments().iterator().next());
 		Assert.assertEquals("a new custom header year !!!\n#a comment\nnew custom header\nmyField1,myField2,field3,the field\n", result.getHeader());
 		
 		for (NoHeaderCsvParserBean bean:beans){
