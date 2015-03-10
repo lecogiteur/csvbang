@@ -771,7 +771,7 @@ public class CsvParserTest {
 		}
 	}
 
-	@Ignore
+	@Test
 	public void customHeaderWithCommentTest() throws CsvBangException{
 		final String content = "a new custom header year !!!\n#a comment\nnew custom header\nmyField1,myField2,field3,the field\n"
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
@@ -804,9 +804,26 @@ public class CsvParserTest {
 		}
 	}
 	
+	@Test
+	public void customHeaderNoDataTest() throws CsvBangException{
+		final String content = "new custom header\nmyField1,myField2,field3,the field\n";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(HeaderCsvParserBean.class);
+		final CsvParser<HeaderCsvParserBean> parser = new CsvParser<HeaderCsvParserBean>(HeaderCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<HeaderCsvParserBean> result = parse(datagrams, parser);
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNotNull(result.getHeader());
+		Assert.assertEquals(0, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		Assert.assertEquals("new custom header\nmyField1,myField2,field3,the field\n", result.getHeader());
+	}
+	
 
 
-	@Ignore
+	@Test
 	public void customHeaderStartCommentTest() throws CsvBangException{
 		final String content = "#a comment\na new custom header year !!!\nnew custom header\nmyField1,myField2,field3,the field\n"
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
@@ -824,12 +841,12 @@ public class CsvParserTest {
 		Assert.assertNotNull(result.getComments());
 		Assert.assertNotNull(result.getHeader());
 		Assert.assertEquals(4, result.getCsvBeans().size());
-		Assert.assertEquals(2, result.getComments().size());
+		Assert.assertEquals(1, result.getComments().size());
 		
 		for (String c:result.getComments()){
-			Assert.assertTrue("#a comment\n".equals(c) || "a comment & a comment".equals(c));
+			Assert.assertTrue("a comment & a comment".equals(c));
 		}
-		Assert.assertEquals("a new custom header year !!!\n#a comment\nnew custom header\nmyField1,myField2,field3,the field\n", result.getHeader());
+		Assert.assertEquals("#a comment\na new custom header year !!!\nnew custom header\nmyField1,myField2,field3,the field\n", result.getHeader());
 		
 		for (NoHeaderCsvParserBean bean:beans){
 			Assert.assertTrue(

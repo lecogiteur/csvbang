@@ -71,6 +71,12 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private int index = 0;
 	
 	/**
+	 * True if the CSV file has header
+	 * @since 1.0.0
+	 */
+	private final boolean hasHeader;
+	
+	/**
 	 * Constructor
 	 * @param beanClass type of CSV bean
 	 * @param conf configuration of CSV bean
@@ -81,6 +87,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 		this.beanClass = beanClass;
 		this.conf = conf;
 		this.buffer = new byte[initialCapacity];
+		this.hasHeader = conf.header != null && conf.header.length()>0;
 	}
 	
 	/**
@@ -135,7 +142,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	@Override
 	public void add(final byte b) throws CsvBangException {
 		if (delegatedAction == null){
-			if (index == 0 && conf.commentCharacter == (char)b){
+			if (!hasHeader && index == 0 && conf.commentCharacter == (char)b){
 				//it's a comment
 				initDelegatedAction(CsvGrammarActionType.COMMENT, null);
 			}else{
@@ -298,7 +305,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 			return false;
 		}
 		
-		if (conf.header != null && conf.header.length()>0){
+		if (hasHeader){
 			if  (index < conf.header.length()){
 				return true;
 			}
