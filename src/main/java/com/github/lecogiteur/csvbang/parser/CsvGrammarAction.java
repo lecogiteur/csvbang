@@ -113,8 +113,9 @@ public interface CsvGrammarAction<T> {
 	 * @param next the next action detected
 	 * @param keyword the current keyword
 	 * @return true If this action is a chuck.
+	 * @throws CsvBangException if a problem has occurred when we test
 	 * @since 1.0.0
 	 */
-	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword);
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) throws CsvBangException;
 
 }

@@ -59,35 +59,61 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private long endOffset = -1;
 	
 	/**
+	 * byte content
+	 * @since 1.0.0
+	 */
+	private byte[] buffer;
+	
+	/**
+	 * Current length of buffer
+	 * @since 1.0.0
+	 */
+	private int index = 0;
+	
+	/**
 	 * Constructor
 	 * @param beanClass type of CSV bean
 	 * @param conf configuration of CSV bean
+	 * @param initialCapacity initial capacity of buffer
 	 * @since 1.0.0
 	 */
-	public StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf){
+	public StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf, final int initialCapacity){
 		this.beanClass = beanClass;
 		this.conf = conf;
+		this.buffer = new byte[initialCapacity];
 	}
 	
 	/**
 	 * Initialize the delegated action
 	 * @param actionType the action type
+	 * @param action an init action
+	 * @throws CsvBangException When we add buffer to action
 	 * @since 1.0.0
 	 */
-	private void initDelegatedAction(final CsvGrammarActionType actionType){
-		switch(actionType){
+	//TODO enlever le paramètre action
+	private void initDelegatedAction(final CsvGrammarActionType actionType, final CsvGrammarAction<?> action) throws CsvBangException{
+		final CsvGrammarActionType type = action == null?actionType:action.getType();
+		//set the delegated action
+		switch(type){
 		case COMMENT:
 			delegatedAction = new CommentGrammarAction(conf, 100);
 			break;
 		case RECORD:
 			delegatedAction = new RecordGrammarAction<T>(beanClass, conf);
 			break;
+		case HEADER:
+			delegatedAction = new HeaderGrammarAction(conf, buffer.length);
+			break;
 		default:
 			return;
 		}
+		//start offset
 		delegatedAction.setStartOffset(0);
-		if (endOffset > 0){
-			delegatedAction.setEndOffset(endOffset);
+		delegatedAction.setEndOffset(endOffset);
+		
+		//add buffer to action
+		for (int i=0; i<index; i++){
+			delegatedAction.add(buffer[i]);
 		}
 	}
 
@@ -109,14 +135,18 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	@Override
 	public void add(final byte b) throws CsvBangException {
 		if (delegatedAction == null){
-			if (conf.commentCharacter == (char)b){
+			if (index == 0 && conf.commentCharacter == (char)b){
 				//it's a comment
-				initDelegatedAction(CsvGrammarActionType.COMMENT);
-				return;
+				initDelegatedAction(CsvGrammarActionType.COMMENT, null);
 			}else{
-				//it's a record
-				initDelegatedAction(CsvGrammarActionType.RECORD);
+				if (index >= buffer.length){
+					final byte[] tmp = new byte[buffer.length * 2];
+					System.arraycopy(buffer, 0, tmp, 0, buffer.length);
+					buffer = tmp;
+				}
+				buffer[index++] = b;
 			}
+			return;
 		}
 		delegatedAction.add(b);
 	}
@@ -130,13 +160,43 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	public boolean add(final CsvGrammarAction<?> word) throws CsvBangException {
 		if (word != null && delegatedAction == null){
 			switch (word.getType()) {
+			case HEADER:
+				initDelegatedAction(CsvGrammarActionType.HEADER, word);
+				break;
+			case END:
+				if (conf.fields.size() > 1){
+					//a record has multiple fields, so the buffer is a header
+					initDelegatedAction(CsvGrammarActionType.HEADER, null);
+				}else{
+					//we don't know if the buffer is a record or a header
+					//so we try the record type
+					initDelegatedAction(CsvGrammarActionType.RECORD, null);
+				}
+				break;
+			case RECORD:
+			case COMMENT:
+				if (conf.fields.size() > 1){
+					//a record has multiple fields, so the buffer is a header
+					initDelegatedAction(CsvGrammarActionType.HEADER, null);
+				}else{
+					//perhaps the buffer is a record
+					if (conf.endRecord.equals(conf.defaultEndLineCharacter.toString())){
+						//we don't know if the buffer is a record or a header
+						//so we try the record type
+						initDelegatedAction(CsvGrammarActionType.RECORD, null);
+						return false;
+					}else{
+						//the buffer is a header
+						initDelegatedAction(CsvGrammarActionType.HEADER, null);
+					}
+				}
+				break;
 			case QUOTE: 
 			case ESCAPE_CHARACTER: 
 			case FIELD:
 				//we try to add a field. So the start action is a record
-				initDelegatedAction(CsvGrammarActionType.RECORD);
-				delegatedAction.add(word);
-				return true;
+				initDelegatedAction(CsvGrammarActionType.RECORD, null);
+				break;
 			default:
 				return false;
 			}
@@ -229,7 +289,56 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	 * @since 1.0.0
 	 */
 	@Override
-	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
-		return delegatedAction==null?false:delegatedAction.isChuck(next, keyword);
+	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) throws CsvBangException {
+		if (delegatedAction != null){
+			return delegatedAction.isChuck(next, keyword);
+		}
+		
+		if (CsvGrammarActionType.HEADER.equals(next)){
+			return false;
+		}
+		
+		if (conf.header != null && conf.header.length()>0){
+			if  (index < conf.header.length()){
+				return true;
+			}
+			
+			final byte[] header = conf.header.getBytes(conf.charset);
+			final int max=index-header.length;
+			int maxHeader = header.length;
+			
+			final int idx = header.length - keyword.length;
+			if (idx >= 0){
+				int i=0;
+				for (; i<keyword.length; i++){
+					if (header[i+idx] != keyword[i]){
+						break;
+					}
+				}
+				if (i == keyword.length){
+					maxHeader = idx;
+				}
+			}
+			
+			for (int i=0; i < max; i++){
+				if (header[0] == buffer[i]){
+					int j=1;
+					for (; j < maxHeader; j++){
+						if (header[j] != buffer[i+j]){
+							break;
+						}
+					}
+					if (j == maxHeader){
+						initDelegatedAction(CsvGrammarActionType.HEADER, null);
+						return false;
+					}
+				}
+			}
+			
+			return true;
+			
+		}
+		
+		return false;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.test.bean.csvparser.HeaderCsvParserBean
+ *  com.github.lecogiteur.csvbang.test.bean.csvparser.EmptyHeaderCsvParserBean
  * 
  *  Copyright (C) 2013-2015  Tony EMMA
  *
@@ -23,15 +23,13 @@
 package com.github.lecogiteur.csvbang.test.bean.csvparser;
 
 import com.github.lecogiteur.csvbang.annotation.CsvHeader;
-import com.github.lecogiteur.csvbang.annotation.CsvType;
 
 /**
  * @author Tony EMMA
  * @version 1.0.0
  * @since 1.0.0
  */
-@CsvType(startRecord="", endRecord="\n")
-@CsvHeader(header=true, customHeader="new custom header\n")
-public class HeaderCsvParserBean extends NoHeaderCsvParserBean {
+@CsvHeader(customHeader="")
+public class EmptyHeaderCsvParserBean extends NoHeaderCsvParserBean {
 
 }

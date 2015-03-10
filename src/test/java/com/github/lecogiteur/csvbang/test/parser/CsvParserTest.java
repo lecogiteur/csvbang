@@ -43,6 +43,7 @@ import com.github.lecogiteur.csvbang.parser.CsvParser;
 import com.github.lecogiteur.csvbang.parser.CsvParsingResult;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BeforeCommentCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BigDataCsvParser;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.EmptyHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.HeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoHeaderCsvParserBean;
@@ -107,6 +108,9 @@ public class CsvParserTest {
 			if (l != null){
 				result.getCsvBeans().addAll(l.getCsvBeans());
 				result.getComments().addAll(l.getComments());
+				if (l.getHeader() != null){
+					result.setHeader(l.getHeader());
+				}
 			}
 		}
 		
@@ -114,6 +118,9 @@ public class CsvParserTest {
 		if (l != null){
 			result.getCsvBeans().addAll(l.getCsvBeans());
 			result.getComments().addAll(l.getComments());
+			if (l.getHeader() != null){
+				result.setHeader(l.getHeader());
+			}
 		}
 		return result;
 	}
@@ -185,9 +192,12 @@ public class CsvParserTest {
 		Assert.assertNotNull(list.get(0));
 		Assert.assertNotNull(list.get(1));
 		Assert.assertNotNull(list.get(2));
-		Assert.assertEquals("azerty", list.get(0).getField());
-		Assert.assertEquals("nbjhklopoiurcfjhfj", list.get(1).getField());
-		Assert.assertEquals("nbvcxw", list.get(2).getField());
+		for (OneFieldCsvParserBean bean:list){
+			Assert.assertTrue("azerty".equals(bean.getField())
+					|| "nbjhklopoiurcfjhfj".equals(bean.getField())
+					|| "nbvcxw".equals(bean.getField())
+					);
+		}
 	}
 	
 
@@ -662,7 +672,7 @@ public class CsvParserTest {
 	}
 	
 
-	@Ignore
+	@Test
 	public void customHeaderTest() throws CsvBangException{
 		final String content = "a new custom header year !!!\na custom header\n"
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd&"
@@ -683,7 +693,7 @@ public class CsvParserTest {
 		Assert.assertEquals(1, result.getComments().size());
 		
 		Assert.assertEquals("a comment & a comment", result.getComments().iterator().next());
-		Assert.assertEquals("a new custom header year !!!\na custom header\n", result.getHeader());
+		Assert.assertEquals("a new custom header year !!!\na custom header", result.getHeader());
 		
 		for (NoHeaderCsvParserBean bean:beans){
 			Assert.assertTrue(
@@ -695,7 +705,7 @@ public class CsvParserTest {
 		}
 	}
 	
-	@Ignore
+	@Test
 	public void customHeaderNoHeaderTest() throws CsvBangException{
 		final String content = "a new custom header year !!!\n"
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd&"
@@ -703,11 +713,11 @@ public class CsvParserTest {
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd&"
 				+ "\n#a comment & a comment\n"
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd";
-		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoHeaderCsvParserBean.class);
-		final CsvParser<NoHeaderCsvParserBean> parser = new CsvParser<NoHeaderCsvParserBean>(NoHeaderCsvParserBean.class, conf);
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(EmptyHeaderCsvParserBean.class);
+		final CsvParser<EmptyHeaderCsvParserBean> parser = new CsvParser<EmptyHeaderCsvParserBean>(EmptyHeaderCsvParserBean.class, conf);
 		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
-		final CsvParsingResult<NoHeaderCsvParserBean> result = parse(datagrams, parser);
-		final List<NoHeaderCsvParserBean> beans = new ArrayList<NoHeaderCsvParserBean>(result.getCsvBeans());
+		final CsvParsingResult<EmptyHeaderCsvParserBean> result = parse(datagrams, parser);
+		final List<EmptyHeaderCsvParserBean> beans = new ArrayList<EmptyHeaderCsvParserBean>(result.getCsvBeans());
 		
 		Assert.assertNotNull(result.getCsvBeans());
 		Assert.assertNotNull(result.getComments());
@@ -716,7 +726,7 @@ public class CsvParserTest {
 		Assert.assertEquals(1, result.getComments().size());
 		
 		Assert.assertEquals("a comment & a comment", result.getComments().iterator().next());
-		Assert.assertEquals("a new custom header year !!!\n", result.getHeader());
+		Assert.assertEquals("a new custom header year !!!", result.getHeader());
 		
 		for (NoHeaderCsvParserBean bean:beans){
 			Assert.assertTrue(
@@ -728,7 +738,7 @@ public class CsvParserTest {
 		}
 	}
 
-	@Ignore
+	@Test
 	public void customHeader2Test() throws CsvBangException{
 		final String content = "a new custom header year !!!\nnew custom header\nmyField1,myField2,field3,the field\n"
 				+ "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"

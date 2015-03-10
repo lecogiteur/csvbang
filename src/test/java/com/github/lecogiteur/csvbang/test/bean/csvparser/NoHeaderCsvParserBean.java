@@ -31,7 +31,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
  * @version 1.0.0
  * @since 1.0.0
  */
-@CsvType(startRecord="*", endRecord="#")
+@CsvType(startRecord="*", endRecord="&")
 @CsvHeader(customHeader="a custom header")
 public class NoHeaderCsvParserBean {
 	

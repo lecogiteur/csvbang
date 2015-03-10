@@ -223,6 +223,8 @@ public class CsvParser<T> {
 							for (int i=contentOffset-keywordLength; i<contentOffset && i < content.length; i++){
 								action.add(content[i]);
 							}
+							//TODO a supprimer
+							String toto = "fkdsjfs";
 							//it's not an action but content
 							continue;
 						}
@@ -237,9 +239,10 @@ public class CsvParser<T> {
 						a.setStartOffset(startActionOffset);
 						if (isUndefinedAction){
 							//if the action is undefined we add the keyword to content of action
-							
-							a.add(content[contentOffset++]);
-							++fileOffset;
+							for (; contentOffset < content.length;){
+								a.add(content[contentOffset++]);
+								++fileOffset;
+							}
 						}
 
 						//add action to the the stack
@@ -427,6 +430,9 @@ public class CsvParser<T> {
 				if (CsvbangUti.isCollectionNotEmpty(r.getComments())){
 					result.getComments().addAll(r.getComments());
 				}
+				if (r.getHeader() != null){
+					result.setHeader(r.getHeader());
+				}
 			}
 		}
 		return result;
@@ -491,6 +497,7 @@ public class CsvParser<T> {
 		boolean hasEndRecord = CsvbangUti.isStringNotBlank(conf.endRecord);
 		final boolean hasCommentChar = CsvbangUti.isStringNotBlank(conf.commentCharacter + "");
 		final boolean hasQuoteChar = CsvbangUti.isStringNotBlank(conf.quote + "");
+		final boolean hasGeneratedHeader = conf.header != null && conf.header.length() > 0;
 		int index = 0;
 		
 		//init table
@@ -510,9 +517,6 @@ public class CsvParser<T> {
 		
 		//the footer
 		sortKeyword(keywordSortedByLength, conf.footer);
-		
-		//the header
-		sortKeyword(keywordSortedByLength, conf.header);
 		
 
 		final StringBuilder startComment = new StringBuilder(5);
@@ -538,6 +542,17 @@ public class CsvParser<T> {
 			
 			escapequote.append(conf.escapeQuoteCharacter).append(conf.quote);
 			sortKeyword(keywordSortedByLength, escapequote.toString());
+		}
+		
+		final StringBuilder header = new StringBuilder();
+		if (hasGeneratedHeader){
+			//header
+			header.append(conf.header);
+			while (header.toString().endsWith(hasEndRecord?conf.endRecord:conf.startRecord)){
+				final int size = header.length() - (hasEndRecord?conf.endRecord.length():conf.startRecord.length());
+				header.delete(size, header.length() );
+			}
+			sortKeyword(keywordSortedByLength, header.toString());
 		}
 		
 		//sort by length. Put in first the longest string 
@@ -574,6 +589,11 @@ public class CsvParser<T> {
 		if (hasQuoteChar){
 			addKeyword(keywordSortedByLength, table, actionList, quote.toString(), CsvGrammarActionType.QUOTE);
 			addKeyword(keywordSortedByLength, table, actionList, escapequote.toString(), CsvGrammarActionType.ESCAPE_CHARACTER);
+		}
+		
+		//header from configuration
+		if (hasGeneratedHeader){
+			addKeyword(keywordSortedByLength, table, actionList, header.toString(), CsvGrammarActionType.HEADER);
 		}
 
 		index = keywordSortedByLength.size();
@@ -660,22 +680,34 @@ public class CsvParser<T> {
 	 */
 	private int isKeyword(final int index, final byte[] content, boolean isEnd){
 		for (int i=0; i<keywordTable.length; i++){
+			//If the first character of a keyword match with the current content
 			if (keywordTable[i][0] == content[index]){
-				boolean isKeyword = !(isEnd && keywordTable[i].length > 1);
-				if (content.length > index +1){
-					isKeyword = true;
-					for (int j=1,k=index + 1; j<keywordTable[i].length; j++){
+				if (keywordTable[i].length == 1){
+					//the keyword is only one character, so we can return the index
+					return i;
+				}else{
+					//the length of keyword is more than one character. 
+					//We check characters after the first character
+					boolean isKeyword = true;
+					int j=1;
+					for (int k=index + 1; j<keywordTable[i].length && k < content.length ; j++,k++){
 						if (keywordTable[i][j] != content[k]){
+							//it's not the keyword. we check another keyword
 							isKeyword = false;
 							break;
 						}
 					}
-				}else if (!isEnd && keywordTable[i].length > 1){
-					//TODO faire une constante pour l'action undefined
-					return keywordTable.length;
-				}
-				if (isKeyword){
-					return i;
+					if (isKeyword){
+						//it's a keyword or a part of keyword
+						if (!isEnd && j < keywordTable[i].length){
+							//Not enough content in order to know if it's a keyword
+							//so unknowing content
+							//TODO faire une constante pour l'action undefined
+							return keywordTable.length;
+						}
+						//it's keyword
+						return i;
+					}
 				}
 			}
 		}
@@ -705,7 +737,9 @@ public class CsvParser<T> {
 		case END:
 			return new EndGrammarAction();
 		case START:
-			return new StartGrammarAction<T>(classOfCSVBean, conf);
+			return new StartGrammarAction<T>(classOfCSVBean, conf, contentLength);
+		case HEADER:
+			return new HeaderGrammarAction(conf, contentLength);
 		default:
 			//undefined action
 			return new UndefinedGrammarAction(contentLength);
@@ -793,6 +827,14 @@ public class CsvParser<T> {
 			if (comment != null){
 				//add the comment
 				result.getComments().add(comment);
+			}
+			addEndAction(stack, action);
+			return true;
+		case HEADER:
+			final String header = ((HeaderGrammarAction)action).execute();
+			if (header != null){
+				//add the comment
+				result.setHeader(header);
 			}
 			addEndAction(stack, action);
 			return true;

@@ -49,7 +49,7 @@ public class CsvParsingResult<T> {
 	 * The header of CSV file
 	 * @since 1.0.0
 	 */
-	private final String header;
+	private String header;
 
 	/**
 	 * Constructor
@@ -101,4 +101,12 @@ public class CsvParsingResult<T> {
 		return header;
 	}
 
+	/**
+	 * Set the header
+	 * @param header the header to set
+	 * @since 1.0.0
+	 */
+	public void setHeader(String header) {
+		this.header = header;
+	}
 }
