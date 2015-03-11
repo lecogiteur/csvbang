@@ -43,9 +43,12 @@ import com.github.lecogiteur.csvbang.parser.CsvParser;
 import com.github.lecogiteur.csvbang.parser.CsvParsingResult;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BeforeCommentCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.BigDataCsvParser;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.CustomFooterCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.EmptyHeaderCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.FooterHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.HeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.NoFooterCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.QuoteCsvParserBean;
@@ -857,4 +860,174 @@ public class CsvParserTest {
 							);
 		}
 	}
+	
+
+
+	@Ignore
+	public void customFooterTest() throws CsvBangException{
+		final String content = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "\n#a comment & a comment\n"
+				+ "a custom footer";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(NoFooterCsvParserBean.class);
+		final CsvParser<NoFooterCsvParserBean> parser = new CsvParser<NoFooterCsvParserBean>(NoFooterCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<NoFooterCsvParserBean> result = parse(datagrams, parser);
+		final List<NoFooterCsvParserBean> beans = new ArrayList<NoFooterCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNotNull(result.getFooter());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(1, result.getComments().size());
+		
+		for (String c:result.getComments()){
+			Assert.assertTrue("a comment & a comment".equals(c));
+		}
+		Assert.assertEquals("a custom footer", result.getFooter());
+		
+		for (NoFooterCsvParserBean bean:beans){
+			Assert.assertTrue(
+					"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".equals(bean.field1) &&
+					"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb".equals(bean.field2) &&
+					"ccccccccccccccccccccccccccccccccccc".equals(bean.getField3()) &&
+					"dddddddddddddddddddddddddddddddddddd".equals(bean.getField5())
+							);
+		}
+	}
+	
+
+	@Ignore
+	public void footerTest() throws CsvBangException{
+		final String content = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "\n#a comment & a comment\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd"
+				+ "a footer";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(CustomFooterCsvParserBean.class);
+		final CsvParser<CustomFooterCsvParserBean> parser = new CsvParser<CustomFooterCsvParserBean>(CustomFooterCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<CustomFooterCsvParserBean> result = parse(datagrams, parser);
+		final List<CustomFooterCsvParserBean> beans = new ArrayList<CustomFooterCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNotNull(result.getFooter());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(1, result.getComments().size());
+		
+		for (String c:result.getComments()){
+			Assert.assertTrue("a comment & a comment".equals(c));
+		}
+		Assert.assertEquals("a footer", result.getFooter());
+		
+		for (NoFooterCsvParserBean bean:beans){
+			Assert.assertTrue(
+					"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".equals(bean.field1) &&
+					"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb".equals(bean.field2) &&
+					"ccccccccccccccccccccccccccccccccccc".equals(bean.getField3()) &&
+					"dddddddddddddddddddddddddddddddddddd".equals(bean.getField5())
+							);
+		}
+	}
+	
+
+	@Ignore
+	public void footerWithCustomFooterTest() throws CsvBangException{
+		final String content = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
+				+ "\n#a comment & a comment\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd"
+				+ "a custom footera footer";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(CustomFooterCsvParserBean.class);
+		final CsvParser<CustomFooterCsvParserBean> parser = new CsvParser<CustomFooterCsvParserBean>(CustomFooterCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<CustomFooterCsvParserBean> result = parse(datagrams, parser);
+		final List<CustomFooterCsvParserBean> beans = new ArrayList<CustomFooterCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNotNull(result.getFooter());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(1, result.getComments().size());
+		
+		for (String c:result.getComments()){
+			Assert.assertTrue("a comment & a comment".equals(c));
+		}
+		Assert.assertEquals("a custom footera footer", result.getFooter());
+		
+		for (CustomFooterCsvParserBean bean:beans){
+			Assert.assertTrue(
+					"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".equals(bean.field1) &&
+					"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb".equals(bean.field2) &&
+					"ccccccccccccccccccccccccccccccccccc".equals(bean.getField3()) &&
+					"dddddddddddddddddddddddddddddddddddd".equals(bean.getField5())
+							);
+		}
+	}
+	
+
+	@Ignore
+	public void footerWithHeaderNoDataTest() throws CsvBangException{
+		final String content = "myField1,myField2,field3,the field,field6\na footer";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(FooterHeaderCsvParserBean.class);
+		final CsvParser<FooterHeaderCsvParserBean> parser = new CsvParser<FooterHeaderCsvParserBean>(FooterHeaderCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<FooterHeaderCsvParserBean> result = parse(datagrams, parser);
+		final List<FooterHeaderCsvParserBean> beans = new ArrayList<FooterHeaderCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNotNull(result.getHeader());
+		Assert.assertNotNull(result.getFooter());
+		Assert.assertEquals(0, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		Assert.assertEquals("a footer", result.getFooter());
+		Assert.assertEquals("myField1,myField2,field3,the field,field6\n", result.getHeader());
+	}
+	
+
+	@Ignore
+	public void footerWithHeaderDataTest() throws CsvBangException{
+		final String content = "myField1,myField2,field3,the field,field6\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd,38\n"
+				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd,38"
+				+ "a custom footera footer";
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(FooterHeaderCsvParserBean.class);
+		final CsvParser<FooterHeaderCsvParserBean> parser = new CsvParser<FooterHeaderCsvParserBean>(FooterHeaderCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<FooterHeaderCsvParserBean> result = parse(datagrams, parser);
+		final List<FooterHeaderCsvParserBean> beans = new ArrayList<FooterHeaderCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNotNull(result.getHeader());
+		Assert.assertNotNull(result.getFooter());
+		Assert.assertEquals(2, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		Assert.assertEquals("a custom footera footer", result.getFooter());
+		Assert.assertEquals("myField1,myField2,field3,the field,field6\n", result.getHeader());
+		
+
+		
+		for (FooterHeaderCsvParserBean bean:beans){
+			Assert.assertTrue(
+					"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".equals(bean.field1) &&
+					"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb".equals(bean.field2) &&
+					"ccccccccccccccccccccccccccccccccccc".equals(bean.getField3()) &&
+					"dddddddddddddddddddddddddddddddddddd".equals(bean.getField5()) &&
+					new Integer(38).equals(bean.getField6())
+				);
+		}
+	}
+	
 }

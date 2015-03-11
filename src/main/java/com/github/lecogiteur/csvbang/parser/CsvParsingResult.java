@@ -50,6 +50,12 @@ public class CsvParsingResult<T> {
 	 * @since 1.0.0
 	 */
 	private String header;
+	
+	/**
+	 * The footer of CSV file
+	 * @since 1.0.0
+	 */
+	private String footer;
 
 	/**
 	 * Constructor
@@ -60,18 +66,6 @@ public class CsvParsingResult<T> {
 		this.csvBeans = new ArrayList<T>(100);
 		this.comments = new ArrayList<String>();
 		this.header = null;
-	}
-
-	/**
-	 * Constructor
-	 * @param header the header of CSV file
-	 * @since 1.0.0
-	 */
-	public CsvParsingResult(final String header) {
-		super();
-		this.csvBeans = new ArrayList<T>(100);
-		this.comments = new ArrayList<String>();
-		this.header = header;
 	}
 
 	/**
@@ -108,5 +102,23 @@ public class CsvParsingResult<T> {
 	 */
 	public void setHeader(String header) {
 		this.header = header;
+	}
+
+	/**
+	 * Get the footer
+	 * @return the footer
+	 * @since 1.0.0
+	 */
+	public String getFooter() {
+		return footer;
+	}
+
+	/**
+	 * Set the footer
+	 * @param footer the footer to set
+	 * @since 1.0.0
+	 */
+	public void setFooter(String footer) {
+		this.footer = footer;
 	}
 }
