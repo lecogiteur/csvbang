@@ -199,5 +199,15 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 	public boolean isChuck(final CsvGrammarActionType next, final byte[] keyword) {
 		return false;
 	}
+	
+	public Character deleteLastChar(){
+		if (content.length() > 0){
+			final int idx = content.length() - 1;
+			final char a = content.charAt(idx);
+			content.deleteCharAt(idx);
+			return a;
+		}
+		return null;
+	}
 
 }

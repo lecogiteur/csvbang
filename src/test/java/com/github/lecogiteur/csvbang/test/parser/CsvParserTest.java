@@ -115,6 +115,9 @@ public class CsvParserTest {
 				if (l.getHeader() != null){
 					result.setHeader(l.getHeader());
 				}
+				if (l.getFooter() != null){
+					result.setFooter(l.getFooter());
+				}
 			}
 		}
 		
@@ -124,6 +127,9 @@ public class CsvParserTest {
 			result.getComments().addAll(l.getComments());
 			if (l.getHeader() != null){
 				result.setHeader(l.getHeader());
+			}
+			if (l.getFooter() != null){
+				result.setFooter(l.getFooter());
 			}
 		}
 		return result;
@@ -864,7 +870,7 @@ public class CsvParserTest {
 	
 
 
-	@Ignore
+	@Test
 	public void customFooterTest() throws CsvBangException{
 		final String content = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"
 				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd\n"

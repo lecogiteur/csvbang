@@ -487,13 +487,13 @@ public class ReflectionUti {
 			return;
 		}
 		
-		Object result = value;
-		if (generator != null){
-			//if a generator is defined we transform the value in the type of CSV field (parameter of setter).
-			result = generator.generate(value);
-		}
-		
 		try {
+			Object result = value;
+			if (generator != null){
+				//if a generator is defined we transform the value in the type of CSV field (parameter of setter).
+				result = generator.generate(value);
+			}
+
 			//set the value to the bean
 			if (setter instanceof Field){
 				((Field)setter).set(beanCSV, result);

@@ -55,7 +55,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	 * List of fields
 	 * @since 1.0.0
 	 */
-	private final List<CsvGrammarAction<?>> fields;
+	private final List<FieldGrammarAction> fields;
 	
 	/**
 	 * CSV bean class
@@ -85,7 +85,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		super();
 		this.beanClass = beanClass;
 		this.conf = conf;
-		this.fields = new ArrayList<CsvGrammarAction<?>>();
+		this.fields = new ArrayList<FieldGrammarAction>();
 		this.fields.add(new FieldGrammarAction(100));
 	}
 
@@ -124,7 +124,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 			switch (word.getType()) {
 			case FIELD:
 				//add a field
-				fields.add(word);
+				fields.add((FieldGrammarAction)word);
 				endOffset = word.getEndOffset();
 				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
 				return true;
@@ -134,6 +134,45 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 					endOffset = word.getEndOffset();
 					return true;
 				}
+				return false;
+			case FOOTER:
+				final FooterGrammarAction foot = (FooterGrammarAction) word;
+				if (fields.size() < conf.fields.size()){
+					//the number of field of last record of file is invalid. So it's a part of footer.
+					final StringBuilder s = new StringBuilder();
+					for (final FieldGrammarAction field:fields){
+						s.append(conf.delimiter).append(field.execute());
+					}
+					s.delete(0, conf.delimiter.length());
+					foot.addBefore(s);
+					foot.setStartOffset(fields.get(0).getStartOffset());
+					endOffset = foot.getEndOffset();
+					fields.clear();
+				}else if (fields.size() == conf.fields.size()){
+					//we verify if the last field of last record can be set
+					final T bean = newInstance();
+					boolean b = true;
+					final StringBuilder s = new StringBuilder();
+					final int idx = fields.size()-1;
+					while(b){
+						try{
+							setField(idx, bean);
+							b = false;
+						}catch(CsvBangException e){
+							final Character a = fields.get(idx).deleteLastChar();
+							if (a == null){
+								b = false;
+							}else{
+								s.append(a);
+							}
+						}
+					}
+					foot.addBefore(s);
+					foot.setStartOffset(fields.get(idx).getEndOffset() - s.length());
+					fields.get(idx).setEndOffset(foot.getEndOffset());
+					endOffset = foot.getEndOffset();
+				}
+				foot.terminateSetFooterContent();
 				return false;
 			case END:
 				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
@@ -177,24 +216,46 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 			}
 			
 			//create new CSV bean
-			try {
-				bean = beanClass.newInstance();
-			} catch (InstantiationException e) {
-				throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
-			} catch (IllegalAccessException e) {
-				throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
-			}
+			bean = newInstance();
 			
 			//set all field to CSV bean
 			for (int i=0; i<conf.fields.size(); i++){
-				final CsvFieldConfiguration confField = conf.fields.get(i);
-				final CsvGrammarAction<?> field = fields.get(i);
-				final Object content = field.execute();
-				isNull = isNull && content == null;
-				ReflectionUti.setValue(confField.setter, confField.generator, bean, field.execute());
+				isNull = setField(i, bean) && isNull;
 			}
 		}
 		return isNull?null:bean;
+	}
+	
+	/**
+	 * Set a field to the CSV bean
+	 * @param fieldIndex field index
+	 * @param bean the CSV bean
+	 * @return true if the field is null
+	 * @throws CsvBangException if a problem has occurred when we set tthe field to the CSV bean
+	 * @since 1.0.0
+	 */
+	private boolean setField(final int fieldIndex, final T bean) throws CsvBangException{
+		final CsvFieldConfiguration confField = conf.fields.get(fieldIndex);
+		final CsvGrammarAction<?> field = fields.get(fieldIndex);
+		final Object content = field.execute();
+		ReflectionUti.setValue(confField.setter, confField.generator, bean, field.execute());
+		return content == null;
+	}
+	
+	/**
+	 * Return a new instance of CSV bean
+	 * @return the CSV bean
+	 * @throws CsvBangException if a problem has occurred whe we create the new instance.
+	 * @since 1.0.0
+	 */
+	private T newInstance() throws CsvBangException{
+		try {
+			return beanClass.newInstance();
+		} catch (InstantiationException e) {
+			throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
+		} catch (IllegalAccessException e) {
+			throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
+		}
 	}
 
 	/**
