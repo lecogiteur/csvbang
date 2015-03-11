@@ -1076,7 +1076,7 @@ public class CsvParserTest {
 	}
 	
 
-	@Ignore
+	@Test
 	public void footerWithHeaderDataTest() throws CsvBangException{
 		final String content = "myField1,myField2,field3,the field,field6\n"
 				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,ccccccccccccccccccccccccccccccccccc,dddddddddddddddddddddddddddddddddddd,38\n"

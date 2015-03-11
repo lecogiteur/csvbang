@@ -155,7 +155,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 					//we verify if the last field of last record can be set
 					final T bean = newInstance();
 					boolean b = true;
-					final StringBuilder s = new StringBuilder();
+					int size = 0;
 					final int idx = fields.size()-1;
 					while(b){
 						try{
@@ -166,12 +166,12 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 							if (a == null){
 								b = false;
 							}else{
-								s.append(a);
+								size++;
+								foot.addBefore(a);
 							}
 						}
 					}
-					foot.addBefore(s);
-					foot.setStartOffset(fields.get(idx).getEndOffset() - s.length());
+					foot.setStartOffset(fields.get(idx).getEndOffset() - size);
 					fields.get(idx).setEndOffset(foot.getEndOffset());
 					endOffset = foot.getEndOffset();
 				}
@@ -194,8 +194,9 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	 */
 	@Override
 	public boolean isActionCompleted(final CsvGrammarActionType next) {
-		return isTerminatedRecord || conf.fields.size() == fields.size() || CsvGrammarActionType.RECORD.equals(next) 
-				|| CsvGrammarActionType.END.equals(next) || CsvGrammarActionType.COMMENT.equals(next);
+		return (isTerminatedRecord || conf.fields.size() == fields.size() || CsvGrammarActionType.RECORD.equals(next) 
+				|| CsvGrammarActionType.END.equals(next) || CsvGrammarActionType.COMMENT.equals(next)) 
+				&& !CsvGrammarActionType.FOOTER.equals(next);
 	}
 
 	/**

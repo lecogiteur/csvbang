@@ -502,7 +502,7 @@ public class ReflectionUti {
 			}
 		} catch (Exception e) {
 			throw new CsvBangException(String.format("A problem has occurred when we set value [%s] in bean of type [%s] with setter: %s", 
-					value, beanCSV.getClass(), ((Member)setter).getName()));
+					value, beanCSV.getClass(), ((Member)setter).getName()), e);
 		}
 	}
 	
