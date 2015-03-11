@@ -141,7 +141,10 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 					//the number of field of last record of file is invalid. So it's a part of footer.
 					final StringBuilder s = new StringBuilder();
 					for (final FieldGrammarAction field:fields){
-						s.append(conf.delimiter).append(field.execute());
+						final String c = field.execute();
+						if (c!=null){
+							s.append(conf.delimiter).append(c);
+						}
 					}
 					s.delete(0, conf.delimiter.length());
 					foot.addBefore(s);
