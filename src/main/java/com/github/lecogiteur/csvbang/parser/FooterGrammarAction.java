@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
+import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
 /**
@@ -31,6 +32,12 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @since 1.0.0
  */
 public class FooterGrammarAction extends AbstractStringGrammarAction {
+	
+	/**
+	 * CsvBang configuration
+	 * @since 1.0.0
+	 */
+	private final CsvBangConfiguration conf;
 	
 	/**
 	 * True if the content of footer is set
@@ -43,9 +50,10 @@ public class FooterGrammarAction extends AbstractStringGrammarAction {
 	 * @param capacity initial capacity of footer
 	 * @since 1.0.0
 	 */
-	public FooterGrammarAction(int capacity) {
+	public FooterGrammarAction(final CsvBangConfiguration conf, final int capacity) {
 		super(capacity);
 		isTerminated = true;
+		this.conf = conf;
 	}
 
 	/**
@@ -113,5 +121,25 @@ public class FooterGrammarAction extends AbstractStringGrammarAction {
 	public void terminateSetFooterContent(){
 		isSet = false;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.parser.AbstractStringGrammarAction#execute()
+	 * @since 1.0.0
+	 */
+	@Override
+	public String execute() {
+		final String footer = super.execute();
+		if (conf.footer != null && conf.footer.length() > 0){
+			if (footer == null){
+				return conf.footer;
+			}else if (!footer.endsWith(conf.footer)){
+				return footer+conf.footer;
+			}
+		}
+		return footer;
+	}
+	
+	
 
 }

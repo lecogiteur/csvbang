@@ -752,7 +752,7 @@ public class CsvParser<T> {
 		case HEADER:
 			return new HeaderGrammarAction(conf, contentLength);
 		case FOOTER:
-			return new FooterGrammarAction(contentLength);
+			return new FooterGrammarAction(conf, contentLength);
 		default:
 			//undefined action
 			return new UndefinedGrammarAction(contentLength);
