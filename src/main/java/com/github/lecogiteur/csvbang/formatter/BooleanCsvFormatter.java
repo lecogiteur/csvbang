@@ -22,9 +22,14 @@
  */
 package com.github.lecogiteur.csvbang.formatter;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
@@ -275,7 +280,7 @@ public class BooleanCsvFormatter implements CsvFormatter {
 			return value;
 		}
 		
-		final Integer index = revert.get(value.toLowerCase());
+		final Integer index = revert.get(value.trim().toLowerCase());
 		if (index == null){
 			return null;
 		}
@@ -284,12 +289,52 @@ public class BooleanCsvFormatter implements CsvFormatter {
 			return index.intValue() == 0 ?Boolean.TRUE:Boolean.FALSE;
 		}
 		
+		if (AtomicBoolean.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new AtomicBoolean(Boolean.TRUE):new AtomicBoolean(Boolean.FALSE);
+		}
+		
 		if (Integer.class.equals(typeOfReturn)){
 			return index.intValue() == 0 ?new Integer(1):new Integer(0);
 		}
 		
+		if (AtomicInteger.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new AtomicInteger(1):new AtomicInteger(0);
+		}
+		
+		if (BigInteger.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new BigInteger("1"):new BigInteger("0");
+		}
+		
+		if (Short.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?(short)1:(short)0;
+		}
+		
+		if (Byte.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?(byte)1:(byte)0;
+		}
+		
+		if (Long.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new Long(1):new Long(0);
+		}
+		
+		if (AtomicLong.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new AtomicLong(1):new AtomicLong(0);
+		}
+		
+		if (Double.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new Double(1):new Double(0);
+		}
+		
+		if (Float.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new Float(1):new Float(0);
+		}
+		
+		if (BigDecimal.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new BigDecimal("1"):new BigDecimal("0");
+		}
+		
 		if (String.class.equals(typeOfReturn)){
-			return value;
+			return destination[index];
 		}
 		
 		return null;
