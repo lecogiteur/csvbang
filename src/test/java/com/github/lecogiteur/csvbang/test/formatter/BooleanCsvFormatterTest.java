@@ -23,8 +23,10 @@
  */
 package com.github.lecogiteur.csvbang.test.formatter;
 
+import java.util.Calendar;
 import java.util.Locale;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -32,7 +34,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import com.github.lecogiteur.csvbang.formatter.BooleanCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.CsvFormatter;
 
-import junit.framework.Assert;
 
 /**
  * @author Tony EMMA
@@ -40,12 +41,6 @@ import junit.framework.Assert;
  */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class BooleanCsvFormatterTest {
-	@Test
-	public void boolea(){
-		double d;
-		d = 0/0.0;
-		System.out.println("dfsdf" + d);
-	}
 	@Test
 	public void booleanFormatNoPatternTest(){
 		CsvFormatter format = new BooleanCsvFormatter();
@@ -563,4 +558,151 @@ public class BooleanCsvFormatterTest {
 		Assert.assertEquals("YES", format.format("Oui", "default"));
 		Assert.assertEquals("NO", format.format("non", "default"));
 	}
+	
+	@Test
+	public void booleanParseToBooleanTest(){
+		CsvFormatter format = new BooleanCsvFormatter();
+		format.init();
+		Assert.assertEquals(null, format.parse(null, Boolean.class));
+		Assert.assertEquals(null, format.parse("string", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("true", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("false", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("True", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("False", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("TRUE", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("FaLSe", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("0", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("1", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("Off", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("ON", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("F", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("T", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("off", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("on", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("f", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("t", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("y", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("n", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("Y", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("N", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("o", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("n", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("yes", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("NO", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("Oui", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("non", Boolean.class));
+		Assert.assertEquals(Boolean.TRUE, format.parse("ja", Boolean.class));
+		Assert.assertEquals(Boolean.FALSE, format.parse("NeIn", Boolean.class));
+	}
+	
+	@Test
+	public void booleanParseToIntegerTest(){
+		CsvFormatter format = new BooleanCsvFormatter();
+		format.init();
+		Assert.assertEquals(null, format.parse(null, Integer.class));
+		Assert.assertEquals(null, format.parse("string", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("true", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("false", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("True", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("False", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("TRUE", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("FaLSe", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("0", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("1", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("Off", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("ON", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("F", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("T", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("off", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("on", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("f", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("t", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("y", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("n", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("Y", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("N", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("o", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("n", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("yes", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("NO", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("Oui", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("non", Integer.class));
+		Assert.assertEquals(new Integer(1), format.parse("ja", Integer.class));
+		Assert.assertEquals(new Integer(0), format.parse("NeIn", Integer.class));
+	}
+	
+	@Test
+	public void booleanParseToStringTest(){
+		CsvFormatter format = new BooleanCsvFormatter();
+		format.init();
+		Assert.assertEquals(null, format.parse(null, String.class));
+		Assert.assertEquals(null, format.parse("string", String.class));
+		Assert.assertEquals("true", format.parse("true", String.class));
+		Assert.assertEquals("false", format.parse("false", String.class));
+		Assert.assertEquals("True", format.parse("True", String.class));
+		Assert.assertEquals("False", format.parse("False", String.class));
+		Assert.assertEquals("TRUE", format.parse("TRUE", String.class));
+		Assert.assertEquals("FaLSe", format.parse("FaLSe", String.class));
+		Assert.assertEquals("0", format.parse("0", String.class));
+		Assert.assertEquals("1", format.parse("1", String.class));
+		Assert.assertEquals("Off", format.parse("Off", String.class));
+		Assert.assertEquals("ON", format.parse("ON", String.class));
+		Assert.assertEquals("F", format.parse("F", String.class));
+		Assert.assertEquals("T", format.parse("T", String.class));
+		Assert.assertEquals("off", format.parse("off", String.class));
+		Assert.assertEquals("on", format.parse("on", String.class));
+		Assert.assertEquals("f", format.parse("f", String.class));
+		Assert.assertEquals("t", format.parse("t", String.class));
+		Assert.assertEquals("y", format.parse("y", String.class));
+		Assert.assertEquals("n", format.parse("n", String.class));
+		Assert.assertEquals("Y", format.parse("Y", String.class));
+		Assert.assertEquals("N", format.parse("N", String.class));
+		Assert.assertEquals("N", format.parse("N", String.class));
+		Assert.assertEquals("n", format.parse("n", String.class));
+		Assert.assertEquals("yes", format.parse("yes", String.class));
+		Assert.assertEquals("NO", format.parse("NO", String.class));
+		Assert.assertEquals("Oui", format.parse("Oui", String.class));
+		Assert.assertEquals("non", format.parse("non", String.class));
+		Assert.assertEquals("ja", format.parse("ja", String.class));
+		Assert.assertEquals("NeIn", format.parse("NeIn", String.class));
+	}
+	
+
+	
+	@Test
+	public void booleanParseToUnknowingTest(){
+		CsvFormatter format = new BooleanCsvFormatter();
+		format.init();
+		Assert.assertEquals(null, format.parse(null, Calendar.class));
+		Assert.assertEquals(null, format.parse("string", Calendar.class));
+		Assert.assertEquals(null, format.parse("true", Calendar.class));
+		Assert.assertEquals(null, format.parse("false", Calendar.class));
+		Assert.assertEquals(null, format.parse("True", Calendar.class));
+		Assert.assertEquals(null, format.parse("False", Calendar.class));
+		Assert.assertEquals(null, format.parse("TRUE", Calendar.class));
+		Assert.assertEquals(null, format.parse("FaLSe", Calendar.class));
+		Assert.assertEquals(null, format.parse("0", Calendar.class));
+		Assert.assertEquals(null, format.parse("1", Calendar.class));
+		Assert.assertEquals(null, format.parse("Off", Calendar.class));
+		Assert.assertEquals(null, format.parse("ON", Calendar.class));
+		Assert.assertEquals(null, format.parse("F", Calendar.class));
+		Assert.assertEquals(null, format.parse("T", Calendar.class));
+		Assert.assertEquals(null, format.parse("off", Calendar.class));
+		Assert.assertEquals(null, format.parse("on", Calendar.class));
+		Assert.assertEquals(null, format.parse("f", Calendar.class));
+		Assert.assertEquals(null, format.parse("t", Calendar.class));
+		Assert.assertEquals(null, format.parse("y", Calendar.class));
+		Assert.assertEquals(null, format.parse("n", Calendar.class));
+		Assert.assertEquals(null, format.parse("Y", Calendar.class));
+		Assert.assertEquals(null, format.parse("N", Calendar.class));
+		Assert.assertEquals(null, format.parse("N", Calendar.class));
+		Assert.assertEquals(null, format.parse("n", Calendar.class));
+		Assert.assertEquals(null, format.parse("yes", Calendar.class));
+		Assert.assertEquals(null, format.parse("NO", Calendar.class));
+		Assert.assertEquals(null, format.parse("Oui", Calendar.class));
+		Assert.assertEquals(null, format.parse("non", Calendar.class));
+		Assert.assertEquals(null, format.parse("ja", Calendar.class));
+		Assert.assertEquals(null, format.parse("NeIn", Calendar.class));
+	}
+	
 }

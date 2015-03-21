@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
+
 /**
  * Format boolean value
  * @author Tony EMMA
@@ -79,12 +81,53 @@ public class BooleanCsvFormatter implements CsvFormatter {
 		simplemap.put("ON/OFF", new String[]{"ON", "OFF"});
 		LocaleMapLitteral.put(Locale.FRANCE, new String[]{"Oui", "Non"});
 		LocaleMapLitteral.put(Locale.FRENCH, new String[]{"Oui", "Non"});
+		LocaleMapLitteral.put(Locale.CANADA, new String[]{"Oui", "Non"});
+		LocaleMapLitteral.put(Locale.CANADA_FRENCH, new String[]{"Oui", "Non"});
+		LocaleMapLitteral.put(Locale.CHINA, new String[]{"是的", "不是"});
+		LocaleMapLitteral.put(Locale.CHINESE, new String[]{"是的", "不是"});
+		LocaleMapLitteral.put(Locale.UK, new String[]{"Yes", "No"});
+		LocaleMapLitteral.put(Locale.US, new String[]{"Yes", "No"});
+		LocaleMapLitteral.put(Locale.ENGLISH, new String[]{"Yes", "No"});
+		LocaleMapLitteral.put(Locale.GERMAN, new String[]{"Ja", "Nein"});
+		LocaleMapLitteral.put(Locale.GERMANY, new String[]{"Ja", "Nein"});
+		LocaleMapLitteral.put(Locale.ITALIAN, new String[]{"Sì", "No"});
+		LocaleMapLitteral.put(Locale.ITALY, new String[]{"Sì", "No"});
+		LocaleMapLitteral.put(Locale.JAPAN, new String[]{"はい", "いいえ"});
+		LocaleMapLitteral.put(Locale.JAPANESE, new String[]{"はい", "いいえ"});
 		LocaleMapLitteral.put(null, new String[]{"Yes", "No"});
+		
 		LocaleMapLITTERAL.put(Locale.FRANCE, new String[]{"OUI", "NON"});
 		LocaleMapLITTERAL.put(Locale.FRENCH, new String[]{"OUI", "NON"});
+		LocaleMapLITTERAL.put(Locale.CANADA, new String[]{"OUI", "NON"});
+		LocaleMapLITTERAL.put(Locale.CANADA_FRENCH, new String[]{"OUI", "NON"});
+		LocaleMapLITTERAL.put(Locale.CHINA, new String[]{"是的", "不是"});
+		LocaleMapLITTERAL.put(Locale.CHINESE, new String[]{"是的", "不是"});
+		LocaleMapLITTERAL.put(Locale.UK, new String[]{"YES", "NO"});
+		LocaleMapLITTERAL.put(Locale.US, new String[]{"YES", "NO"});
+		LocaleMapLITTERAL.put(Locale.ENGLISH, new String[]{"YES", "NO"});
+		LocaleMapLITTERAL.put(Locale.GERMAN, new String[]{"JA", "NEIN"});
+		LocaleMapLITTERAL.put(Locale.GERMANY, new String[]{"JA", "NEIN"});
+		LocaleMapLITTERAL.put(Locale.ITALIAN, new String[]{"SÌ", "NO"});
+		LocaleMapLITTERAL.put(Locale.ITALY, new String[]{"SÌ", "NO"});
+		LocaleMapLITTERAL.put(Locale.JAPAN, new String[]{"はい", "いいえ"});
+		LocaleMapLITTERAL.put(Locale.JAPANESE, new String[]{"はい", "いいえ"});
 		LocaleMapLITTERAL.put(null, new String[]{"YES", "NO"});
+		
 		LocaleMaplitteral.put(Locale.FRANCE, new String[]{"oui", "non"});
 		LocaleMaplitteral.put(Locale.FRENCH, new String[]{"oui", "non"});
+		LocaleMaplitteral.put(Locale.CANADA, new String[]{"oui", "non"});
+		LocaleMaplitteral.put(Locale.CANADA_FRENCH, new String[]{"oui", "non"});
+		LocaleMaplitteral.put(Locale.CHINA, new String[]{"是的", "不是"});
+		LocaleMaplitteral.put(Locale.CHINESE, new String[]{"是的", "不是"});
+		LocaleMaplitteral.put(Locale.UK, new String[]{"yes", "no"});
+		LocaleMaplitteral.put(Locale.US, new String[]{"yes", "no"});
+		LocaleMaplitteral.put(Locale.ENGLISH, new String[]{"yes", "no"});
+		LocaleMaplitteral.put(Locale.GERMAN, new String[]{"ja", "nein"});
+		LocaleMaplitteral.put(Locale.GERMANY, new String[]{"ja", "nein"});
+		LocaleMaplitteral.put(Locale.ITALIAN, new String[]{"sì", "no"});
+		LocaleMaplitteral.put(Locale.ITALY, new String[]{"sì", "no"});
+		LocaleMaplitteral.put(Locale.JAPAN, new String[]{"はい", "いいえ"});
+		LocaleMaplitteral.put(Locale.JAPANESE, new String[]{"はい", "いいえ"});
 		LocaleMaplitteral.put(null, new String[]{"yes", "no"});
 		
 		revert.put("true", 0);
@@ -95,6 +138,10 @@ public class BooleanCsvFormatter implements CsvFormatter {
 		revert.put("o", 0);
 		revert.put("y", 0);
 		revert.put("on", 0);
+		revert.put("はい", 0);
+		revert.put("sì", 0);
+		revert.put("ja", 0);
+		revert.put("是的", 0);
 		revert.put("false", 1);
 		revert.put("f", 1);
 		revert.put("0", 1);
@@ -102,6 +149,9 @@ public class BooleanCsvFormatter implements CsvFormatter {
 		revert.put("no", 1);
 		revert.put("n", 1);
 		revert.put("off", 1);
+		revert.put("いいえ", 1);
+		revert.put("nein", 1);
+		revert.put("不是", 1);
 	}
 	
 	/**
@@ -212,6 +262,37 @@ public class BooleanCsvFormatter implements CsvFormatter {
 			return "unkowningBoolean";
 		}
 		return destination[index];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.formatter.CsvFormatter#parse(java.lang.String, java.lang.Class)
+	 * @since 1.0.0
+	 */
+	@Override
+	public Object parse(final String value, final Class<?> typeOfReturn) {
+		if (value == null || CsvbangUti.isStringBlank(value) || typeOfReturn == null){
+			return value;
+		}
+		
+		final Integer index = revert.get(value.toLowerCase());
+		if (index == null){
+			return null;
+		}
+		
+		if (Boolean.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?Boolean.TRUE:Boolean.FALSE;
+		}
+		
+		if (Integer.class.equals(typeOfReturn)){
+			return index.intValue() == 0 ?new Integer(1):new Integer(0);
+		}
+		
+		if (String.class.equals(typeOfReturn)){
+			return value;
+		}
+		
+		return null;
 	}
 
 }

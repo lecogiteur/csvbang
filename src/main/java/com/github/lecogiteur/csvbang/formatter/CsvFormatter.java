@@ -64,5 +64,14 @@ public interface CsvFormatter {
 	 * @since 0.0.1
 	 */
 	String format(final Object o, final String defaultIfNull);
+	
+	/**
+	 * Parse value 
+	 * @param value the value from CSV file
+	 * @param typeOfReturn the type of return
+	 * @return the value parsed.
+	 * @since 1.0.0
+	 */
+	Object parse(final String value, final Class<?> typeOfReturn);
 
 }
