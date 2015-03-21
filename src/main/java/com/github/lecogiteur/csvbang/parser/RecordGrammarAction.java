@@ -136,46 +136,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 				}
 				return false;
 			case FOOTER:
-				final FooterGrammarAction foot = (FooterGrammarAction) word;
-				if (fields.size() < conf.fields.size()){
-					//the number of field of last record of file is invalid. So it's a part of footer.
-					final StringBuilder s = new StringBuilder();
-					for (final FieldGrammarAction field:fields){
-						final String c = field.execute();
-						if (c!=null){
-							s.append(conf.delimiter).append(c);
-						}
-					}
-					s.delete(0, conf.delimiter.length());
-					foot.addBefore(s);
-					foot.setStartOffset(fields.get(0).getStartOffset());
-					endOffset = foot.getEndOffset();
-					fields.clear();
-				}else if (fields.size() == conf.fields.size()){
-					//we verify if the last field of last record can be set
-					final T bean = newInstance();
-					boolean b = true;
-					int size = 0;
-					final int idx = fields.size()-1;
-					while(b){
-						try{
-							setField(idx, bean);
-							b = false;
-						}catch(CsvBangException e){
-							final Character a = fields.get(idx).deleteLastChar();
-							if (a == null){
-								b = false;
-							}else{
-								size++;
-								foot.addBefore(a);
-							}
-						}
-					}
-					foot.setStartOffset(fields.get(idx).getEndOffset() - size);
-					fields.get(idx).setEndOffset(foot.getEndOffset());
-					endOffset = foot.getEndOffset();
-				}
-				foot.terminateSetFooterContent();
+				manageFooter((FooterGrammarAction) word);
 				return false;
 			case END:
 				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
@@ -185,6 +146,54 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Manage footer
+	 * @param foot the footer
+	 * @throws CsvBangException if a problem has occurred when parse footer
+	 * @since 1.0.0
+	 */
+	private void manageFooter(final FooterGrammarAction foot) throws CsvBangException{
+		if (fields.size() < conf.fields.size()){
+			//the number of field of last record of file is invalid. So it's a part of footer.
+			final StringBuilder s = new StringBuilder();
+			for (final FieldGrammarAction field:fields){
+				final String c = field.execute();
+				if (c!=null){
+					s.append(conf.delimiter).append(c);
+				}
+			}
+			s.delete(0, conf.delimiter.length());
+			foot.addBefore(s);
+			foot.setStartOffset(fields.get(0).getStartOffset());
+			endOffset = foot.getEndOffset();
+			fields.clear();
+		}else if (fields.size() == conf.fields.size()){
+			//we verify if the last field of last record can be set
+			final T bean = newInstance();
+			boolean b = true;
+			int size = 0;
+			final int idx = fields.size()-1;
+			while(b){
+				try{
+					setField(idx, bean);
+					b = false;
+				}catch(CsvBangException e){
+					final Character a = fields.get(idx).deleteLastChar();
+					if (a == null){
+						b = false;
+					}else{
+						size++;
+						foot.addBefore(a);
+					}
+				}
+			}
+			foot.setStartOffset(fields.get(idx).getEndOffset() - size);
+			fields.get(idx).setEndOffset(foot.getEndOffset());
+			endOffset = foot.getEndOffset();
+		}
+		foot.terminateSetFooterContent();
 	}
 
 	/**
