@@ -22,10 +22,14 @@
  */
 package com.github.lecogiteur.csvbang.formatter;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangRuntimeException;
 import com.github.lecogiteur.csvbang.util.CsvBangDateFormat;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
@@ -106,6 +110,40 @@ public class DateCsvFormatter implements CsvFormatter {
 			return format.get().format(((Calendar)o).getTime());
 		}
 		return format.get().format(o);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.formatter.CsvFormatter#parse(java.lang.String, java.lang.Class)
+	 * @since 1.0.0
+	 */
+	@Override
+	public Object parse(final String value, final Class<?> typeOfReturn) {
+		if (value == null || CsvbangUti.isStringBlank(value) || typeOfReturn == null){
+			return null;
+		}
+		
+		try {
+			final Date date = format.get().parse(value.trim());
+			if (Date.class.equals(typeOfReturn)){
+				return date;
+			}
+			if (Calendar.class.equals(typeOfReturn)){
+				final Calendar c = Calendar.getInstance(locale);
+				c.setTime(date);
+				return c;
+			}
+			if (Timestamp.class.equals(typeOfReturn)){
+				return new Timestamp(date.getTime());
+			}
+			if (Long.class.equals(typeOfReturn)){
+				return date.getTime();
+			}
+		} catch (ParseException e) {
+			throw new CsvBangRuntimeException(String.format("We can't parse CSV value [%s] to the type [%s]. The formatter uses the date pattern: [%s] (See SimpleDateFormat).", 
+					value, typeOfReturn, pattern), e);
+		}
+		return null;
 	}
 
 }

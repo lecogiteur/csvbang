@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,10 +53,11 @@ public class DateCsvFormatterTest {
 		format.init();
 		
 		Date date = sf.parse("11/05/2013");
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance(Locale.US);
 		calendar.setTime(date);
 		
 		Timestamp timestamp = new Timestamp(date.getTime());
+		Long longValue = date.getTime();
 		
 		Assert.assertEquals("default", format.format(null, "default"));
 		
@@ -68,6 +70,7 @@ public class DateCsvFormatterTest {
 		Assert.assertEquals("05/11/2013", format.format(date, "default"));
 		Assert.assertEquals("05/11/2013", format.format(calendar, "default"));
 		Assert.assertEquals("05/11/2013", format.format(timestamp, "default"));
+		Assert.assertEquals("05/11/2013", format.format(longValue, "default"));
 	}
 	
 	@Test
@@ -77,15 +80,76 @@ public class DateCsvFormatterTest {
 		format.init();
 		
 		Date date = sf.parse("11/05/2013");
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance(Locale.US);
 		calendar.setTime(date);
 		
 		Timestamp timestamp = new Timestamp(date.getTime());
+		Long longValue = date.getTime();
 		
 		Assert.assertEquals("default", format.format(null, "default"));
 		Assert.assertEquals("11-05-2013", format.format(date, "default"));
 		Assert.assertEquals("11-05-2013", format.format(calendar, "default"));
 		Assert.assertEquals("11-05-2013", format.format(timestamp, "default"));
+		Assert.assertEquals("11-05-2013", format.format(longValue, "default"));
+	}
+	
+	@Test
+	public void dateParseTest() throws ParseException{
+		CsvFormatter format = new DateCsvFormatter();
+		format.init();
+		
+		Date date = sf.parse("11/05/2013");
+		Calendar calendar = Calendar.getInstance(Locale.US);
+		calendar.setTime(date);
+		
+		Timestamp timestamp = new Timestamp(date.getTime());
+		Long longValue = date.getTime();
+		
+		Assert.assertNull(format.parse(null, Calendar.class));
+		Assert.assertNull(format.parse(null, Timestamp.class));
+		Assert.assertNull(format.parse(null, Date.class));
+		
+		try{
+			format.parse("string", Calendar.class);
+			Assert.fail();
+		}catch(Exception e){
+			//good
+		}
+		Assert.assertEquals(date, format.parse("05/11/2013", Date.class));
+		Assert.assertEquals(calendar, format.parse("05/11/2013", Calendar.class));
+		Assert.assertEquals(timestamp, format.parse("05/11/2013", Timestamp.class));
+		Assert.assertEquals(longValue, format.parse("05/11/2013", Long.class));
+	}
+	
+	@Test
+	public void dateParseWithPatternTest() throws ParseException{
+		CsvFormatter format = new DateCsvFormatter();
+		format.setPattern("dd-MM-yyyy");
+		format.init();
+		
+		Date date = sf.parse("11/05/2013");
+		Calendar calendar = Calendar.getInstance(Locale.US);
+		calendar.setTime(date);
+		
+		Timestamp timestamp = new Timestamp(date.getTime());
+		Long longValue = date.getTime();
+		
+		Assert.assertNull(format.parse(null, Calendar.class));
+		Assert.assertNull(format.parse("", Timestamp.class));
+		Assert.assertNull(format.parse("  ", Date.class));
+		
+
+		try{
+			format.parse("string", Calendar.class);
+			Assert.fail();
+		}catch(Exception e){
+			//good
+		}
+		
+		Assert.assertEquals(date, format.parse("11-05-2013", Date.class));
+		Assert.assertEquals(calendar, format.parse("11-05-2013", Calendar.class));
+		Assert.assertEquals(timestamp, format.parse("11-05-2013", Timestamp.class));
+		Assert.assertEquals(longValue, format.parse("11-05-2013", Long.class));
 	}
 
 }
