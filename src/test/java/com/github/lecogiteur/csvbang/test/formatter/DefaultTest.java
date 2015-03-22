@@ -23,8 +23,11 @@
  */
 package com.github.lecogiteur.csvbang.test.formatter;
 
-import junit.framework.Assert;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -48,6 +51,16 @@ public class DefaultTest {
 		Assert.assertEquals("default", format.format("", "default"));
 		Assert.assertEquals(" ", format.format(" ", "default"));
 		Assert.assertEquals("18", format.format(18, "default"));
+	}
+	
+	@Test
+	public void defaultParseTest(){
+		CsvFormatter format = new Default();
+		format.init();
+		Assert.assertEquals(null, format.parse(null, String.class));
+		Assert.assertEquals("", format.parse("", Integer.class));
+		Assert.assertEquals(" ", format.parse(" ", Calendar.class));
+		Assert.assertEquals("18", format.parse("18", Timestamp.class));
 	}
 
 }

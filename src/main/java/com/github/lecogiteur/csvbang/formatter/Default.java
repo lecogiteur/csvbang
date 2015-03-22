@@ -80,4 +80,14 @@ public class Default implements CsvFormatter {
 		return o.toString();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.formatter.CsvFormatter#parse(java.lang.String, java.lang.Class)
+	 * @since 1.0.0
+	 */
+	@Override
+	public Object parse(final String value, final Class<?> typeOfReturn) {
+		return value;
+	}
+
 }
