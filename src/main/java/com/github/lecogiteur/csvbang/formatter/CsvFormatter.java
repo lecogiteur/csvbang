@@ -60,7 +60,6 @@ public interface CsvFormatter {
 	 * @param o the value
 	 * @param defaultIfNull String if value is null defined in {@link com.github.lecogiteur.csvbang.annotation.CsvField}
 	 * @return the value formatted
-	 * 
 	 * @since 0.0.1
 	 */
 	String format(final Object o, final String defaultIfNull);
