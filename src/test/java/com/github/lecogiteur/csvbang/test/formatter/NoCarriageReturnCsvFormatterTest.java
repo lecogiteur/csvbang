@@ -87,4 +87,40 @@ public class NoCarriageReturnCsvFormatterTest {
 		Assert.assertEquals("a string", formatter.format("a \r\n\nstring", "default string"));
 	}
 	
+	
+	@Test
+	public void noCarriageReturnParsingTest(){
+		NoCarriageReturnCsvFormatter formatter = new NoCarriageReturnCsvFormatter();
+		formatter.init();
+		
+		Assert.assertEquals(null, formatter.parse(null, String.class));
+		Assert.assertEquals("normal string", formatter.parse("normal string", Integer.class));
+		Assert.assertEquals("a\n string", formatter.parse("a  string", null));
+		Assert.assertEquals("a\n\n string", formatter.parse("a   string", null));
+	}
+
+	@Test
+	public void noCarriageReturnWithPatternParsingTest(){
+		NoCarriageReturnCsvFormatter formatter = new NoCarriageReturnCsvFormatter();
+		formatter.setPattern("<BR/>");
+		formatter.init();
+		
+		Assert.assertEquals(null, formatter.parse(null, String.class));
+		Assert.assertEquals("normal string", formatter.parse("normal string", Integer.class));
+		Assert.assertEquals("a \nstring", formatter.parse("a <BR/>string", null));
+		Assert.assertEquals("a \n\nstring", formatter.parse("a <BR/><BR/>string", null));
+	}
+	
+
+
+	@Test
+	public void noCarriageReturnWithPatternEmptyParsingTest(){
+		NoCarriageReturnCsvFormatter formatter = new NoCarriageReturnCsvFormatter();
+		formatter.setPattern("");
+		formatter.init();
+		
+		Assert.assertEquals(null, formatter.parse(null, String.class));
+		Assert.assertEquals("normal\nstring", formatter.parse("normal string", Integer.class));
+		Assert.assertEquals("a\nstring", formatter.parse("a string", null));
+	}
 }

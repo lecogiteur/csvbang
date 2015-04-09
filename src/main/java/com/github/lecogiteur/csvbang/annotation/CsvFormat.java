@@ -60,7 +60,10 @@ public @interface CsvFormat {
 		DEFAULT,
 		
 		/**
-		 * Delete all carriage return in field value and replace them by a pattern (By default a space). 
+		 * <p>Delete all carriage return in field value and replace them by a pattern (By default a space).</p> 
+		 * <p>You can define the end line with its replacement by this syntax: <i>[end line characters]-->[replacement characters]</i>. For example, you can set pattern to: <code>\n-->MYENDLINE</code></p>
+		 * <p>If you don't define <i>[end line characters]</i>, the end line pattern used is \r?\n. For example if you set pattern with: <code>MYENDLINE</code>, all end lines which match with \r?\n pattern, will be replaced. 
+		 * if you don't define <i>[end line characters]</i>, when we parse CSV file we replace <i>[replacement characters]</i> by \n character.</p>
 		 * @since 0.0.4
 		 */
 		NO_CARRIAGE_RETURN,

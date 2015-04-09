@@ -27,10 +27,12 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
+
 /**
  * Delete all carriage return of a value and replace them by a pattern (By default a space). 
  * @author Tony EMMA
- * @version 0.0.4
+ * @version 1.0.0
  *
  */
 public class NoCarriageReturnCsvFormatter implements CsvFormatter{
@@ -42,10 +44,28 @@ public class NoCarriageReturnCsvFormatter implements CsvFormatter{
 	private static final Pattern CARRIAGE_RETURN = Pattern.compile("\r?\n");
 	
 	/**
+	 * Pattern of carriage return
+	 * @since 1.0.0
+	 */
+	private Pattern patterReplaceCarriageReturn;
+	
+	/**
+	 * Pattern of replacement of carriage return
+	 * @since 1.0.0
+	 */
+	private Pattern patterReplaceCarriageReturnReplacement;
+	
+	/**
 	 * String which replaces carriage return
 	 * @since 0.0.1
 	 */
 	private String replaceByString = " ";
+	
+	/**
+	 * carriage return
+	 * @since 0.0.1
+	 */
+	private String replaceByEndLine = "\n";
 
 	/**
 	 * {@inheritDoc}
@@ -54,6 +74,26 @@ public class NoCarriageReturnCsvFormatter implements CsvFormatter{
 	 */
 	@Override
 	public void init() {
+		if (replaceByString != null || !"".equals(replaceByString)){
+			
+			
+			final String[] tab = replaceByString.split("-->");
+			if (tab.length == 1){
+				patterReplaceCarriageReturn = CARRIAGE_RETURN;
+			}else{
+				replaceByEndLine = tab[0];
+				replaceByString = tab[1];
+				patterReplaceCarriageReturn = Pattern.compile(Pattern.quote(replaceByEndLine));
+			}
+			
+			
+			if (CsvbangUti.isStringBlank(replaceByString)){
+				patterReplaceCarriageReturnReplacement = Pattern.compile("(" + replaceByString + ") ");
+				replaceByEndLine += "$1";
+			}else{
+				patterReplaceCarriageReturnReplacement = Pattern.compile(Pattern.quote(replaceByString));
+			}
+		}
 	}
 
 	/**
@@ -88,9 +128,33 @@ public class NoCarriageReturnCsvFormatter implements CsvFormatter{
 			return defaultIfNull;
 		}
 		
-		final Matcher matcher = CARRIAGE_RETURN.matcher(o.toString());
+		final Matcher matcher = patterReplaceCarriageReturn.matcher(o.toString());
 		
 		return matcher.replaceAll(replaceByString);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.formatter.CsvFormatter#parse(java.lang.String, java.lang.Class)
+	 * @since 1.0.0
+	 */
+	@Override
+	public Object parse(final String value, final Class<?> typeOfReturn) {
+		if (value == null || patterReplaceCarriageReturnReplacement == null){
+			return value;
+		}
+		Matcher matcher = patterReplaceCarriageReturnReplacement.matcher(value);
+		
+
+		if (CsvbangUti.isStringBlank(replaceByString)){
+			String s = matcher.replaceAll(replaceByEndLine);
+			matcher = patterReplaceCarriageReturnReplacement.matcher(s);
+			while (matcher.find()){
+				s = matcher.replaceAll(replaceByEndLine);
+				matcher = patterReplaceCarriageReturnReplacement.matcher(s);
+			}
+		}
+		return matcher.replaceAll(replaceByEndLine);
 	}
 
 	
