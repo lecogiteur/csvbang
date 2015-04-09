@@ -22,8 +22,17 @@
  */
 package com.github.lecogiteur.csvbang.formatter;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import com.github.lecogiteur.csvbang.exception.CsvBangRuntimeException;
+import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 /**
  * Format and parse number. This class is based on {@link DecimalFormat}.
@@ -52,6 +61,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 	 */
 	public void init() {
 		format = new DecimalFormat(pattern);
+		format.setParseBigDecimal(true);
 	}
 
 	/**
@@ -83,6 +93,61 @@ public class NumberCsvFormatter implements CsvFormatter {
 			return defaultIfNull;
 		}
 		return format.format(o);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.formatter.CsvFormatter#parse(java.lang.String, java.lang.Class)
+	 * @since 1.0.0
+	 */
+	@Override
+	public Object parse(final String value, final Class<?> typeOfReturn) {
+		if (value == null || CsvbangUti.isStringBlank(value) || typeOfReturn == null){
+			return null;
+		}
+		
+		if (String.class.equals(typeOfReturn)){
+			return value;
+		}
+		
+		try {
+			BigDecimal number = (BigDecimal) format.parse(value.trim());
+			number = number.setScale(format.getMaximumFractionDigits(), RoundingMode.HALF_UP);
+			
+			if (BigDecimal.class.equals(typeOfReturn)){
+				return number;
+			}
+			if (Double.class.equals(typeOfReturn)){
+				return number.doubleValue();
+			}
+			if (Float.class.equals(typeOfReturn)){
+				return number.floatValue();
+			}
+			if (Integer.class.equals(typeOfReturn)){
+				return number.setScale(0, RoundingMode.HALF_UP).intValue();
+			}
+			if (BigInteger.class.equals(typeOfReturn)){
+				return number.setScale(0, RoundingMode.HALF_UP).toBigInteger();
+			}
+			if (AtomicInteger.class.equals(typeOfReturn)){
+				return new AtomicInteger(number.setScale(0, RoundingMode.HALF_UP).intValue());
+			}
+			if (Long.class.equals(typeOfReturn)){
+				return number.setScale(0, RoundingMode.HALF_UP).longValue();
+			}
+			if (AtomicLong.class.equals(typeOfReturn)){
+				return new AtomicLong(number.setScale(0, RoundingMode.HALF_UP).longValue());
+			}
+			if (Byte.class.equals(typeOfReturn)){
+				return number.setScale(0, RoundingMode.HALF_UP).byteValue();
+			}
+			if (Short.class.equals(typeOfReturn)){
+				return number.setScale(0, RoundingMode.HALF_UP).shortValue();
+			}
+		} catch (ParseException e) {
+			throw new CsvBangRuntimeException(String.format("We can't parse value [%s] to type [%s].", value, typeOfReturn), e);
+		}
+		return null;
 	}
 
 }
