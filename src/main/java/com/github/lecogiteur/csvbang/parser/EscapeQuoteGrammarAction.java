@@ -40,7 +40,7 @@ public class EscapeQuoteGrammarAction extends QuoteGrammarAction {
 	 * @since 1.0.0
 	 */
 	public EscapeQuoteGrammarAction(final int capacity, final CsvBangConfiguration conf) throws CsvBangException {
-		super(capacity);
+		super(conf, capacity);
 		add((byte)conf.quote.charValue());
 	}
 

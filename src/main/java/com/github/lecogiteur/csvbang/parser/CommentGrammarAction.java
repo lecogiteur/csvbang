@@ -31,32 +31,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class CommentGrammarAction implements CsvGrammarAction<String> {
-	
-	/**
-	 * Start offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long startOffset = -1;
-	
-	/**
-	 * End offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long endOffset = -1;
-	
-	/**
-	 * True if it's the last comment of file and it's terminated. Warning: if file have a footer, this variable is at false.
-	 * @since 1.0.0
-	 */
-	private boolean isTerminated = false;
-	
-	
-	/**
-	 * Content of comment
-	 * @since 1.0.0
-	 */
-	private final StringBuilder comment;
+public class CommentGrammarAction extends AbstractStringGrammarAction {
 	
 	/**
 	 * Csvbang configuration of CSV bean
@@ -71,7 +46,7 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	 * @since 1.0.0
 	 */
 	public CommentGrammarAction(final CsvBangConfiguration conf, final int initialContentSize) {
-		this.comment = new StringBuilder(initialContentSize);
+		super(conf, initialContentSize);
 		this.conf = conf;
 	}
 
@@ -83,16 +58,6 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	@Override
 	public CsvGrammarActionType getType() {
 		return CsvGrammarActionType.COMMENT;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(byte)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void add(byte b) throws CsvBangException {
-		comment.append((char)b);
 	}
 
 	/**
@@ -125,66 +90,6 @@ public class CommentGrammarAction implements CsvGrammarAction<String> {
 	@Override
 	public boolean isActionCompleted(CsvGrammarActionType next) {
 		return isTerminated || CsvGrammarActionType.RECORD.equals(next) || CsvGrammarActionType.END.equals(next);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
-	 * @since 1.0.0
-	 */
-	@Override
-	public boolean isLastAction() {
-		return isTerminated;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#execute()
-	 * @since 1.0.0
-	 */
-	@Override
-	public String execute() throws CsvBangException {
-		return comment.length() > 0?comment.toString():null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getStartOffset() {
-		return startOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getEndOffset() {
-		return endOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setStartOffset(long offset) {
-		startOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setEndOffset(long offset) {
-		endOffset = offset;
 	}
 
 	/**

@@ -77,6 +77,13 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private final boolean hasHeader;
 	
 	/**
+	 * Char for comment
+	 * @since 1.0.0
+	 */
+	//TODO verifier le charset conversion
+	private final byte[] commentChar;
+	
+	/**
 	 * Constructor
 	 * @param beanClass type of CSV bean
 	 * @param conf configuration of CSV bean
@@ -88,6 +95,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 		this.conf = conf;
 		this.buffer = new byte[initialCapacity];
 		this.hasHeader = conf.header != null && conf.header.length()>0;
+		commentChar = (conf.commentCharacter + "").getBytes(conf.charset);
 	}
 	
 	/**
@@ -133,6 +141,25 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	public CsvGrammarActionType getType() {
 		return CsvGrammarActionType.START;
 	}
+	
+	/**
+	 * Verify if the buffer start with a comment character
+	 * @param b a byte to test
+	 * @return true if buffer start with a comment character
+	 * @since 1.0.0
+	 */
+	private boolean isCommentChar(final byte b){
+		if (commentChar.length != index + 1){
+			return false;
+		}else{
+			for (int i=0; i<index; i++){
+				if (commentChar[i] != buffer[i]){
+					return false;
+				}
+			}
+			return commentChar[index] == b;
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -142,7 +169,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	@Override
 	public void add(final byte b) throws CsvBangException {
 		if (delegatedAction == null){
-			if (!hasHeader && index == 0 && conf.commentCharacter == (char)b){
+			if (!hasHeader && isCommentChar(b)){
 				//it's a comment
 				initDelegatedAction(CsvGrammarActionType.COMMENT, null);
 			}else{

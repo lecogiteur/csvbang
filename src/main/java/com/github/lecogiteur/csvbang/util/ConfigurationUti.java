@@ -206,12 +206,12 @@ public class ConfigurationUti {
 				LOGGER.warning(String.format("No way in order to set %s in class %s. You must define a getter method or change the modifier of field.", conf.name, finalClass));
 				continue;
 			}else{
-				final Class<?> type = ReflectionUti.getSetterType(conf.setter);
-				ObjectGenerator<?> generator = generators.get(type);
+				conf.typeOfSetter = ReflectionUti.getSetterType(conf.setter);
+				ObjectGenerator<?> generator = generators.get(conf.typeOfSetter);
 				if (generator == null || csvField.factory() != null){
-					generator = ReflectionUti.createTypeGenerator(type, csvField.factory(), csvField.factoryMethodName());
+					generator = ReflectionUti.createTypeGenerator(conf.typeOfSetter, csvField.factory(), csvField.factoryMethodName());
 					if (csvField.factory() == null){
-						generators.put(type, generator);
+						generators.put(conf.typeOfSetter, generator);
 					}
 				}
 				conf.generator = generator;

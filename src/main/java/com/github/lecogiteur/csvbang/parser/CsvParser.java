@@ -736,13 +736,13 @@ public class CsvParser<T> {
 	private CsvGrammarAction<?> generateAction(final CsvGrammarActionType action, final int contentLength) throws CsvBangException{
 		switch (action) {
 		case FIELD:
-			return new FieldGrammarAction(contentLength);
+			return new FieldGrammarAction(conf, contentLength);
 		case RECORD:
 			return new RecordGrammarAction<T>(classOfCSVBean, conf);
 		case COMMENT:
 			return new CommentGrammarAction(conf, contentLength);
 		case QUOTE:
-			return new QuoteGrammarAction(contentLength);
+			return new QuoteGrammarAction(conf, contentLength);
 		case ESCAPE_CHARACTER:
 			return new EscapeQuoteGrammarAction(contentLength, conf);
 		case END:

@@ -51,7 +51,7 @@ public class FooterGrammarAction extends AbstractStringGrammarAction {
 	 * @since 1.0.0
 	 */
 	public FooterGrammarAction(final CsvBangConfiguration conf, final int capacity) {
-		super(capacity);
+		super(conf, capacity);
 		isTerminated = true;
 		this.conf = conf;
 	}
@@ -111,7 +111,7 @@ public class FooterGrammarAction extends AbstractStringGrammarAction {
 	 * @since 1.0.0
 	 */
 	public void addBefore(final Object content){
-		this.content.insert(0, content);
+		this.result.insert(0, content);
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class FooterGrammarAction extends AbstractStringGrammarAction {
 	 * @since 1.0.0
 	 */
 	@Override
-	public String execute() {
+	public String execute() throws CsvBangException {
 		final String footer = super.execute();
 		if (conf.footer != null && conf.footer.length() > 0){
 			if (footer == null){

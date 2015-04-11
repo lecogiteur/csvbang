@@ -22,7 +22,10 @@
  */
 package com.github.lecogiteur.csvbang.test.parser;
 
+import java.math.BigDecimal;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +49,7 @@ import com.github.lecogiteur.csvbang.test.bean.csvparser.BigDataCsvParser;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.CustomFooterCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.EmptyHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.FooterHeaderCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.FormattedCsvParseBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.HeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoFooterCsvParserBean;
@@ -1107,6 +1111,64 @@ public class CsvParserTest {
 					"ccccccccccccccccccccccccccccccccccc".equals(bean.getField3()) &&
 					"dddddddddddddddddddddddddddddddddddd".equals(bean.getField5()) &&
 					new Integer(38).equals(bean.getField6())
+				);
+		}
+	}
+	
+
+	
+
+	@Test
+	public void formattedBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(FormattedCsvParseBean.class);
+		final String content = "1,12-03-2013,\"123,43 €\",\"1,10\",name1\n"
+				+ "2,13-03-2013,\"123,43 €\",\"12,10\",name2\n"
+				+ "3,14-03-2013,\"12,45 €\",\"13,10\",name3\n"
+				+ "4,15-03-2013,\"345,00 €\",\"14,10\",name4\n"
+				+ "5,16-03-2013,\"12,45 €\",\"15,10\",name5\n"
+				+ "6,17-03-2013,\"123,43 €\",\"16,10\",name6\n"
+				+ "7,18-03-2013,\"12,45 €\",\"17,10\",name7\n"
+				+ "8,19-03-2013,\"345,00 €\",\"18,10\",name8\n"
+				+ "9,20-03-2013,\"12,45 €\",\"19,10\",name9\n"
+				+ "10,21-03-2013,\"123,43 €\",\"21,10\",name10\n"
+				+ "11,22-03-2013,\"12,45 €\",\"31,10\",name11\n"
+				+ "12,23-03-2013,\"345,00 €\",\"41,10\",name12\n"
+				+ "13,24-03-2013,\"123,43 €\",\"51,10\",name13\n"
+				+ "14,25-03-2013,\"345,00 €\",\"61,10\",name14\n"
+				+ "15,26-03-2013,\"123,43 €\",\"71,10\",name15\n";
+		final CsvParser<FormattedCsvParseBean> parser = new CsvParser<FormattedCsvParseBean>(FormattedCsvParseBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<FormattedCsvParseBean> result = parse(datagrams, parser);
+		final List<FormattedCsvParseBean> beans = new ArrayList<FormattedCsvParseBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(15, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+
+		
+		for (FormattedCsvParseBean bean:beans){
+			Assert.assertTrue(
+					(new Integer(1).equals(bean.getNumber()) && "12-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(2.10d).equals(bean.getAnotherNumber()) && "name1".equals(bean.getName()) )
+					|| (new Integer(2).equals(bean.getNumber()) && "13-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(13.10d).equals(bean.getAnotherNumber()) && "name2".equals(bean.getName()))
+					|| (new Integer(3).equals(bean.getNumber()) && "14-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("12.45").equals(bean.getCost()) && new Double(14.10d).equals(bean.getAnotherNumber()) && "name3".equals(bean.getName()))
+					|| (new Integer(4).equals(bean.getNumber()) && "15-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("345.00").equals(bean.getCost()) && new Double(15.10d).equals(bean.getAnotherNumber()) && "name4".equals(bean.getName()))
+					|| (new Integer(5).equals(bean.getNumber()) && "16-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("12.45").equals(bean.getCost()) && new Double(16.10d).equals(bean.getAnotherNumber()) && "name5".equals(bean.getName()))
+					|| (new Integer(6).equals(bean.getNumber()) && "17-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(17.10d).equals(bean.getAnotherNumber()) && "name6".equals(bean.getName()))
+					|| (new Integer(7).equals(bean.getNumber()) && "18-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("12.45").equals(bean.getCost()) && new Double(18.10d).equals(bean.getAnotherNumber()) && "name7".equals(bean.getName()))
+					|| (new Integer(8).equals(bean.getNumber()) && "19-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("345.00").equals(bean.getCost()) && new Double(19.10d).equals(bean.getAnotherNumber()) && "name8".equals(bean.getName()))
+					|| (new Integer(9).equals(bean.getNumber()) && "20-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("12.45").equals(bean.getCost()) && new Double(20.10d).equals(bean.getAnotherNumber()) && "name9".equals(bean.getName()))
+					|| (new Integer(10).equals(bean.getNumber()) && "21-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(22.10d).equals(bean.getAnotherNumber()) && "name10".equals(bean.getName()))
+					|| (new Integer(11).equals(bean.getNumber()) && "22-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("12.45").equals(bean.getCost()) && new Double(32.10d).equals(bean.getAnotherNumber()) && "name11".equals(bean.getName()))
+					|| (new Integer(12).equals(bean.getNumber()) && "23-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("345.00").equals(bean.getCost()) && new Double(42.10d).equals(bean.getAnotherNumber()) && "name12".equals(bean.getName()))
+					|| (new Integer(13).equals(bean.getNumber()) && "24-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(52.10d).equals(bean.getAnotherNumber()) && "name13".equals(bean.getName()))
+					|| (new Integer(14).equals(bean.getNumber()) && "25-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("345.00").equals(bean.getCost()) && new Double(62.10d).equals(bean.getAnotherNumber()) && "name14".equals(bean.getName()))
+					|| (new Integer(15).equals(bean.getNumber()) && "26-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(72.10d).equals(bean.getAnotherNumber()) && "name15".equals(bean.getName()))
+					
 				);
 		}
 	}

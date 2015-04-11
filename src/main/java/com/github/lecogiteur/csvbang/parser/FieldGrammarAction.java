@@ -22,6 +22,7 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
+import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 
 /**
@@ -30,39 +31,16 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class FieldGrammarAction implements CsvGrammarAction<String> {
-	
-	/**
-	 * Start offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long startOffset = -1;
-	
-	/**
-	 * End offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long endOffset = -1;
-	
-	/**
-	 * Content of field
-	 * @since 1.0.0
-	 */
-	private final StringBuilder content;
-	
-	/**
-	 * True if it's the last field of file and it's terminated. Warning: if file have a footer or comment after last field, this variable is at false.
-	 * @since 1.0.0
-	 */
-	private boolean isFieldTerminated = false;
+public class FieldGrammarAction extends AbstractStringGrammarAction {
 	
 	/**
 	 * Constructor
+	 * @param conf the CsvBang configuration
 	 * @param capacity initial capacity of content of field
 	 * @since 1.0.0
 	 */
-	public FieldGrammarAction(final int capacity){
-		content = new StringBuilder(capacity);
+	public FieldGrammarAction(final CsvBangConfiguration conf, final int capacity){
+		super(conf, capacity);
 	}
 
 
@@ -78,16 +56,6 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(byte)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void add(byte b) {
-		content.append((char)b);
-	}
-
-	/**
-	 * {@inheritDoc}
 	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#add(com.github.lecogiteur.csvbang.parser.CsvGrammarAction)
 	 * @since 1.0.0
 	 */
@@ -96,16 +64,16 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 		if (word != null){
 			switch (word.getType()) {
 			case RECORD:
-				isFieldTerminated = isFieldTerminated || word.isLastAction();
+				isTerminated = isTerminated || word.isLastAction();
 				return false;
 			case ESCAPE_CHARACTER:
 			case QUOTE:
-				isFieldTerminated = isFieldTerminated || word.isLastAction();
-				content.append(word.execute());
+				isTerminated = isTerminated || word.isLastAction();
+				addToResult(word.execute());
 				endOffset = word.getEndOffset();
 				return true;
 			case END:
-				isFieldTerminated = isFieldTerminated || word.isLastAction();
+				isTerminated = isTerminated || word.isLastAction();
 				return true;
 			default:
 				return false;
@@ -121,72 +89,12 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 	 */
 	@Override
 	public boolean isActionCompleted(CsvGrammarActionType next) {
-		return isFieldTerminated || 
+		return isTerminated || 
 				(next != null && 
 				!(CsvGrammarActionType.QUOTE.equals(next) 
 						|| CsvGrammarActionType.ESCAPE_CHARACTER.equals(next) 
 						|| CsvGrammarActionType.NOTHING_TO_DO.equals(next) 
 						|| CsvGrammarActionType.UNDEFINED.equals(next)));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#execute()
-	 * @since 1.0.0
-	 */
-	@Override
-	public String execute() {
-		return content.length() == 0?null:content.toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getStartOffset() {
-		return startOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getEndOffset() {
-		return endOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setStartOffset(long offset) {
-		startOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setEndOffset(long offset) {
-		endOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
-	 * @since 1.0.0
-	 */
-	@Override
-	public boolean isLastAction() {
-		return isFieldTerminated;
 	}
 
 
@@ -200,14 +108,22 @@ public class FieldGrammarAction implements CsvGrammarAction<String> {
 		return false;
 	}
 	
-	public Character deleteLastChar(){
-		if (content.length() > 0){
-			final int idx = content.length() - 1;
-			final char a = content.charAt(idx);
-			content.deleteCharAt(idx);
+	/**
+	 * Delete the last character
+	 * @return the last character
+	 * @throws CsvBangException if a problem has occurred when we flush byte buffer
+	 * @since 1.0.0
+	 */
+	public Character deleteLastChar() throws CsvBangException{
+		flushByteBuffer();
+		if (result.length() > 0){
+			final int idx = result.length() - 1;
+			final char a = result.charAt(idx);
+			result.deleteCharAt(idx);
 			return a;
 		}
 		return null;
 	}
+	
 
 }

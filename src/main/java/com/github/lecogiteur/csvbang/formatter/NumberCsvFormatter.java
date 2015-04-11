@@ -37,7 +37,7 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
 /**
  * Format and parse number. This class is based on {@link DecimalFormat}.
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 1.0.0
  *
  */
 public class NumberCsvFormatter implements CsvFormatter {
@@ -53,6 +53,12 @@ public class NumberCsvFormatter implements CsvFormatter {
 	 * @since 0.0.1
 	 */
 	private String pattern;
+	
+	/**
+	 * The local
+	 * @since 1.0.0
+	 */
+	private Locale locale;
 
 	/**
 	 * {@inheritDoc}
@@ -60,7 +66,13 @@ public class NumberCsvFormatter implements CsvFormatter {
 	 * @since 0.0.1
 	 */
 	public void init() {
-		format = new DecimalFormat(pattern);
+		if (locale == null){
+			locale = Locale.US;
+		}
+		format = (DecimalFormat) DecimalFormat.getInstance(locale);
+		if (CsvbangUti.isStringNotBlank(pattern)){
+			format.applyPattern(pattern);
+		}
 		format.setParseBigDecimal(true);
 	}
 
@@ -70,7 +82,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 	 * @see java.text.DecimalFormat
 	 * @since 0.0.1
 	 */
-	public void setPattern(String pattern) {
+	public void setPattern(final String pattern) {
 		this.pattern = pattern;
 	}
 
@@ -79,8 +91,8 @@ public class NumberCsvFormatter implements CsvFormatter {
 	 * @see com.github.lecogiteur.csvbang.formatter.CsvFormatter#setLocal(java.util.Locale)
 	 * @since 0.0.1
 	 */
-	public void setLocal(Locale locale) {
-		//do nothing
+	public void setLocal(final Locale locale) {
+		this.locale = locale;
 	}
 
 	/**

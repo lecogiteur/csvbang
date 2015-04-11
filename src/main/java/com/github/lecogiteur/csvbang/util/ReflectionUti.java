@@ -38,6 +38,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -449,6 +450,11 @@ public class ReflectionUti {
 				return null;
 			}
 			
+			//calendar has no generator, user must create it
+			if (Calendar.class.equals(type)){
+				return null;
+			}
+			
 			//if no factory, we search static method with standard name
 			generator = StaticMethodObjectGenerator.newInstance(type, "valueOf");
 			if (generator != null){
@@ -474,17 +480,18 @@ public class ReflectionUti {
 	/**
 	 * Set a value of field to a CSV bean 
 	 * @param setter the setter of CSV bean
-	 * @param generator the generator of object to use in order to set the CSV bean with the type of field
+	 * @param generator the generator of object to use in order to set the CSV bean with the type of field. can be null
 	 * @param beanCSV the bean CSV 
 	 * @param value the value to set
+	 * @return the value setted
 	 * @throws CsvBangException if a problem has occurred when we set the value to the bean
 	 * @since 1.0.0
 	 */
-	public static final <T> void setValue(final AnnotatedElement setter, ObjectGenerator<T> generator, 
+	public static final <T> Object setValue(final AnnotatedElement setter, final ObjectGenerator<T> generator, 
 			final Object beanCSV, final Object value) throws CsvBangException{
 		if (value == null){
 			//no need to set it
-			return;
+			return null;
 		}
 		
 		try {
@@ -500,6 +507,7 @@ public class ReflectionUti {
 			}else if (setter instanceof Method){
 				((Method)setter).invoke(beanCSV, result);
 			}
+			return result;
 		} catch (Exception e) {
 			throw new CsvBangException(String.format("A problem has occurred when we set value [%s] in bean of type [%s] with setter: %s", 
 					value, beanCSV.getClass(), ((Member)setter).getName()), e);

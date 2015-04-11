@@ -29,6 +29,7 @@ import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
+import com.github.lecogiteur.csvbang.util.FactoryObjectGenerator;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
 
 /**
@@ -86,7 +87,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		this.beanClass = beanClass;
 		this.conf = conf;
 		this.fields = new ArrayList<FieldGrammarAction>();
-		this.fields.add(new FieldGrammarAction(100));
+		this.fields.add(new FieldGrammarAction(conf, 100));
 	}
 
 	/**
@@ -244,15 +245,29 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	 * @param fieldIndex field index
 	 * @param bean the CSV bean
 	 * @return true if the field is null
-	 * @throws CsvBangException if a problem has occurred when we set tthe field to the CSV bean
+	 * @throws CsvBangException if a problem has occurred when we set the field to the CSV bean
 	 * @since 1.0.0
 	 */
 	private boolean setField(final int fieldIndex, final T bean) throws CsvBangException{
+		//get the configuration of field
 		final CsvFieldConfiguration confField = conf.fields.get(fieldIndex);
-		final CsvGrammarAction<?> field = fields.get(fieldIndex);
-		final Object content = field.execute();
-		ReflectionUti.setValue(confField.setter, confField.generator, bean, field.execute());
-		return content == null;
+		
+		//field from CSV file
+		final FieldGrammarAction field = fields.get(fieldIndex);
+		
+		//parse the field value with the CsvFormatter
+		final Object content = confField.format.parse(field.execute(), confField.typeOfSetter);
+		if (content == null){
+			return true;
+		}
+		if (confField.typeOfSetter.equals(content.getClass()) && !(confField.generator instanceof FactoryObjectGenerator)){
+			//the type of field content which is parsed by formatter has the matched type of setter
+			ReflectionUti.setValue(confField.setter, null, bean, content);
+			return false;
+		}
+		
+		//we must generate a new instance of this value in the good type
+		return ReflectionUti.setValue(confField.setter, confField.generator, bean, content) == null;
 	}
 	
 	/**

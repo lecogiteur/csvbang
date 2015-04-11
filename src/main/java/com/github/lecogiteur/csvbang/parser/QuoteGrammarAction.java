@@ -22,6 +22,8 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
+import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+
 
 /**
  * Quote action
@@ -30,8 +32,6 @@ package com.github.lecogiteur.csvbang.parser;
  * @since 1.0.0
  */
 public class QuoteGrammarAction extends FieldGrammarAction {
-	
-	
 
 	/**
 	 * Is chuck
@@ -48,11 +48,12 @@ public class QuoteGrammarAction extends FieldGrammarAction {
 
 	/**
 	 * Constructor
+	 * @param conf Csvbang configuration of CSV bean
 	 * @param capacity the initial capacity of field
 	 * @since 1.0.0
 	 */
-	public QuoteGrammarAction(final int capacity) {
-		super(capacity);
+	public QuoteGrammarAction(final CsvBangConfiguration conf, final int capacity) {
+		super(conf, capacity);
 	}
 	
 	

@@ -84,4 +84,10 @@ public class CsvFieldConfiguration {
 	 * @since 1.0.0
 	 */
 	public AnnotatedElement setter;
+	
+	/**
+	 * Type of field to set
+	 * @since 1.0.0
+	 */
+	public Class<?> typeOfSetter;
 }

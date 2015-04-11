@@ -22,7 +22,12 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
+import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.util.ByteStreamBuffer;
+
 /**
+ * Abstract action which generate string
  * @author Tony EMMA
  * @version 1.0.0
  * @since 1.0.0
@@ -30,21 +35,36 @@ package com.github.lecogiteur.csvbang.parser;
 public abstract class AbstractStringGrammarAction extends AbstractGrammarAction<String> {
 	
 	/**
-	 * Content of action
+	 * CsvBang configuration
 	 * @since 1.0.0
 	 */
-	protected final StringBuilder content;
+	private final CsvBangConfiguration conf;
+	
+	/**
+	 * Buffer of bytes. Before we convert to a character sequence each bytes with a charset decoder
+	 * @since 1.0.0
+	 */
+	protected final ByteStreamBuffer buffer;
+	
+	/**
+	 * String result of byte array
+	 * @since 1.0.0
+	 */
+	protected final StringBuilder result;
 	
 	
 
 	/**
 	 * Constructor
+	 * @param conf the CsvBang configuration
 	 * @param capacity the initial capacity of content
 	 * @since 1.0.0
 	 */
-	public AbstractStringGrammarAction(final int capacity) {
+	public AbstractStringGrammarAction(final CsvBangConfiguration conf, final int capacity) {
 		super();
-		this.content = new StringBuilder(capacity);
+		this.buffer = new ByteStreamBuffer(capacity);
+		this.result = new StringBuilder(capacity);
+		this.conf = conf;
 	}
 
 	/**
@@ -54,7 +74,7 @@ public abstract class AbstractStringGrammarAction extends AbstractGrammarAction<
 	 */
 	@Override
 	public void add(byte b) {
-		content.append((char)b);
+		buffer.add(b);
 	}
 
 
@@ -64,7 +84,30 @@ public abstract class AbstractStringGrammarAction extends AbstractGrammarAction<
 	 * @since 1.0.0
 	 */
 	@Override
-	public String execute() {
-		return content.length() == 0?null:content.toString();
+	public String execute() throws CsvBangException {
+		flushByteBuffer();
+		return result.length() == 0?null:result.toString();
+	}
+	
+	/**
+	 * flush the byte buffer. Convert bytes to character sequence
+	 * @throws CsvBangException if a problem has occurred when we convert byte array
+	 * @since 1.0.0
+	 */
+	protected void flushByteBuffer() throws CsvBangException{
+		if (buffer.length() > 0){
+			result.append(buffer.toString(conf.charset));
+			buffer.clear();
+		}
+	}
+	
+	/**
+	 * A object to result of content of this action. This method include to clear the byte buffer
+	 * @throws CsvBangException if a problem has occurred when we convert byte array
+	 * @since 1.0.0
+	 */
+	protected void addToResult(final Object o) throws CsvBangException{
+		flushByteBuffer();
+		result.append(o);
 	}
 }

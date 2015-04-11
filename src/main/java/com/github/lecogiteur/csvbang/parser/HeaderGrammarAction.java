@@ -46,7 +46,7 @@ public class HeaderGrammarAction extends AbstractStringGrammarAction{
 	 * @since 1.0.0
 	 */
 	public HeaderGrammarAction(final CsvBangConfiguration conf, final int capacity) {
-		super(capacity);
+		super(conf, capacity);
 		this.conf = conf;
 	}
 
@@ -72,12 +72,12 @@ public class HeaderGrammarAction extends AbstractStringGrammarAction{
 			case HEADER:
 				isTerminated = word.isLastAction();
 				endOffset = word.getEndOffset();
-				content.append(((HeaderGrammarAction)word).content);
+				addContent((AbstractStringGrammarAction)word);
 				break;
 			case COMMENT:
 				isTerminated = word.isLastAction();
 				endOffset = word.getEndOffset();
-				content.append(((CommentGrammarAction)word).execute());
+				addContent((AbstractStringGrammarAction)word);
 				break;
 			case END:
 				isTerminated = true;
@@ -88,6 +88,21 @@ public class HeaderGrammarAction extends AbstractStringGrammarAction{
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Add result of action to this action
+	 * @param action action
+	 * @throws CsvBangException if a problem has occurred when we add action
+	 * @since 1.0.0
+	 */
+	private void addContent(final AbstractStringGrammarAction action) throws CsvBangException{
+		if (action.result.length() == 0){
+			this.buffer.addAfter(action.buffer);
+		}else{
+			action.flushByteBuffer();
+			addToResult(action.result);					
+		}
 	}
 
 	/**
@@ -116,9 +131,11 @@ public class HeaderGrammarAction extends AbstractStringGrammarAction{
 	 * @since 1.0.0
 	 */
 	@Override
-	public String execute() {
-		final String c = content.toString();
-		if (conf.header == null || c.endsWith(conf.header)){
+	public String execute() throws CsvBangException {
+		final String c = super.execute();
+		if (c == null){
+			return conf.header;
+		}else if (conf.header == null || c.endsWith(conf.header)){
 			return c;
 		}else{
 			return c + conf.header;
