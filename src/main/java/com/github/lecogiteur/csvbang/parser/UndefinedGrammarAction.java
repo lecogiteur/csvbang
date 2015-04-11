@@ -22,9 +22,11 @@
  */
 package com.github.lecogiteur.csvbang.parser;
 
-import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.util.ByteStreamBuffer;
 
 /**
  * Undefined action
@@ -32,37 +34,19 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
+public class UndefinedGrammarAction extends AbstractGrammarAction<ByteStreamBuffer> {
 	
 	/**
-	 * Start offset of this action in CSV file
+	 * The logger
 	 * @since 1.0.0
 	 */
-	private long startOffset = -1;
-	
-	/**
-	 * End offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long endOffset = -1;
+	private static final Logger LOGGER = Logger.getLogger(UndefinedGrammarAction.class.getName());
 	
 	/**
 	 * Content of undefined action
 	 * @since 1.0.0
 	 */
-	private byte[] content;
-	
-	/**
-	 * Current index
-	 * @since 1.0.0
-	 */
-	private int index = 0;
-	
-	/**
-	 * Is terminate
-	 * @since 1.0.0
-	 */
-	private boolean isTerminate = false;
+	private ByteStreamBuffer buffer;
 	
 	
 	/**
@@ -70,9 +54,12 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 	 * @param capacity initial capacity of the undefined word
 	 * @since 1.0.0
 	 */
-	public UndefinedGrammarAction(int capacity) {
+	public UndefinedGrammarAction(final int capacity) {
 		super();
-		content = new byte[capacity];
+		if (LOGGER.isLoggable(Level.FINEST)){
+			LOGGER.finest(String.format("Capacity required of undefined action %s bytes.", capacity));
+		}
+		buffer = new ByteStreamBuffer(capacity);
 	}
 
 	/**
@@ -92,12 +79,7 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 	 */
 	@Override
 	public void add(final byte b) throws CsvBangException {
-		if (index >= content.length){
-			byte[] copy = new byte[content.length>0?content.length * 2:100];
-			System.arraycopy(content, 0, copy, 0, content.length);
-			content = copy;
-		}
-		content[index++] = b;
+		buffer.add(b);
 	}
 
 	/**
@@ -111,36 +93,28 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 			switch (word.getType()) {
 			case UNDEFINED:
 				final UndefinedGrammarAction undefinedAction = (UndefinedGrammarAction)word;
-				final byte[] table = undefinedAction.execute();
-				if (table == null || table.length == 0){
-					isTerminate = isTerminate || word.isLastAction();
+				final ByteStreamBuffer wordBuffer = undefinedAction.execute();
+				if (wordBuffer.isEmpty()){
+					isTerminated = isTerminated || word.isLastAction();
 					return true;
 				}
 				if (word.getEndOffset() == startOffset){
-					byte[] tmp = new byte[table.length + content.length];
-					System.arraycopy(table, 0, tmp, 0, table.length);
-					System.arraycopy(content, 0, tmp, table.length, content.length);
-					index += table.length;
-					content = tmp;
+					buffer.addBefore(wordBuffer);
 					startOffset = word.getStartOffset();
-					isTerminate = isTerminate || word.isLastAction();
+					isTerminated = isTerminated || word.isLastAction();
 					return true;
 				}else if (word.getStartOffset() == endOffset){
-					byte[] tmp = new byte[table.length + content.length];
-					System.arraycopy(content, 0, tmp, 0, index);
-					System.arraycopy(table, 0, tmp, index, table.length);
-					index += table.length;
-					content = tmp;
+					buffer.addAfter(wordBuffer);
 					endOffset = word.getEndOffset();
-					isTerminate = isTerminate || word.isLastAction();
+					isTerminated = isTerminated || word.isLastAction();
 					return true;
 				}
 				return false;
 			case NOTHING_TO_DO:
-				isTerminate = isTerminate || word.isLastAction();
+				isTerminated = isTerminated || word.isLastAction();
 				return true;
 			case END:
-				isTerminate = isTerminate || word.isLastAction();
+				isTerminated = isTerminated || word.isLastAction();
 				return true;
 			default:
 				return false;
@@ -156,7 +130,7 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 	 */
 	@Override
 	public boolean isActionCompleted(final CsvGrammarActionType next) {
-		return isTerminate || (next != null && !CsvGrammarActionType.NOTHING_TO_DO.equals(next));
+		return isTerminated || (next != null && !CsvGrammarActionType.NOTHING_TO_DO.equals(next));
 	}
 
 	/**
@@ -165,61 +139,8 @@ public class UndefinedGrammarAction implements CsvGrammarAction<byte[]> {
 	 * @since 1.0.0
 	 */
 	@Override
-	public byte[] execute() throws CsvBangException {
-		if (index == content.length){
-			return content;
-		}
-		return index == 0?null:Arrays.copyOf(content, index);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getStartOffset() {
-		return startOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getEndOffset() {
-		return endOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setStartOffset(long offset) {
-		startOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setEndOffset(long offset) {
-		endOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
-	 * @since 1.0.0
-	 */
-	@Override
-	public boolean isLastAction() {
-		return isTerminate;
+	public ByteStreamBuffer execute() throws CsvBangException {
+		return buffer;
 	}
 
 	/**

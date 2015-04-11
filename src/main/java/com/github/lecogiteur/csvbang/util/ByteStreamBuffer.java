@@ -52,7 +52,7 @@ public class ByteStreamBuffer {
 		 * Array of byte
 		 * @since 1.0.0
 		 */
-		final byte[] tab;
+		byte[] tab;
 		
 		/**
 		 * The current index 
@@ -83,6 +83,15 @@ public class ByteStreamBuffer {
 			this.previous = previous;
 		}
 		
+		/**
+		 * Constructor
+		 * @param previous the previous link
+		 * @since 1.0.0
+		 */
+		public Entry(final Entry previous){
+			this.previous = previous;
+		}
+		
 	}
 	
 	/**
@@ -110,10 +119,16 @@ public class ByteStreamBuffer {
 	private Entry current;
 	
 	/**
-	 * Current index of byte to read
+	 * Current index of byte to read in the current entry
 	 * @since 1.0.0
 	 */
 	private int readIndex = 0;
+	
+	/**
+	 * Position of the cursor in buffer
+	 * @since 1.0.0
+	 */
+	private int readPosition = 0;
 	
 	
 	/**
@@ -122,7 +137,28 @@ public class ByteStreamBuffer {
 	 * @since 1.0.0
 	 */
 	public ByteStreamBuffer(final int capacity){
-		final Entry entry = new Entry(Math.max(IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE/3, capacity), null);
+		int cap = capacity < 10?IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE/3:capacity;
+		final Entry entry = new Entry(cap, null);
+		first = entry;
+		last = entry;
+		reset();
+	}
+	
+	
+	/**
+	 * Constructor
+	 * @param capacity the initial capacity of a byte array
+	 * @since 1.0.0
+	 */
+	public ByteStreamBuffer(final byte[] initialBuffer){
+		final Entry entry = new Entry(null);
+		if (initialBuffer != null && initialBuffer.length > 0){
+			entry.tab = initialBuffer;
+			entry.index = initialBuffer.length;
+			totalLength = initialBuffer.length;
+		}else{
+			entry.tab = new byte[IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE/3];
+		}
 		first = entry;
 		last = entry;
 		reset();
@@ -150,15 +186,12 @@ public class ByteStreamBuffer {
 	 * @since 1.0.0
 	 */
 	public void add(final byte[] array){
-		if (last.index + array.length >= last.tab.length){
-			for (final byte b:array){
-				add(b);
-			}
-		}else{
-			for (final byte b:array){
-				last.tab[last.index++] = b;
-				totalLength++;
-			}
+		if (array.length > 0){
+			final Entry e = new Entry(last);
+			e.tab = array;
+			e.index = array.length;
+			last.next = e;
+			last = e;
 		}
 	}
 	
@@ -169,8 +202,10 @@ public class ByteStreamBuffer {
 	 */
 	public void addBefore(final ByteStreamBuffer stream){
 		first.previous = stream.last;
+		stream.last.next = first;
 		first = stream.first;
 		totalLength += stream.totalLength;
+		stream.clear();
 	}
 	
 	/**
@@ -180,8 +215,10 @@ public class ByteStreamBuffer {
 	 */
 	public void addAfter(final ByteStreamBuffer stream){
 		last.next = stream.first;
+		stream.first.previous = last;
 		last = stream.last;
 		totalLength += stream.totalLength;
+		stream.clear();
 	}
 	
 	
@@ -300,6 +337,7 @@ public class ByteStreamBuffer {
 		final Entry entry = new Entry(last.tab.length, null);
 		first = entry;
 		last = entry;
+		totalLength = 0;
 		reset();
 	}
 	
@@ -310,15 +348,18 @@ public class ByteStreamBuffer {
 	public void reset(){
 		current = first;
 		readIndex =0;
+		readPosition=0;
 	}
 	
 	
 	/**
 	 * Read byte of the byte stream at current position
 	 * @return the current byte
+	 * @throws CsvBangException if you are out of bound
 	 * @since 1.0.0
 	 */
-	public Byte read(){
+	public byte read() throws CsvBangException{
+		readPosition++;
 		if (readIndex < current.index){
 			return current.tab[readIndex++];
 		}
@@ -331,7 +372,74 @@ public class ByteStreamBuffer {
 			}
 		}
 		
-		return null;
+		throw new CsvBangException("We have read all byte in buffer. No more to read.");
+	}
+	
+	/**
+	 * Read byte from the current position of read cursor in buffer. Not change the current position of cursor.
+	 * The cursor is always at the position on next byte. So a step equals to 0, means to read the next byte.
+	 * @param step gap from current position. Number of byte between the last byte which read and the byte you want to read.
+	 * @return the byte
+	 * @throws CsvBangException
+	 * @since 1.0.0
+	 */
+	public byte readFromPosition(final int step) throws CsvBangException{
+		int index = readIndex + step;
+		
+		if (index < current.index){
+			return current.tab[index];
+		}
+		
+		Entry e = current;
+		while(e != last){
+			index = index - e.index;
+			e = e.next;
+			if (index < e.index){
+				return e.tab[index];
+			}
+		}
+		
+		throw new CsvBangException("We have read all byte in buffer. No mare to read.");
+	}
+	
+	/**
+	 * Retrieve the current position of read cursor in buffer
+	 * @return the current position
+	 * @since 1.0.0
+	 */
+	public int readPosition(){
+		return readPosition;
+	}
+	
+	/**
+	 * Set the current position of read cursor in buffer.
+	 * @param position the buffer
+	 * @since 1.0.0
+	 */
+	public void setPosition(final int position){
+		readIndex = readIndex + position - readPosition;
+		readPosition = position;
+		
+		if (readIndex < current.index){
+			return;
+		}
+		
+		while(current != last){
+			readIndex = readIndex - current.index;
+			current = current.next;
+			if (readIndex < current.index){
+				return;
+			}
+		}
+	}
+	
+	/**
+	 * Verify that you have not read the whole buffer.
+	 * @return True if you have read the whole buffer.
+	 * @since 1.0.0
+	 */
+	public boolean isReadWholeBuffer(){
+		return totalLength <= readPosition;
 	}
 	
 	/**
