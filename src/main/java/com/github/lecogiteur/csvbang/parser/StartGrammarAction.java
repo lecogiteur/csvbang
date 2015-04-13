@@ -84,18 +84,27 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	private final byte[] commentChar;
 	
 	/**
+	 * number of field which can be deleted if null
+	 * @since 1.0.0
+	 */
+	private final int totalNbFieldWhichCanBeDeleted;
+	
+	/**
 	 * Constructor
 	 * @param beanClass type of CSV bean
 	 * @param conf configuration of CSV bean
+	 * @param totalNbFieldWhichCanBeDeleted number of field which can be deleted if null
 	 * @param initialCapacity initial capacity of buffer
 	 * @since 1.0.0
 	 */
-	public StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf, final int initialCapacity){
+	public StartGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf, 
+			final int totalNbFieldWhichCanBeDeleted, final int initialCapacity){
 		this.beanClass = beanClass;
 		this.conf = conf;
 		this.buffer = new byte[initialCapacity];
 		this.hasHeader = conf.header != null && conf.header.length()>0;
 		commentChar = (conf.commentCharacter + "").getBytes(conf.charset);
+		this.totalNbFieldWhichCanBeDeleted = totalNbFieldWhichCanBeDeleted;
 	}
 	
 	/**
@@ -114,7 +123,7 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 			delegatedAction = new CommentGrammarAction(conf, 100);
 			break;
 		case RECORD:
-			delegatedAction = new RecordGrammarAction<T>(beanClass, conf);
+			delegatedAction = new RecordGrammarAction<T>(beanClass, conf, totalNbFieldWhichCanBeDeleted);
 			break;
 		case HEADER:
 			delegatedAction = new HeaderGrammarAction(conf, buffer.length);

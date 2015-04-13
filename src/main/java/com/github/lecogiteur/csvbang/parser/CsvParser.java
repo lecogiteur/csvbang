@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
+import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.file.CsvDatagram;
 import com.github.lecogiteur.csvbang.util.ByteStreamBuffer;
@@ -82,6 +83,12 @@ public class CsvParser<T> {
 	 * @since 1.0.0
 	 */
 	private final ConcurrentSkipListMap<ActionKey, Deque<CsvGrammarAction<?>>> stackByOffset;
+	
+	/**
+	 * Total number of field which can be deleted if there are null
+	 * @since 1.0.0
+	 */
+	private int totalNbFieldWhichCanBeDeleted = 0;
 	
 	/**
 	 * Constructor
@@ -628,6 +635,15 @@ public class CsvParser<T> {
 		//Add the undefined action
 		actionList.add(CsvGrammarActionType.UNDEFINED);
 		
+		
+		//######################################################"
+
+		for (CsvFieldConfiguration field:conf.fields){
+			if (field.isDeleteFieldIfNull){
+				totalNbFieldWhichCanBeDeleted++;
+			}
+		}
+		
 		return dest;
 	}
 	
@@ -682,55 +698,6 @@ public class CsvParser<T> {
 		key.fileId = fileID;
 		return key;
 	}
-	
-	/**
-	 * Verify if bytes which start to current index is a CSV keyword
-	 * @param index the current index
-	 * @param content the content
-	 * @param isEnd True if it's the last CSV content from file
-	 * @return the index of action in the action table or -1 if it's no a keyword
-	 * @since 1.0.0
-	 * @see #words
-	 * @see #actions
-	 */
-	//TODO à suprimer
-	private int isKeyword(final int index, final byte[] content, boolean isEnd){
-		for (int i=0; i<keywordTable.length; i++){
-			//If the first character of a keyword match with the current content
-			if (keywordTable[i][0] == content[index]){
-				if (keywordTable[i].length == 1){
-					//the keyword is only one character, so we can return the index
-					return i;
-				}else{
-					//the length of keyword is more than one character. 
-					//We check characters after the first character
-					boolean isKeyword = true;
-					int j=1;
-					for (int k=index + 1; j<keywordTable[i].length && k < content.length ; j++,k++){
-						if (keywordTable[i][j] != content[k]){
-							//it's not the keyword. we check another keyword
-							isKeyword = false;
-							break;
-						}
-					}
-					if (isKeyword){
-						//it's a keyword or a part of keyword
-						if (!isEnd && j < keywordTable[i].length){
-							//Not enough content in order to know if it's a keyword
-							//so unknowing content
-							//TODO faire une constante pour l'action undefined
-							return keywordTable.length;
-						}
-						//it's keyword
-						return i;
-					}
-				}
-			}
-		}
-		return -1;
-	}
-	
-
 	
 	/**
 	 * Verify if bytes which start to current index is a CSV keyword
@@ -793,7 +760,7 @@ public class CsvParser<T> {
 		case FIELD:
 			return new FieldGrammarAction(conf, contentLength);
 		case RECORD:
-			return new RecordGrammarAction<T>(classOfCSVBean, conf);
+			return new RecordGrammarAction<T>(classOfCSVBean, conf, totalNbFieldWhichCanBeDeleted);
 		case COMMENT:
 			return new CommentGrammarAction(conf, contentLength);
 		case QUOTE:
@@ -803,7 +770,7 @@ public class CsvParser<T> {
 		case END:
 			return new EndGrammarAction();
 		case START:
-			return new StartGrammarAction<T>(classOfCSVBean, conf, contentLength);
+			return new StartGrammarAction<T>(classOfCSVBean, conf, totalNbFieldWhichCanBeDeleted, contentLength);
 		case HEADER:
 			return new HeaderGrammarAction(conf, contentLength);
 		case FOOTER:

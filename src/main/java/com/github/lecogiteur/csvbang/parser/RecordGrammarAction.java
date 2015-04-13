@@ -38,19 +38,7 @@ import com.github.lecogiteur.csvbang.util.ReflectionUti;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
-	
-	/**
-	 * Start offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long startOffset = -1;
-	
-	/**
-	 * End offset of this action in CSV file
-	 * @since 1.0.0
-	 */
-	private long endOffset = -1;
+public class RecordGrammarAction<T> extends AbstractGrammarAction<T> {
 	
 	/**
 	 * List of fields
@@ -71,23 +59,25 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	private final CsvBangConfiguration conf;
 	
 	/**
-	 * Last record of file. Warning: if file have a footer or comment after last record, this variable is at false.  
+	 * Total number of field which can be deleted if there are null
 	 * @since 1.0.0
 	 */
-	private boolean isTerminatedRecord = false;
+	private final int totalNbFieldWhichCanBeDeleted;
 
 	/**
 	 * Constructor
-	 * @param beanClass
-	 * @param conf
+	 * @param beanClass type of CSV bean
+	 * @param conf configuration of CSV bean
+	 * @param totalNbFieldWhichCanBeDeleted total number of field which can be deleted
 	 * @since 1.0.0
 	 */
-	public RecordGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf) {
+	public RecordGrammarAction(final Class<T> beanClass, final CsvBangConfiguration conf, final int totalNbFieldWhichCanBeDeleted) {
 		super();
 		this.beanClass = beanClass;
 		this.conf = conf;
 		this.fields = new ArrayList<FieldGrammarAction>();
 		this.fields.add(new FieldGrammarAction(conf, 100));
+		this.totalNbFieldWhichCanBeDeleted = totalNbFieldWhichCanBeDeleted;
 	}
 
 	/**
@@ -127,7 +117,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 				//add a field
 				fields.add((FieldGrammarAction)word);
 				endOffset = word.getEndOffset();
-				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
+				isTerminated = isTerminated || word.isLastAction();
 				return true;
 			case QUOTE:
 				if (fields.size() == 1){
@@ -140,7 +130,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 				manageFooter((FooterGrammarAction) word);
 				return false;
 			case END:
-				isTerminatedRecord = isTerminatedRecord || word.isLastAction();
+				isTerminated = isTerminated || word.isLastAction();
 				return true;
 			default:
 				return false;
@@ -156,7 +146,8 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	 * @since 1.0.0
 	 */
 	private void manageFooter(final FooterGrammarAction foot) throws CsvBangException{
-		if (fields.size() < conf.fields.size()){
+		if (fields.size() < conf.fields.size() && 
+				(totalNbFieldWhichCanBeDeleted == 0 || conf.fields.size() - fields.size() > totalNbFieldWhichCanBeDeleted)){
 			//the number of field of last record of file is invalid. So it's a part of footer.
 			final StringBuilder s = new StringBuilder();
 			for (final FieldGrammarAction field:fields){
@@ -170,27 +161,48 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 			foot.setStartOffset(fields.get(0).getStartOffset());
 			endOffset = foot.getEndOffset();
 			fields.clear();
+		}else if (hasDeletedField()){
+			try{
+				execute();
+			}catch(Exception e){
+				for (int i=fields.size()-1;i >=0; i--){
+					final FieldGrammarAction field = fields.get(i);
+					final StringBuilder s = new StringBuilder();
+					s.append(i==0?"":conf.delimiter).append(field.execute());
+					foot.addBefore(s);
+					foot.setStartOffset(field.getStartOffset());
+					field.setEndOffset(foot.getEndOffset());
+					endOffset = foot.getEndOffset();
+				}
+				fields.clear();
+			}
 		}else if (fields.size() == conf.fields.size()){
 			//we verify if the last field of last record can be set
 			final T bean = newInstance();
 			boolean b = true;
+			int idx = fields.size() - 1;
 			int size = 0;
-			final int idx = fields.size()-1;
-			while(b){
-				try{
-					setField(idx, bean);
-					b = false;
-				}catch(CsvBangException e){
-					final Character a = fields.get(idx).deleteLastChar();
-					if (a == null){
+			while (b){
+				while(b){
+					try{
+						setField(idx, idx, bean);
 						b = false;
-					}else{
-						size++;
-						foot.addBefore(a);
+					}catch(Exception e){
+						final Character a = fields.get(idx).deleteLastChar();
+						if (a == null){
+							b = conf.fields.get(idx).isDeleteFieldIfNull;
+							if (b){
+								fields.remove(idx);
+								idx--;
+							}
+						}else{
+							size++;
+							foot.addBefore(a);
+						}
 					}
 				}
 			}
-			foot.setStartOffset(fields.get(idx).getEndOffset() - size);
+			foot.setStartOffset(fields.get(idx).getStartOffset());
 			fields.get(idx).setEndOffset(foot.getEndOffset());
 			endOffset = foot.getEndOffset();
 		}
@@ -204,9 +216,19 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	 */
 	@Override
 	public boolean isActionCompleted(final CsvGrammarActionType next) {
-		return (isTerminatedRecord || conf.fields.size() == fields.size() || CsvGrammarActionType.RECORD.equals(next) 
+		return (isTerminated || conf.fields.size() == fields.size() || CsvGrammarActionType.RECORD.equals(next) 
 				|| CsvGrammarActionType.END.equals(next) || CsvGrammarActionType.COMMENT.equals(next)) 
 				&& !CsvGrammarActionType.FOOTER.equals(next);
+	}
+	
+	/**
+	 * Verify if this record has deleted field
+	 * @return true if this field has deleted field
+	 * @since 1.0.0
+	 */
+	private boolean hasDeletedField(){
+		return totalNbFieldWhichCanBeDeleted > 0 && conf.fields.size() > fields.size() 
+				&& conf.fields.size() - totalNbFieldWhichCanBeDeleted <= fields.size();
 	}
 
 	/**
@@ -221,36 +243,96 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		T bean = null;
 		boolean isNull = true;
 		if (CsvbangUti.isCollectionNotEmpty(fields)){
+			//init
+			final List<Integer> fieldWhichCanBeDeleted = new ArrayList<Integer>();
+			final List<Integer> mustSetField = new ArrayList<Integer>();
+			
+			//effective max number of field deleted on this record
+			int maxNbFieldDeleted = 0;
+			
+			
+			//true if this record contains some fields are deleted 
+			boolean hasDeletedField = hasDeletedField();
+			
+			//true: try to set the bean
+			boolean mustretry = true;
+			
 			if (fields.size() == 1 && fields.get(0).execute() == null){
+				//CSV bean null. Don't return it
 				return null;
 			}
+			
 			if (conf.fields.size() != fields.size()){
-				throw new CsvBangException(String.format("A problem has occurred between offset [%s] and [%s] for a record. The number of fields configurated [%s] is different than the number of field find in file [%s] for type [%s].", 
-						startOffset, endOffset, conf.fields.size(), fields.size(), beanClass));
+				//the number of field retrieved in CSV file is different than the number field defined on configuration.
+				//verify if there is deleted field
+				if (!hasDeletedField){
+					throw new CsvBangException(String.format("A problem has occurred between offset [%s] and [%s] for a record. "
+							+ "The number of fields configurated [%s] is different than the number of field find in file [%s] "
+							+ "for type [%s].", 
+							startOffset, endOffset, conf.fields.size(), fields.size(), beanClass));
+				}
+				
+				//effective max number of field deleted on this record
+				maxNbFieldDeleted = conf.fields.size() - fields.size();
 			}
 			
 			//create new CSV bean
 			bean = newInstance();
 			
-			//set all field to CSV bean
-			for (int i=0; i<conf.fields.size(); i++){
-				isNull = setField(i, bean) && isNull;
+			while (mustretry){
+				//init
+				mustretry = false;
+				isNull = true;
+				
+				//set all field to CSV bean
+				for (int indexConf=0,indexField=0; indexConf<conf.fields.size() && indexField<fields.size(); indexConf++,indexField++){
+					
+					if (hasDeletedField && !mustSetField.contains(indexConf) 
+							&& maxNbFieldDeleted >  fieldWhichCanBeDeleted.size() 
+							&& conf.fields.get(indexConf).isDeleteFieldIfNull){
+						//this field can be deleted
+						fieldWhichCanBeDeleted.add(indexConf);
+						indexField--;
+						continue;
+					}
+
+					try{
+						//try to set a field
+						isNull = setField(indexConf, indexField, bean) && isNull;
+					}catch(Exception e){
+						if (hasDeletedField && fieldWhichCanBeDeleted.size() > 0 
+								&& maxNbFieldDeleted < totalNbFieldWhichCanBeDeleted){
+							//we can't set this record in CSV bean. Some field are deleted
+							//try again
+							mustretry = true;
+							bean = newInstance();
+							maxNbFieldDeleted++;
+							mustSetField.add(fieldWhichCanBeDeleted.get(0));
+							fieldWhichCanBeDeleted.clear();
+							break;
+						}else{
+							throw new CsvBangException(String.format("A problem has occurred when we try to set CSV bean [%s] on field %s", this.beanClass, indexConf), e);
+						}
+					}
+				}
 			}
 		}
 		return isNull?null:bean;
 	}
+
 	
 	/**
 	 * Set a field to the CSV bean
+	 * @param fieldConfIndex field configuration index
 	 * @param fieldIndex field index
 	 * @param bean the CSV bean
 	 * @return true if the field is null
 	 * @throws CsvBangException if a problem has occurred when we set the field to the CSV bean
 	 * @since 1.0.0
 	 */
-	private boolean setField(final int fieldIndex, final T bean) throws CsvBangException{
+	private boolean setField(final int fieldConfIndex, final int fieldIndex, final T bean) throws CsvBangException{
 		//get the configuration of field
-		final CsvFieldConfiguration confField = conf.fields.get(fieldIndex);
+		final CsvFieldConfiguration confField = conf.fields.get(fieldConfIndex);
 		
 		//field from CSV file
 		final FieldGrammarAction field = fields.get(fieldIndex);
@@ -273,7 +355,7 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 	/**
 	 * Return a new instance of CSV bean
 	 * @return the CSV bean
-	 * @throws CsvBangException if a problem has occurred whe we create the new instance.
+	 * @throws CsvBangException if a problem has occurred when we create the new instance.
 	 * @since 1.0.0
 	 */
 	private T newInstance() throws CsvBangException{
@@ -284,56 +366,6 @@ public class RecordGrammarAction<T> implements CsvGrammarAction<T> {
 		} catch (IllegalAccessException e) {
 			throw new CsvBangException(String.format("A problem has occurred when we instantiate the CSV type [%s]. Record between offset [%s] and [%s].", startOffset, endOffset, beanClass));
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getStartOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getStartOffset() {
-		return startOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#getEndOffset()
-	 * @since 1.0.0
-	 */
-	@Override
-	public long getEndOffset() {
-		return endOffset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setStartOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setStartOffset(long offset) {
-		startOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#setEndOffset(long)
-	 * @since 1.0.0
-	 */
-	@Override
-	public void setEndOffset(long offset) {
-		endOffset = offset;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.parser.CsvGrammarAction#isLastAction()
-	 * @since 1.0.0
-	 */
-	@Override
-	public boolean isLastAction() {
-		return isTerminatedRecord;
 	}
 
 

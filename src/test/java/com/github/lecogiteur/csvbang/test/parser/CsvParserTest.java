@@ -51,10 +51,14 @@ import com.github.lecogiteur.csvbang.test.bean.csvparser.EmptyHeaderCsvParserBea
 import com.github.lecogiteur.csvbang.test.bean.csvparser.FooterHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.FormattedCsvParseBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.HeaderCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleDeletedFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoFooterCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoFooterWithNoEndCharCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoHeaderCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.OneDeletedFieldCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.OneDeletedFieldWithFooterCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.OneDeletedFieldWithHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.QuoteCsvParserBean;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
@@ -1169,6 +1173,158 @@ public class CsvParserTest {
 					|| (new Integer(14).equals(bean.getNumber()) && "25-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("345.00").equals(bean.getCost()) && new Double(62.10d).equals(bean.getAnotherNumber()) && "name14".equals(bean.getName()))
 					|| (new Integer(15).equals(bean.getNumber()) && "26-03-2013".equals(format.format(bean.getDate().getTime())) && new BigDecimal("123.43").equals(bean.getCost()) && new Double(72.10d).equals(bean.getAnotherNumber()) && "name15".equals(bean.getName()))
 					
+				);
+		}
+	}
+	
+	@Test
+	public void oneSimpleDeletedFieldBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneDeletedFieldCsvParserBean.class);
+		final String content = "field1,field2,field3\n"
+				+ "unit1,unit3\n"
+				+ "field1,field2,field3\n";
+		final CsvParser<OneDeletedFieldCsvParserBean> parser = new CsvParser<OneDeletedFieldCsvParserBean>(OneDeletedFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneDeletedFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<OneDeletedFieldCsvParserBean> beans = new ArrayList<OneDeletedFieldCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+
+		
+		for (OneDeletedFieldCsvParserBean bean:beans){
+			Assert.assertTrue(
+					("*field1*".equals(bean.getField1()) && "field2".equals(bean.getField2()) && "field3".equals(bean.getField3()))
+					|| ("*unit1*".equals(bean.getField1()) && bean.getField2() == null && "unit3".equals(bean.getField3()))
+				);
+		}
+	}
+	
+	@Test
+	public void simpleDeletedFieldBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneDeletedFieldCsvParserBean.class);
+		final String content = "field1,field2,field3\n"
+				+ "unit1,unit3\n"
+				+ "field1,field2,field3\n"
+				+ "test1,test3";
+		final CsvParser<OneDeletedFieldCsvParserBean> parser = new CsvParser<OneDeletedFieldCsvParserBean>(OneDeletedFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneDeletedFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<OneDeletedFieldCsvParserBean> beans = new ArrayList<OneDeletedFieldCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+
+		
+		for (OneDeletedFieldCsvParserBean bean:beans){
+			Assert.assertTrue(
+					("*field1*".equals(bean.getField1()) && "field2".equals(bean.getField2()) && "field3".equals(bean.getField3()))
+					|| ("*unit1*".equals(bean.getField1()) && bean.getField2() == null && "unit3".equals(bean.getField3()))
+					|| ("*test1*".equals(bean.getField1()) && bean.getField2() == null && "test3".equals(bean.getField3()))
+				);
+		}
+	}
+	
+
+	@Test
+	public void deletedFieldWithHeaderBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneDeletedFieldWithHeaderCsvParserBean.class);
+		final String content = "a custom header\nfield1,field2,field3\n"
+				+ "unit2,unit3\n"
+				+ "field1,field2,field3\n"
+				+ "test2,test3";
+		final CsvParser<OneDeletedFieldWithHeaderCsvParserBean> parser = new CsvParser<OneDeletedFieldWithHeaderCsvParserBean>(OneDeletedFieldWithHeaderCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneDeletedFieldWithHeaderCsvParserBean> result = parse(datagrams, parser);
+		final List<OneDeletedFieldWithHeaderCsvParserBean> beans = new ArrayList<OneDeletedFieldWithHeaderCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals("a custom header", result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+
+		
+		for (OneDeletedFieldWithHeaderCsvParserBean bean:beans){
+			Assert.assertTrue(
+					("field1".equals(bean.getField1()) && "field2".equals(bean.getField2()) && "field3".equals(bean.getField3()))
+					|| ("unit2".equals(bean.getField2()) && bean.getField1() == null && "unit3".equals(bean.getField3()))
+					|| ("test2".equals(bean.getField2()) && bean.getField1() == null && "test3".equals(bean.getField3()))
+				);
+		}
+	}
+	
+
+	@Test
+	public void deletedFieldWithFooterBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneDeletedFieldWithFooterCsvParserBean.class);
+		final String content = "a custom header\nfield1,field2,field3\n"
+				+ "unit1,unit2\n"
+				+ "field1,field2,field3\n"
+				+ "test1,test2\na custom footer";
+		final CsvParser<OneDeletedFieldWithFooterCsvParserBean> parser = new CsvParser<OneDeletedFieldWithFooterCsvParserBean>(OneDeletedFieldWithFooterCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneDeletedFieldWithFooterCsvParserBean> result = parse(datagrams, parser);
+		final List<OneDeletedFieldWithFooterCsvParserBean> beans = new ArrayList<OneDeletedFieldWithFooterCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals("a custom header", result.getHeader());
+		Assert.assertEquals("a custom footer", result.getFooter());
+		Assert.assertEquals(4, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+
+		
+		for (OneDeletedFieldWithFooterCsvParserBean bean:beans){
+			Assert.assertTrue(
+					("field1".equals(bean.getField1()) && "field2".equals(bean.getField2()) && "field3".equals(bean.getField3()))
+					|| ("unit1".equals(bean.getField1()) && bean.getField3() == null && "unit2".equals(bean.getField2()))
+					|| ("test1".equals(bean.getField1()) && bean.getField3() == null && "test2".equals(bean.getField2()))
+				);
+		}
+	}
+	
+	@Test
+	public void multipleDeletedFieldBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleDeletedFieldCsvParserBean.class);
+		final String content = "a custom header\nfield1,10,field3\n"
+				+ "5\n"
+				+ "field1,10,field3\n"
+				+ "30,test3\n"
+				+ "toto1,67\na custom footer";
+		final CsvParser<MultipleDeletedFieldCsvParserBean> parser = new CsvParser<MultipleDeletedFieldCsvParserBean>(MultipleDeletedFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<MultipleDeletedFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleDeletedFieldCsvParserBean> beans = new ArrayList<MultipleDeletedFieldCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals("a custom header", result.getHeader());
+		Assert.assertEquals("a custom footer", result.getFooter());
+		Assert.assertEquals(5, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+
+		
+		for (MultipleDeletedFieldCsvParserBean bean:beans){
+			Assert.assertTrue(
+					("field1".equals(bean.getField1()) && new Integer(10).equals(bean.getField2()) && "field3".equals(bean.getField3()))
+					|| (new Integer(5).equals(bean.getField2()) && bean.getField3() == null && bean.getField1() == null)
+					|| (new Integer(30).equals(bean.getField2()) && bean.getField1() == null && "test3".equals(bean.getField3()))
+					|| (new Integer(67).equals(bean.getField2()) && bean.getField3() == null && "toto1".equals(bean.getField1()))
 				);
 		}
 	}
