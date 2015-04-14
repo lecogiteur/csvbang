@@ -25,8 +25,10 @@ package com.github.lecogiteur.csvbang.test.parser;
 import java.math.BigDecimal;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,11 +53,15 @@ import com.github.lecogiteur.csvbang.test.bean.csvparser.EmptyHeaderCsvParserBea
 import com.github.lecogiteur.csvbang.test.bean.csvparser.FooterHeaderCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.FormattedCsvParseBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.HeaderCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.HellCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleCollectionCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleDeletedFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.MultipleFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoFooterCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoFooterWithNoEndCharCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.NoHeaderCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.OneArrayCsvParserBean;
+import com.github.lecogiteur.csvbang.test.bean.csvparser.OneCollectionCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneDeletedFieldCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneDeletedFieldWithFooterCsvParserBean;
 import com.github.lecogiteur.csvbang.test.bean.csvparser.OneDeletedFieldWithHeaderCsvParserBean;
@@ -1329,4 +1335,252 @@ public class CsvParserTest {
 		}
 	}
 	
+
+	
+	@Test
+	public void simpleOneCollectionFieldBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneCollectionCsvParserBean.class);
+		final String content = "1,record1,1,2,3,4\n"
+				+ "2,record2,\n"
+				+ "3,record3,8";
+		final CsvParser<OneCollectionCsvParserBean> parser = new CsvParser<OneCollectionCsvParserBean>(OneCollectionCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneCollectionCsvParserBean> result = parse(datagrams, parser);
+		final List<OneCollectionCsvParserBean> beans = new ArrayList<OneCollectionCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+
+		
+		for (OneCollectionCsvParserBean bean:beans){
+			if (new Integer(1).equals(bean.getField1())){
+				Assert.assertEquals("record1", bean.getField2());
+				Assert.assertNotNull(bean.getField3());
+				Assert.assertEquals(4, bean.getField3().size());
+				int j = 1;
+				for (Integer i:bean.getField3()){
+					Assert.assertEquals(new Integer(j++), i);
+				}
+			}else if (new Integer(2).equals(bean.getField1())){
+				Assert.assertEquals("record2", bean.getField2());
+				Assert.assertNull(bean.getField3());
+				
+			}else if (new Integer(3).equals(bean.getField1())){
+				Assert.assertEquals("record3", bean.getField2());
+				Assert.assertNotNull(bean.getField3());
+				Assert.assertEquals(1, bean.getField3().size());
+				for (Integer i:bean.getField3()){
+					Assert.assertEquals(new Integer(8), i);
+				}
+				
+			}else{
+				Assert.fail();
+			}
+		}
+	}
+	
+	@Test
+	public void simpleOneArrayFieldBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneArrayCsvParserBean.class);
+		final String content = "1,record1,1,2,3,4\n"
+				+ "2,record2,\n"
+				+ "3,record3,8";
+		final CsvParser<OneArrayCsvParserBean> parser = new CsvParser<OneArrayCsvParserBean>(OneArrayCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneArrayCsvParserBean> result = parse(datagrams, parser);
+		final List<OneArrayCsvParserBean> beans = new ArrayList<OneArrayCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		for (OneArrayCsvParserBean bean:beans){
+			if (new Integer(1).equals(bean.getField1())){
+				Assert.assertEquals("record1", bean.getField2());
+				Assert.assertNotNull(bean.getField3());
+				Assert.assertEquals(4, bean.getField3().length);
+				int j = 1;
+				for (Integer i:bean.getField3()){
+					Assert.assertEquals(new Integer(j++), i);
+				}
+			}else if (new Integer(2).equals(bean.getField1())){
+				Assert.assertEquals("record2", bean.getField2());
+				Assert.assertNull(bean.getField3());
+				
+			}else if (new Integer(3).equals(bean.getField1())){
+				Assert.assertEquals("record3", bean.getField2());
+				Assert.assertNotNull(bean.getField3());
+				Assert.assertEquals(1, bean.getField3().length);
+				for (Integer i:bean.getField3()){
+					Assert.assertEquals(new Integer(8), i);
+				}
+				
+			}else{
+				Assert.fail();
+			}
+		}
+	}
+	
+	@Test
+	public void simpleOneArrayFieldWithFooterBeanTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(OneArrayCsvParserBean.class);
+		final String content = "1,record1,1,2,3,4\n"
+				+ "2,record2,\n"
+				+ "3,record3,8\na custom footer";
+		final CsvParser<OneArrayCsvParserBean> parser = new CsvParser<OneArrayCsvParserBean>(OneArrayCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<OneArrayCsvParserBean> result = parse(datagrams, parser);
+		final List<OneArrayCsvParserBean> beans = new ArrayList<OneArrayCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertEquals("a custom footer", result.getFooter());
+		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		for (OneArrayCsvParserBean bean:beans){
+			if (new Integer(1).equals(bean.getField1())){
+				Assert.assertEquals("record1", bean.getField2());
+				Assert.assertNotNull(bean.getField3());
+				Assert.assertEquals(4, bean.getField3().length);
+				int j = 1;
+				for (Integer i:bean.getField3()){
+					Assert.assertEquals(new Integer(j++), i);
+				}
+			}else if (new Integer(2).equals(bean.getField1())){
+				Assert.assertEquals("record2", bean.getField2());
+				Assert.assertNull(bean.getField3());
+				
+			}else if (new Integer(3).equals(bean.getField1())){
+				Assert.assertEquals("record3", bean.getField2());
+				Assert.assertNotNull(bean.getField3());
+				Assert.assertEquals(1, bean.getField3().length);
+				for (Integer i:bean.getField3()){
+					Assert.assertEquals(new Integer(8), i);
+				}
+				
+			}else{
+				Assert.fail();
+			}
+		}
+	}
+
+	
+	@Test
+	public void multipleCollectionFieldBeanTest() throws CsvBangException, CharacterCodingException, ParseException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleCollectionCsvParserBean.class);
+		final String content = "1,1.9,2.7,3.5,4.7,12.8,12-03-2011,23-07-2015\n"
+				+ "2,4.9,2.2,3.534,4.12,76.8,\n"
+				+ "3,4.9,,3.534,4.12,,\n"
+				+ "4,,12.8,12-03-2011,23-07-2015";
+		final CsvParser<MultipleCollectionCsvParserBean> parser = new CsvParser<MultipleCollectionCsvParserBean>(MultipleCollectionCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<MultipleCollectionCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleCollectionCsvParserBean> beans = new ArrayList<MultipleCollectionCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+		
+		c1.setTime(format.parse("12-03-2011"));
+		c2.setTime(format.parse("23-07-2015"));
+		
+		List<Double> doubles = new ArrayList<Double>();
+		doubles.add(1.9d);
+		doubles.add(2.7d);
+		doubles.add(3.5d);
+		doubles.add(4.7d);
+		doubles.add(4.9d);
+		doubles.add(2.2d);
+		doubles.add(3.534d);
+		doubles.add(4.12d);
+		
+		for (MultipleCollectionCsvParserBean bean:beans){
+			if (1 == bean.field1){
+				Assert.assertNotNull(bean.field2);
+				Assert.assertEquals(4, bean.field2.length);
+				for (Double i:bean.field2){
+					Assert.assertTrue(doubles.contains(i));
+				}
+				Assert.assertEquals(new Double(12.8d), bean.field3);
+				Assert.assertNotNull(bean.field4);
+				Assert.assertEquals(2, bean.field4.size());
+				bean.field4.contains(c1);
+				bean.field4.contains(c2);
+			}else if (2 == bean.field1){
+				Assert.assertNotNull(bean.field2);
+				Assert.assertEquals(4, bean.field2.length);
+				for (Double i:bean.field2){
+					Assert.assertTrue(doubles.contains(i));
+				}
+				Assert.assertEquals(new Double(76.8d), bean.field3);
+				Assert.assertNull(bean.field4);
+			}else if (3 == bean.field1){
+				Assert.assertNotNull(bean.field2);
+				Assert.assertEquals(3, bean.field2.length);
+				for (Double i:bean.field2){
+					Assert.assertTrue(doubles.contains(i));
+				}
+				Assert.assertNull(bean.field3);
+				Assert.assertNull(bean.field4);
+				
+			}else if (4 == bean.field1){
+				Assert.assertNull(bean.field2);
+				Assert.assertEquals(new Double(12.8d), bean.field3);
+				Assert.assertNotNull(bean.field4);
+				Assert.assertEquals(2, bean.field4.size());
+				bean.field4.contains(c1);
+				bean.field4.contains(c2);
+			}else{
+				Assert.fail();
+			}
+		}
+	}
+	
+	
+
+	
+	/**
+	 * Because we don't know
+	 * @throws CsvBangException
+	 * @throws CharacterCodingException
+	 * @since 1.0.0
+	 */
+	@Test
+	public void hellTest() throws CsvBangException, CharacterCodingException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(HellCsvParserBean.class);
+		final String content = "1,1,2,3,4\n";
+		final CsvParser<HellCsvParserBean> parser = new CsvParser<HellCsvParserBean>(HellCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator(content, 0, 5, conf.charset);
+		final CsvParsingResult<HellCsvParserBean> result = parse(datagrams, parser);
+		final List<HellCsvParserBean> beans = new ArrayList<HellCsvParserBean>(result.getCsvBeans());
+		
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertNull(result.getHeader());
+		Assert.assertNull(result.getFooter());
+		Assert.assertEquals(1, result.getCsvBeans().size());
+		Assert.assertEquals(0, result.getComments().size());
+		
+		for (HellCsvParserBean bean:beans){
+			Assert.assertEquals("1", bean.field1);
+		}
+	}
 }

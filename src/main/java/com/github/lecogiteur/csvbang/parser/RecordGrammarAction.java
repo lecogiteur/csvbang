@@ -162,6 +162,7 @@ public class RecordGrammarAction<T> extends AbstractGrammarAction<T> {
 			endOffset = foot.getEndOffset();
 			fields.clear();
 		}else if (hasDeletedField()){
+			//manage case where there is deleted field
 			try{
 				execute();
 			}catch(Exception e){
