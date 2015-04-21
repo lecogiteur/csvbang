@@ -26,6 +26,10 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.beans.beancontext.BeanContext;
+import java.beans.beancontext.BeanContextServices;
+import java.beans.beancontext.BeanContextServicesSupport;
+import java.beans.beancontext.BeanContextSupport;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -34,15 +38,29 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NavigableSet;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -421,6 +439,95 @@ public class ReflectionUti {
 		return null;
 	}
 	
+	//TODO faire des tests unitaires pour ByteStreamBuffer
+	
+	
+	/**
+	 * Retrieve the parameterized type of a generic type used in order to set a CSV bean
+	 * @param setter a member like field or method of class
+	 * @return the parameterized of generic class.
+	 * @throws CsvBangException if there is multiple parameterized type or if the type used in order to set a bean is not generic
+	 * @since 1.0.0
+	 */
+	public static final Class<?> getParameterizedSetterType(final AnnotatedElement setter)
+			throws CsvBangException{
+		Type parameterizedType = null;
+		Type[] types = null;
+		if (setter != null){
+			if (setter instanceof Field){
+				parameterizedType = ((Field) setter).getGenericType();
+			}else if (setter instanceof Method){
+				final Type[] tps = ((Method)setter).getGenericParameterTypes();
+				if (tps == null || tps.length == 0){
+					throw new CsvBangException(String.format("The setter method [%s] has no generic parameter. So we can't set value to field.", 
+							((Method)setter).getName()));
+				}else if (tps.length > 1){
+					throw new CsvBangException(String.format("The setter method [%s] has multiples generic parameters. So we can't set value to field.", 
+							((Method)setter).getName()));
+				}
+				parameterizedType = tps[0];
+			}
+			
+			
+			if ((parameterizedType instanceof Class) && !(parameterizedType instanceof ParameterizedType) 
+					&& isCollection((Class<?>)parameterizedType)){
+				return Object.class;
+			}
+
+			types = ((ParameterizedType)parameterizedType).getActualTypeArguments();
+			if (types == null || types.length == 0){
+				throw new CsvBangException(String.format("The setter method [%s] has a generic parameter but no parameterized type. So we can't set value to field.", 
+						((Method)setter).getName()));
+			}else if (types.length > 1){
+				throw new CsvBangException(String.format("The setter method [%s] has a generic parameter but multiple parameterized types. So we can't set value to field.", 
+						((Method)setter).getName()));
+			}
+			if (types[0] != null && !(types[0] instanceof Class || types[0] instanceof WildcardType)){
+				throw new CsvBangException(String.format("The type [%s] is not a class. We can't convert it. So we can't set value to field.", 
+						types[0]));
+			}
+		}
+		if (types == null){
+			return null;
+		}
+		
+		if (types[0] instanceof Class){
+			//it's a class
+			return (Class<?>)types[0];
+		}
+		
+		//undefined parameterized type
+		final WildcardType type = (WildcardType) types[0];
+		return (Class<?>) type.getUpperBounds()[0];
+	}
+	
+	/**
+	 * Verify if the Class implements the Collection interface.
+	 * @param clazz a class
+	 * @return True if the class is a collection
+	 * @since 1.0.0
+	 */
+	public static final boolean isCollection(final Class<?> clazz){
+		if (clazz == null){
+			return false;
+		}
+		if (Collection.class.equals(clazz)){
+			return true;
+		}
+		
+		final Class<?>[] interfaces = clazz.getInterfaces();
+		for (final Class<?> i:interfaces){
+			if (Collection.class.equals(i)){
+				return true;
+			}else if (isCollection(i)){
+				return true;
+			}
+		}
+		
+		final Class<?> sub = clazz.getSuperclass();
+		return isCollection(sub);
+	}
+	
 	/**
 	 * Creates a generator for a type in order to create new object of this type. When we read a CSV file, we must set the CSV bean with each types fo CSV field.
 	 * This method select to best generator for a given type.
@@ -433,10 +540,37 @@ public class ReflectionUti {
 	 * @since 1.0.0
 	 */
 	//TODO faire les tests unitaires pour cette méthode. Necessite la création des annotations factory et factory méthode
+	@SuppressWarnings("unchecked")
 	public static final <T> ObjectGenerator<T> createTypeGenerator(final Class<T> type, 
 			final Class<?> factory, final String factoryMethodName) throws CsvBangException{
 		ObjectGenerator<T> generator = null;
 		if (type != null){
+			//primitive class
+			if (int.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Integer.class, factory, factoryMethodName);
+			}
+			if (byte.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Byte.class, factory, factoryMethodName);
+			}
+			if (short.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Short.class, factory, factoryMethodName);
+			}
+			if (long.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Long.class, factory, factoryMethodName);
+			}
+			if (float.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Float.class, factory, factoryMethodName);
+			}
+			if (double.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Double.class, factory, factoryMethodName);
+			}
+			if (char.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Character.class, factory, factoryMethodName);
+			}
+			if (boolean.class.equals(type)){
+				return (ObjectGenerator<T>) createTypeGenerator(Boolean.class, factory, factoryMethodName);
+			}
+			
 			if (factory != null){
 				//if a factory is defined
 				generator = FactoryObjectGenerator.newInstance(type, factory, factoryMethodName);
@@ -660,5 +794,55 @@ public class ReflectionUti {
 			}
 		}
 		return members;
+	}
+	
+	/**
+	 * Create a new instance of a collection
+	 * @param clazz the class of type collection
+	 * @return a new instance. If the class is an array, we send an ArrayList
+	 * @throws CsvBangException
+	 * @since 1.0.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static final <T> Collection<T> newInstanceCollectionOrArray(final Class<?> clazz) throws CsvBangException{
+		if (clazz == null){
+			return null;
+		}else if (clazz.isArray()){
+			return new ArrayList<T>();
+		}else if (isCollection(clazz)){
+			try {
+				if (clazz.isInterface()){
+					if (clazz.equals(BeanContext.class)){
+						return new BeanContextSupport();
+					}if (clazz.equals(BeanContextServices.class)){
+						return new BeanContextServicesSupport();
+					}if (clazz.equals(BlockingDeque.class)){
+						return new LinkedBlockingDeque<T>();
+					}if (clazz.equals(BlockingQueue.class)){
+						return new LinkedBlockingQueue<T>();
+					}if (clazz.equals(Deque.class)){
+						return new ArrayDeque<T>();
+					}if (clazz.equals(List.class)){
+						return new ArrayList<T>();
+					}if (clazz.equals(NavigableSet.class)){
+						return new TreeSet<T>();
+					}if (clazz.equals(Queue.class)){
+						return new ArrayDeque<T>();
+					}if (clazz.equals(Set.class)){
+						return new HashSet<T>();
+					}if (clazz.equals(SortedSet.class)){
+						return new TreeSet<T>();
+					}if (clazz.equals(Collection.class)){
+						return new ArrayList<T>();
+					}
+				}
+				return (Collection<T>) clazz.newInstance();
+			} catch (InstantiationException e) {
+				throw new CsvBangException(String.format("A problem has occurred when we try to add element to the collection or array of field of type %s", clazz), e);
+			} catch (IllegalAccessException e) {
+				throw new CsvBangException(String.format("A problem has occurred when we try to add element to the collection or array of field of type %s", clazz), e);
+			}
+		}
+		return null;
 	}
 }

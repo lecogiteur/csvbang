@@ -39,6 +39,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.file.CsvDatagram;
 import com.github.lecogiteur.csvbang.util.ByteStreamBuffer;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
+import com.github.lecogiteur.csvbang.util.ReflectionUti;
 
 /**
  * Parser of CSV content. This parser is thread safe.
@@ -89,6 +90,12 @@ public class CsvParser<T> {
 	 * @since 1.0.0
 	 */
 	private int totalNbFieldWhichCanBeDeleted = 0;
+	
+	/**
+	 * True if CSV bean has field of Collection (or array) type
+	 * @since 1.0.0
+	 */
+	private boolean hasFieldCollection = false;
 	
 	/**
 	 * Constructor
@@ -638,10 +645,12 @@ public class CsvParser<T> {
 		
 		//######################################################"
 
+		
 		for (CsvFieldConfiguration field:conf.fields){
 			if (field.isDeleteFieldIfNull){
 				totalNbFieldWhichCanBeDeleted++;
 			}
+			hasFieldCollection = hasFieldCollection || field.typeOfSetter.isArray() || ReflectionUti.isCollection(field.typeOfSetter);
 		}
 		
 		return dest;
@@ -760,7 +769,7 @@ public class CsvParser<T> {
 		case FIELD:
 			return new FieldGrammarAction(conf, contentLength);
 		case RECORD:
-			return new RecordGrammarAction<T>(classOfCSVBean, conf, totalNbFieldWhichCanBeDeleted);
+			return new RecordGrammarAction<T>(classOfCSVBean, conf, totalNbFieldWhichCanBeDeleted, hasFieldCollection);
 		case COMMENT:
 			return new CommentGrammarAction(conf, contentLength);
 		case QUOTE:
@@ -770,7 +779,7 @@ public class CsvParser<T> {
 		case END:
 			return new EndGrammarAction();
 		case START:
-			return new StartGrammarAction<T>(classOfCSVBean, conf, totalNbFieldWhichCanBeDeleted, contentLength);
+			return new StartGrammarAction<T>(classOfCSVBean, conf, totalNbFieldWhichCanBeDeleted, hasFieldCollection, contentLength);
 		case HEADER:
 			return new HeaderGrammarAction(conf, contentLength);
 		case FOOTER:

@@ -90,4 +90,10 @@ public class CsvFieldConfiguration {
 	 * @since 1.0.0
 	 */
 	public Class<?> typeOfSetter;
+	
+	/**
+	 * Parameterized type of collection or array.
+	 * @since 1.0.0
+	 */
+	public Class<?> parameterizedCollectionType;
 }

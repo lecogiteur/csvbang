@@ -27,6 +27,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -137,5 +138,24 @@ public class CsvbangUti {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Delete the last element of the collection
+	 * @param col a collection
+	 * @since 1.0.0
+	 */
+	public static final void deleteLastElement(final Collection<?> col){
+		if (col == null || col.isEmpty()){
+			return;
+		}
+		int size = col.size();
+		final Iterator<?> it = col.iterator();
+		it.next();
+		while (size > 1){
+			it.next();
+			size--;
+		}
+		it.remove();
 	}
 }

@@ -23,17 +23,34 @@
 package com.github.lecogiteur.csvbang.test.util;
 
 import java.beans.IntrospectionException;
+import java.beans.beancontext.BeanContext;
+import java.beans.beancontext.BeanContextServices;
+import java.beans.beancontext.BeanContextServicesSupport;
+import java.beans.beancontext.BeanContextSupport;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -414,5 +431,109 @@ public class ReflectionUtiTest {
 		Assert.assertNull(bean.getValue3());
 		ReflectionUti.setValue(setter3, generator3, bean, "345");
 		Assert.assertEquals("345", bean.getValue3());
+	}
+	
+	@Test
+	public void isCollectionTest(){
+		Assert.assertFalse(ReflectionUti.isCollection(null));
+		Assert.assertTrue(ReflectionUti.isCollection(Collection.class));
+		Assert.assertTrue(ReflectionUti.isCollection(List.class));
+		Assert.assertTrue(ReflectionUti.isCollection(ArrayList.class));
+		Assert.assertTrue(ReflectionUti.isCollection(HashSet.class));
+		Assert.assertFalse(ReflectionUti.isCollection(Integer.class));
+	}
+	
+	@SuppressWarnings({"unused","rawtypes"})
+	private final class ParameterizedSetterTypeBean{
+		public Integer field1;
+		public List<Calendar> field2;
+		public Set<?> field3;
+		public Collection field4;
+		public Collection<? extends Integer> field5;
+		public void setCol1(List<Double> d){
+			
+		}
+		public void setCol2(Double d){
+			
+		}
+		public void setCol3(Set<?> d){
+			
+		}
+		public void setCol4(Collection d){
+			
+		}
+		public void setCol5(Collection<? extends Double> d){
+			
+		}
+		
+	}
+	
+	@Test
+	public void getParameterizedSetterTypeTest() throws SecurityException, NoSuchFieldException, CsvBangException{
+		final Field field1 = ParameterizedSetterTypeBean.class.getField("field1");
+		final Field field2 = ParameterizedSetterTypeBean.class.getField("field2");
+		final Field field3 = ParameterizedSetterTypeBean.class.getField("field3");
+		final Field field4 = ParameterizedSetterTypeBean.class.getField("field4");
+		final Field field5 = ParameterizedSetterTypeBean.class.getField("field5");
+		final Method[] methods = ParameterizedSetterTypeBean.class.getMethods();
+		Method setCol1 = null;
+		Method setCol2 = null;
+		Method setCol3 = null;
+		Method setCol4 = null;
+		Method setCol5 = null;
+		for (final Method method:methods){
+			if ("setCol1".equals(method.getName())){
+				setCol1 = method;
+			}else if ("setCol2".equals(method.getName())){
+				setCol2 = method;
+			}else if ("setCol3".equals(method.getName())){
+				setCol3 = method;
+			}else if ("setCol4".equals(method.getName())){
+				setCol4 = method;
+			}else if ("setCol5".equals(method.getName())){
+				setCol5 = method;
+			}
+		}
+		
+		
+		Assert.assertNull(ReflectionUti.getParameterizedSetterType(null));
+		try{
+			ReflectionUti.getParameterizedSetterType(field1);
+			Assert.fail();
+		}catch(ClassCastException e){}
+		try{
+			ReflectionUti.getParameterizedSetterType(setCol2);
+			Assert.fail();
+		}catch(ClassCastException e){}
+		
+		Assert.assertEquals(Calendar.class, ReflectionUti.getParameterizedSetterType(field2));
+		Assert.assertEquals(Double.class, ReflectionUti.getParameterizedSetterType(setCol1));
+		Assert.assertEquals(Object.class, ReflectionUti.getParameterizedSetterType(setCol3));
+		Assert.assertEquals(Object.class, ReflectionUti.getParameterizedSetterType(setCol4));
+		Assert.assertEquals(Object.class, ReflectionUti.getParameterizedSetterType(field3));
+		Assert.assertEquals(Object.class, ReflectionUti.getParameterizedSetterType(field4));
+		Assert.assertEquals(Integer.class, ReflectionUti.getParameterizedSetterType(field5));
+		Assert.assertEquals(Double.class, ReflectionUti.getParameterizedSetterType(setCol5));
+		
+	}
+	
+	@Test
+	public void newInstanceCollectionOrArrayTest() throws CsvBangException{
+		int[] array = new int[0];
+		Assert.assertNull(ReflectionUti.newInstanceCollectionOrArray(null));
+		Assert.assertEquals(BeanContextSupport.class, ReflectionUti.newInstanceCollectionOrArray(BeanContext.class).getClass());
+		Assert.assertEquals(BeanContextServicesSupport.class, ReflectionUti.newInstanceCollectionOrArray(BeanContextServices.class).getClass());
+		Assert.assertEquals(LinkedBlockingDeque.class, ReflectionUti.newInstanceCollectionOrArray(BlockingDeque.class).getClass());
+		Assert.assertEquals(LinkedBlockingQueue.class, ReflectionUti.newInstanceCollectionOrArray(BlockingQueue.class).getClass());
+		Assert.assertEquals(ArrayDeque.class, ReflectionUti.newInstanceCollectionOrArray(Deque.class).getClass());
+		Assert.assertEquals(ArrayList.class, ReflectionUti.newInstanceCollectionOrArray(List.class).getClass());
+		Assert.assertEquals(TreeSet.class, ReflectionUti.newInstanceCollectionOrArray(NavigableSet.class).getClass());
+		Assert.assertEquals(ArrayDeque.class, ReflectionUti.newInstanceCollectionOrArray(Queue.class).getClass());
+		Assert.assertEquals(HashSet.class, ReflectionUti.newInstanceCollectionOrArray(Set.class).getClass());
+		Assert.assertEquals(TreeSet.class, ReflectionUti.newInstanceCollectionOrArray(SortedSet.class).getClass());
+		Assert.assertEquals(ArrayList.class, ReflectionUti.newInstanceCollectionOrArray(Collection.class).getClass());
+		Assert.assertEquals(ArrayList.class, ReflectionUti.newInstanceCollectionOrArray(ArrayList.class).getClass());
+		Assert.assertEquals(ArrayList.class, ReflectionUti.newInstanceCollectionOrArray(array.getClass()).getClass());
+		Assert.assertNull(ReflectionUti.newInstanceCollectionOrArray(String.class));
 	}
 }

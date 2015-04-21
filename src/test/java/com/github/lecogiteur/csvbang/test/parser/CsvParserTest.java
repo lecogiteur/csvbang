@@ -1491,7 +1491,7 @@ public class CsvParserTest {
 		Assert.assertNotNull(result.getComments());
 		Assert.assertNull(result.getHeader());
 		Assert.assertNull(result.getFooter());
-		Assert.assertEquals(3, result.getCsvBeans().size());
+		Assert.assertEquals(4, result.getCsvBeans().size());
 		Assert.assertEquals(0, result.getComments().size());
 		
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -1581,6 +1581,9 @@ public class CsvParserTest {
 		
 		for (HellCsvParserBean bean:beans){
 			Assert.assertEquals("1", bean.field1);
+			Assert.assertEquals("4", bean.field3);
+			Assert.assertNotNull(bean.field2);
+			Assert.assertEquals(3, bean.field2.length);
 		}
 	}
 }
