@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,6 +97,12 @@ public class CsvParser<T> {
 	 * @since 1.0.0
 	 */
 	private boolean hasFieldCollection = false;
+	
+	/**
+	 * Number of request to flush parser
+	 * @since 1.0.0
+	 */
+	private AtomicInteger requestOfFlush = new AtomicInteger(0);
 	
 	/**
 	 * Constructor
@@ -404,69 +411,78 @@ public class CsvParser<T> {
 	 * @throws CsvBangException if a problem has occurred when CsvBang parsed the CSV file
 	 * @since 1.0.0
 	 */
+	//TODO vérifier les AtomicBoolean getAndSet équivaut plutot à setAndGet
 	public CsvParsingResult<T> flush() throws CsvBangException{
+		int request = requestOfFlush.incrementAndGet();
+		if (request > 1){
+			return null;
+		}
 		
 		//list of CSV beans which are completed.
 		final CsvParsingResult<T> result = new CsvParsingResult<T>();
 		
-		//for each stack which are not terminated
-		while (!stackByOffset.isEmpty()){
-			//init
-			byte[] content = null;
-			
-			//retrieve the last stack. (stack has been ordered by offset in files
-			final Entry<ActionKey, Deque<CsvGrammarAction<?>>> stack = stackByOffset.pollLastEntry();
-			
-			if (CsvbangUti.isCollectionEmpty(stack.getValue())){
-				//no stack we continue
-				continue;
-			}
-			
-			//true, if the last action of stack is the last action to execute in file
-			if (CsvGrammarActionType.END.equals(stack.getValue().getLast().getType())){
-				//it's the last action
-				final CsvGrammarAction<?> end = stack.getValue().removeLast();
+		while (request > 0){
+			//for each stack which are not terminated
+			while (!stackByOffset.isEmpty()){
+				//init
+				byte[] content = null;
+
+				//retrieve the last stack. (stack has been ordered by offset in files
+				final Entry<ActionKey, Deque<CsvGrammarAction<?>>> stack = stackByOffset.pollLastEntry();
+
 				if (CsvbangUti.isCollectionEmpty(stack.getValue())){
-					if (stackByOffset.isEmpty()){
-						//end
-						break;
-					}
+					//no stack we continue
 					continue;
-				}else{
-					stack.getValue().getLast().add(end);
 				}
-			}
-			
-			//start offset
-			long startOffset = stack.getKey().startOffset;
-		
-			/*if (CsvGrammarActionType.UNDEFINED.equals(stack.getValue().getLast().getType())){
+
+				//true, if the last action of stack is the last action to execute in file
+				if (CsvGrammarActionType.END.equals(stack.getValue().getLast().getType())){
+					//it's the last action
+					final CsvGrammarAction<?> end = stack.getValue().removeLast();
+					if (CsvbangUti.isCollectionEmpty(stack.getValue())){
+						if (stackByOffset.isEmpty()){
+							//end
+							break;
+						}
+						continue;
+					}else{
+						stack.getValue().getLast().add(end);
+					}
+				}
+
+				//start offset
+				long startOffset = stack.getKey().startOffset;
+
+				/*if (CsvGrammarActionType.UNDEFINED.equals(stack.getValue().getLast().getType())){
 				//the action is undefined, we retrieve the last content
 				final UndefinedGrammarAction action = (UndefinedGrammarAction) stack.getValue().removeLast();
 				content = action.execute();
 				startOffset = action.getStartOffset();
 			}*/
-			
-			//parse content
-			final CsvParsingResult<T> r = internalParse(content, stack.getValue(), startOffset, 
-					stack.getKey().fileId, true, false);
-			
-			//add result
-			if (r != null){
-				if (CsvbangUti.isCollectionNotEmpty(r.getCsvBeans())){
-					result.getCsvBeans().addAll(r.getCsvBeans());
-				}
-				if (CsvbangUti.isCollectionNotEmpty(r.getComments())){
-					result.getComments().addAll(r.getComments());
-				}
-				if (r.getHeader() != null){
-					result.setHeader(r.getHeader());
-				}
-				if (r.getFooter() != null){
-					result.setFooter(r.getFooter());
+
+				//parse content
+				final CsvParsingResult<T> r = internalParse(content, stack.getValue(), startOffset, 
+						stack.getKey().fileId, true, false);
+
+				//add result
+				if (r != null){
+					if (CsvbangUti.isCollectionNotEmpty(r.getCsvBeans())){
+						result.getCsvBeans().addAll(r.getCsvBeans());
+					}
+					if (CsvbangUti.isCollectionNotEmpty(r.getComments())){
+						result.getComments().addAll(r.getComments());
+					}
+					if (r.getHeader() != null){
+						result.setHeader(r.getHeader());
+					}
+					if (r.getFooter() != null){
+						result.setFooter(r.getFooter());
+					}
 				}
 			}
+			request = requestOfFlush.decrementAndGet();
 		}
+		
 		return result;
 	}
 	
