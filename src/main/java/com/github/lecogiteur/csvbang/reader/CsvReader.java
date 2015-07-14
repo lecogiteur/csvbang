@@ -56,15 +56,6 @@ public interface CsvReader<T> extends Channel{
 	public boolean isOpen();
 	
 	/**
-	 * Read a line
-	 * @return a line
-	 * @throws CsvBangException if a problem occurred during reading file
-	 * @throws CsvBangCloseException if the reader is closed
-	 * @since 1.0.0
-	 */
-	public T read() throws CsvBangException, CsvBangCloseException;
-	
-	/**
 	 * Read multiple lines
 	 * @return multiple lines
 	 * @throws CsvBangException if a problem occurred during reading file
