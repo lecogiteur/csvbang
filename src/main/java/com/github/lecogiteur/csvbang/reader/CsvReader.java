@@ -24,6 +24,8 @@ package com.github.lecogiteur.csvbang.reader;
 
 import java.io.IOException;
 import java.nio.channels.Channel;
+import java.util.Collection;
+import java.util.concurrent.Future;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
@@ -63,6 +65,15 @@ public interface CsvReader<T> extends Channel{
 	public T read() throws CsvBangException, CsvBangCloseException;
 	
 	/**
+	 * Read multiple lines
+	 * @return multiple lines
+	 * @throws CsvBangException if a problem occurred during reading file
+	 * @throws CsvBangCloseException if the reader is closed
+	 * @since 1.0.0
+	 */
+	public Collection<T> readBlock() throws CsvBangException, CsvBangCloseException;
+	
+	/**
 	 * {@inheritDoc}
 	 * @see java.nio.channels.Channel#close()
 	 * @since 1.0.0
@@ -78,21 +89,26 @@ public interface CsvReader<T> extends Channel{
 	public boolean isClose();
 	
 	/**
-	 * Get header of file
-	 * @return the header
+	 * Get header of all CSV files in pool
+	 * @return a header for each file. No order defined. Can be null when no footer is available.
 	 * @throws CsvBangException if problem occurred during we retrieve header
-	 * @throws CsvBangCloseException if reader is closed
 	 * @since 1.0.0
 	 */
-	public String getHeader() throws CsvBangException, CsvBangCloseException;
+	public Future<String> getHeader() throws CsvBangException;
 	
 	/**
-	 * Get footer of file
-	 * @return the footer
-	 * @throws CsvBangException if problem occurred during we retrieve header
-	 * @throws CsvBangCloseException if reader is closed
+	 * Get footer of all CSV files in pool
+	 * @return a footer for each file. No order defined. Can be null when no footer is available.
+	 * @throws CsvBangException if problem occurred during we retrieve footer
 	 * @since 1.0.0
 	 */
-	public String getFooter() throws CsvBangException, CsvBangCloseException;
+	public Future<String> getFooter() throws CsvBangException;
 
+	/**
+	 * Get a comment
+	 * @return the comment
+	 * @throws CsvBangException if problem occurred during we retrieve comments
+	 * @since 1.0.0
+	 */
+	public Future<String> getComment() throws CsvBangException;
 }

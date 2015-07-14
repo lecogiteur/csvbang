@@ -23,8 +23,6 @@
 package com.github.lecogiteur.csvbang.file;
 
 
-import java.util.Collection;
-
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.exception.CsvBangIOException;

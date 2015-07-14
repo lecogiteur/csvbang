@@ -24,6 +24,7 @@ package com.github.lecogiteur.csvbang.parser;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -412,14 +413,14 @@ public class CsvParser<T> {
 	 * @since 1.0.0
 	 */
 	//TODO vérifier les AtomicBoolean getAndSet équivaut plutot à setAndGet
-	public CsvParsingResult<T> flush() throws CsvBangException{
+	public Collection<CsvParsingResult<T>> flush() throws CsvBangException{
 		int request = requestOfFlush.incrementAndGet();
 		if (request > 1){
 			return null;
 		}
 		
 		//list of CSV beans which are completed.
-		final CsvParsingResult<T> result = new CsvParsingResult<T>();
+		final Collection<CsvParsingResult<T>> result = new ArrayList<CsvParsingResult<T>>();
 		
 		while (request > 0){
 			//for each stack which are not terminated
@@ -466,18 +467,7 @@ public class CsvParser<T> {
 
 				//add result
 				if (r != null){
-					if (CsvbangUti.isCollectionNotEmpty(r.getCsvBeans())){
-						result.getCsvBeans().addAll(r.getCsvBeans());
-					}
-					if (CsvbangUti.isCollectionNotEmpty(r.getComments())){
-						result.getComments().addAll(r.getComments());
-					}
-					if (r.getHeader() != null){
-						result.setHeader(r.getHeader());
-					}
-					if (r.getFooter() != null){
-						result.setFooter(r.getFooter());
-					}
+					result.add(r);
 				}
 			}
 			request = requestOfFlush.decrementAndGet();
