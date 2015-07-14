@@ -54,6 +54,12 @@ public class CsvbangThreadPoolExecutor extends ThreadPoolExecutor implements Csv
 	private static final Logger LOGGER = Logger.getLogger(ReflectionUti.class.getName());
 	
 	/**
+	 * The max number of thread in pool
+	 * @since 1.0.0
+	 */
+	private final int numberOfThread;
+
+	/**
 	 * List of tasks by group
 	 * @since 0.1.0
 	 */
@@ -68,6 +74,7 @@ public class CsvbangThreadPoolExecutor extends ThreadPoolExecutor implements Csv
 		super(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>());
+		numberOfThread = nThreads;
 	}
 	
 
@@ -113,6 +120,18 @@ public class CsvbangThreadPoolExecutor extends ThreadPoolExecutor implements Csv
 		}
 		return true;
 	}
+
+
+	/**
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.pool.CsvbangExecutorService#getMaxNumberThread()
+	 * @since 1.0.0
+	 */
+	@Override
+	public int getMaxNumberThread() {
+		return numberOfThread;
+	}
 	
 
+	
 }
