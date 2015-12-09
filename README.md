@@ -1,7 +1,7 @@
 csvbang
 =======
 
-A comma-separated values ( CSV ) API, written in JAVA using annotations and thread-safe.
+CSVBang is a Java written thread-safe API. Its annotations allow a easy way to bind CSV file's records to Java Beans.
 
 **Current version:** [0.1.0](https://github.com/lecogiteur/csvbang/wiki/Roadmap#current-release)
 
