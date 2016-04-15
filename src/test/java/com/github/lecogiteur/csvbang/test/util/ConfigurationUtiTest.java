@@ -105,7 +105,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(1, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("date", e.name);
@@ -114,7 +114,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(3, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof DateCsvFormatter);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("customMethod", e.name);
@@ -123,7 +123,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("TheYear", e.name);
@@ -132,7 +132,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -180,7 +180,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals("No Date", e.nullReplaceString);
 		Assert.assertEquals(3, e.position);
 		Assert.assertNull(e.format);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("The Name", e.name);
@@ -189,7 +189,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(5, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("old", e.name);
@@ -198,7 +198,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(8, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		Assert.assertEquals("isOld", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("customMethod", e.name);
@@ -207,7 +207,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(4);
 		Assert.assertEquals("TheYear", e.name);
@@ -216,7 +216,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -265,7 +265,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(5, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("old", e.name);
@@ -274,7 +274,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(8, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		Assert.assertEquals("isOld", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("custom", e.name);
@@ -283,7 +283,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("date", e.name);
@@ -292,7 +292,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(4);
 		Assert.assertEquals("TheYear", e.name);
@@ -301,7 +301,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -353,7 +353,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals("No Date", e.nullReplaceString);
 		Assert.assertEquals(3, e.position);
 		Assert.assertNull(e.format);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("The Name", e.name);
@@ -362,7 +362,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(5, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("old", e.name);
@@ -371,7 +371,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(8, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		Assert.assertEquals("isOld", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("customMethod", e.name);
@@ -380,7 +380,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(4);
 		Assert.assertEquals("TheYear", e.name);
@@ -389,7 +389,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -437,7 +437,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(5, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("old", e.name);
@@ -446,7 +446,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(8, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		Assert.assertEquals("isOld", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("custom", e.name);
@@ -455,7 +455,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("date", e.name);
@@ -464,7 +464,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(4);
 		Assert.assertEquals("TheYear", e.name);
@@ -473,7 +473,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -525,7 +525,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(1, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("date", e.name);
@@ -534,7 +534,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(3, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof DateCsvFormatter);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("customMethod", e.name);
@@ -543,7 +543,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("TheYear", e.name);
@@ -552,7 +552,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -604,7 +604,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(IConstantsCsvBang.DEFAULT_FIELD_NULL_VALUE, e.nullReplaceString);
 		Assert.assertEquals(3, e.position);
 		Assert.assertNull(e.format);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("The Name", e.name);
@@ -613,7 +613,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(5, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("old", e.name);
@@ -622,7 +622,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(8, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		Assert.assertEquals("isOld", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("customMethod", e.name);
@@ -631,7 +631,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(4);
 		Assert.assertEquals("TheYear", e.name);
@@ -640,7 +640,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 	
@@ -689,7 +689,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(5, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getName", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getName", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(1);
 		Assert.assertEquals("old", e.name);
@@ -698,7 +698,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(8, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("isOld", ((Member)e.memberBean).getName());
+		Assert.assertEquals("isOld", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(2);
 		Assert.assertEquals("custom", e.name);
@@ -707,7 +707,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(10, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("customMethod", ((Member)e.memberBean).getName());
+		Assert.assertEquals("customMethod", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(3);
 		Assert.assertEquals("date", e.name);
@@ -716,7 +716,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("getDate", ((Member)e.memberBean).getName());
+		Assert.assertEquals("getDate", ((Member)e.getter).getName());
 		
 		e = conf.fields.get(4);
 		Assert.assertEquals("TheYear", e.name);
@@ -725,7 +725,7 @@ public class ConfigurationUtiTest {
 		Assert.assertEquals(-2, e.position);
 		Assert.assertNotNull(e.format);
 		Assert.assertTrue(e.format instanceof Default);
-		Assert.assertEquals("year", ((Member)e.memberBean).getName());
+		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
 	}
 }

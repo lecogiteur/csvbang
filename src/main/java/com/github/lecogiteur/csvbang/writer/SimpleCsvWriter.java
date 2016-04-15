@@ -95,7 +95,7 @@ public class SimpleCsvWriter<T> extends AbstractWriter<T> {
 		isClose = workers == 0;
 		if (isClose){
 			super.close();
-		}else{
+		}else if (!conf.isRegisterThread){
 			throw new CsvBangCloseException(workers);
 		}
 	}

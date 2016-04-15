@@ -194,6 +194,9 @@ public class MultiCsvFilePool implements CsvFilePool {
 					file = generateNewFile();					
 					allFiles.add(file.file);
 				}else if (nbFilesFull.get() >= maxFiles){
+					if (FileActionType.READ_ONLY.equals(this.action)){
+						return null;
+					}
 					//all files are full.
 					throw new CsvBangException(String.format("No file available in pool for update. The maximum number files [%s] has been already created and are full.", conf.maxFile));
 				}else{

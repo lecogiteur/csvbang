@@ -97,7 +97,7 @@ public class AsynchronousCsvReader<T> extends AbstractCsvReader<T> {
 	@Override
 	public Collection<T> readBlock() throws CsvBangException,
 			CsvBangCloseException {
-		while (!isTerminate || numberOfWorker.get() > 0){
+		while ((!isTerminate || numberOfWorker.get() > 0) && !isClose()){
 			if (!isTerminate && numberOfWorker.get() < maxNumberOfWorker){
 				executor.submit(this.hashCode(), new ReadWorker(this));
 			}
@@ -106,6 +106,7 @@ public class AsynchronousCsvReader<T> extends AbstractCsvReader<T> {
 				return beans;
 			}
 		}
+		executor.awaitGroupTermination(this.hashCode());
 		return records.poll();
 	}
 	
@@ -161,12 +162,11 @@ public class AsynchronousCsvReader<T> extends AbstractCsvReader<T> {
 		 */
 		@Override
 		public Void call() throws Exception {
-			Collection<T> beans = reader.readBlock();
-			while (beans != null){
+			Collection<T> beans = null;
+			while ((beans = reader.readBlock()) != null){
 				if (CsvbangUti.isCollectionNotEmpty(beans)){
 					records.add(beans);
 				}
-				beans = reader.readBlock();
 			}
 			numberOfWorker.decrementAndGet();
 			isTerminate = true;

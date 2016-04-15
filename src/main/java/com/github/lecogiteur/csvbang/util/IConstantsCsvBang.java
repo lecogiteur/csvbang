@@ -231,6 +231,13 @@ public interface IConstantsCsvBang {
 	public static final String DEFAULT_FIELD_SETTER = "";
 	
 	/**
+	 * True if you want register all threads which are open and write/read. When close the action we verify if all threads is terminated.
+	 * The default value is {@value}
+	 * @since 1.0.0
+	 */
+	public static final boolean DEFAULT_REGISTER_THREAD = true;
+	
+	/**
 	 * <p>The factory is used in order to set CSV bean. When CsvBang read a CSV file, it generate field with String type. 
 	 * But, each field can define its type in CSV bean.</p> 
 	 * <p>By default, in order to generate a new instance of field type, CsvBang searches by priority:

@@ -114,16 +114,16 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	 * @since 0.1.0
 	 */
 	public void close() throws IOException {
+		if (isClose){
+			return;
+		}
 		try {
 			emptyQueue(true);
 			//close file
-			int workers = isEnded.get();
-			isClose = workers == 0;
-			if (isClose){
-				super.close();
-			}else{
-				throw new CsvBangCloseException(workers);
+			if(isEnded.get() > 0){
+				return;
 			}
+			super.close();
 		} catch (CsvBangException e) {
 			throw new CsvBangIOException(String.format("Error has occurred on closing file."), e);
 		}
@@ -161,31 +161,33 @@ public class BlockCsvWriter<T> extends AbstractWriter<T> {
 	 * @since 0.1.0
 	 */
 	private final void emptyQueue(boolean isEnd) throws CsvBangException, CsvBangCloseException{
-		isEnded.incrementAndGet();
-		final Collection<LinesWrapper> wrappers = drainQueue(isEnd);
-		if (CsvbangUti.isCollectionNotEmpty(wrappers)){
-			//Submit the writing to the executor
-			final StringBuilder result = new StringBuilder(wrappers.size() * defaultLineSize);
-			int nbRealLine = 0;
-			for (final LinesWrapper wrapper:wrappers){
-				//generate content to add to file
-				final StringBuilder sLine = generateLine(wrapper.line, wrapper.isComment);
-				if (sLine != null){
-					result.append(sLine);
-					if (!wrapper.isComment){
-						++nbRealLine;
+		try{
+			final Collection<LinesWrapper> wrappers = drainQueue(isEnd);
+			if (CsvbangUti.isCollectionNotEmpty(wrappers)){
+				//Submit the writing to the executor
+				final StringBuilder result = new StringBuilder(wrappers.size() * defaultLineSize);
+				int nbRealLine = 0;
+				for (final LinesWrapper wrapper:wrappers){
+					//generate content to add to file
+					final StringBuilder sLine = generateLine(wrapper.line, wrapper.isComment);
+					if (sLine != null){
+						result.append(sLine);
+						if (!wrapper.isComment){
+							++nbRealLine;
+						}
 					}
 				}
+
+				//get a file in order to write
+				final CsvFileContext file = filePool.getFile(nbRealLine, result.length());
+
+				//write data
+				file.write(result.toString());
+
 			}
-
-			//get a file in order to write
-			final CsvFileContext file = filePool.getFile(nbRealLine, result.length());
-
-			//write data
-			file.write(result.toString());
-
+		}finally{
+			isEnded.decrementAndGet();
 		}
-		isEnded.decrementAndGet();
 	}
 
 }

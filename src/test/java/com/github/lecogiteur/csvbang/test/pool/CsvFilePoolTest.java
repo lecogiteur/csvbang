@@ -60,8 +60,11 @@ public class CsvFilePoolTest {
 		private final Integer millis;
 		private final Integer nbRecord;
 		private final Integer nbByte;
+		private final Long nbRound;
 		private final CsvFilePool pool;
-		private final Map<Integer, Integer> count = new HashMap<Integer, Integer>();
+		private final boolean forRead;
+		private final Map<Integer, Integer> countRecord = new HashMap<Integer, Integer>();
+		private final Map<Integer, Integer> countByte = new HashMap<Integer, Integer>();
 		
 		public Getter(Integer millis, CsvFilePool pool) {
 			super();
@@ -69,14 +72,18 @@ public class CsvFilePoolTest {
 			this.pool = pool;
 			this.nbRecord = 10;
 			this.nbByte = 100;
+			forRead = false;
+			this.nbRound = 10000l;
 		}
 		
-		public Getter(Integer millis, CsvFilePool pool, Integer nbRecord, Integer nbByte) {
+		public Getter(Integer millis, CsvFilePool pool, Integer nbRecord, Integer nbByte, boolean forRead, long nbRound) {
 			super();
 			this.millis = millis;
 			this.pool = pool;
 			this.nbRecord = nbRecord;
 			this.nbByte = nbByte;
+			this.forRead = forRead;
+			this.nbRound = nbRound;
 		}
 
 		@Override
@@ -87,34 +94,47 @@ public class CsvFilePoolTest {
 				e.printStackTrace();
 			}
 			
-			for (int i=0; i<10000; i++){
+			for (long i=0; i<nbRound; i++){
 				try {
 					CsvFileContext file = pool.getFile(nbRecord, nbByte);
+					if (forRead && file == null){
+						return;
+					}
 					Assert.assertNotNull(file);
 					int key = file.hashCode();
 					int total = nbRecord;
-					if (count.containsKey(key)){
-						total += count.get(key);
+					if (countRecord.containsKey(key)){
+						total += countRecord.get(key);
 					}
-					count.put(key, total);
+					countRecord.put(key, total);
+					
+					total = nbByte;
+					if (countByte.containsKey(key)){
+						total += countByte.get(key);
+					}
+					countByte.put(key, total);
 				} catch (CsvBangException e) {
-					Assert.fail("" + count.size());
+					Assert.fail("" + countRecord.size());
 				}
 			}
 		}
 
-		public Map<Integer, Integer> getCount() {
-			return count;
+		public Map<Integer, Integer> getCountRecord() {
+			return countRecord;
+		}
+		
+		public Map<Integer, Integer> getCountByte() {
+			return countByte;
 		}
 		
 		
 	}
 	
 	private void threadSafeReadingTest(CsvBangConfiguration conf, CsvFilePool pool, String name, boolean isNotSimple, long nbFile, long totalsize){
-		System.out.println("Test name: " + name);
-		Getter g1 = new Getter(20, pool, -1, 43);
-		Getter g2 = new Getter(10, pool, -1, 43);
-		Getter g3 = new Getter(0, pool, -1, 43);
+		System.out.println(String.format("Test name: %s || NB file: %s || nbRound: %s", name, nbFile, (totalsize / 43)));
+		Getter g1 = new Getter(20, pool, -1, 43, true, (totalsize / 43));
+		Getter g2 = new Getter(10, pool, -1, 43, true, (totalsize / 43));
+		Getter g3 = new Getter(0, pool, -1, 43, true, (totalsize / 43));
 		Thread t1 = new Thread(g1);
 		Thread t2 = new Thread(g2);
 		Thread t3 = new Thread(g3);
@@ -125,32 +145,32 @@ public class CsvFilePoolTest {
 		
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){};
 		
-		Map<Integer, Integer> c1 = g1.getCount();
-		Map<Integer, Integer> c2 = g2.getCount();
-		Map<Integer, Integer> c3 = g3.getCount();
+		Map<Integer, Integer> c1 = g1.getCountByte();
+		Map<Integer, Integer> c2 = g2.getCountByte();
+		Map<Integer, Integer> c3 = g3.getCountByte();
 		
 		Assert.assertEquals(nbFile, pool.getAllFiles().size());
-		int nbRecords = 0;
+		int nbBytes = 0;
 		for (CsvFileContext c:pool.getAllFiles()){
-			int nbRecord = 0;
+			int nbByte = 0;
 			if (c1.containsKey(c.hashCode())){
-				nbRecord += c1.get(c.hashCode());
+				nbByte += c1.get(c.hashCode());
 				System.out.println(c.hashCode() + " --> t1 : " + c1.get(c.hashCode()));
 			}
 			if (c2.containsKey(c.hashCode())){
-				nbRecord += c2.get(c.hashCode());
+				nbByte += c2.get(c.hashCode());
 				System.out.println(c.hashCode() + " --> t2 : " + c2.get(c.hashCode()));
 			}
 			if (c3.containsKey(c.hashCode())){
-				nbRecord += c3.get(c.hashCode());
+				nbByte += c3.get(c.hashCode());
 				System.out.println(c.hashCode() + " --> t3 : " + c3.get(c.hashCode()));
 			}
-			nbRecords += nbRecord;
+			nbBytes += nbByte;
 		}
 		
-		long total = nbRecords * -43;
-		Assert.assertTrue(total >= totalsize);
-		Assert.assertTrue(total - totalsize < 43);
+		long total = nbBytes;
+		Assert.assertTrue(String.format("Total byte read: %s || Total bytes in all file: %s", total, totalsize), total >= totalsize);
+		Assert.assertTrue(String.format("Total byte read: %s || Total bytes in all file: %s", total, totalsize), total - totalsize < 43 * 3);
 	}
 	
 	private void threadSafeWritingTest(CsvBangConfiguration conf, CsvFilePool pool, String name, boolean isNotSimple, long nbFile){
@@ -168,9 +188,9 @@ public class CsvFilePoolTest {
 		
 		while (t1.isAlive() || t2.isAlive() || t3.isAlive()){};
 		
-		Map<Integer, Integer> c1 = g1.getCount();
-		Map<Integer, Integer> c2 = g2.getCount();
-		Map<Integer, Integer> c3 = g3.getCount();
+		Map<Integer, Integer> c1 = g1.getCountRecord();
+		Map<Integer, Integer> c2 = g2.getCountRecord();
+		Map<Integer, Integer> c3 = g3.getCountRecord();
 		
 		Assert.assertEquals(nbFile, pool.getAllFiles().size());
 		List<Integer> nbRecords = new ArrayList<Integer>();
@@ -290,12 +310,12 @@ public class CsvFilePoolTest {
 		conf.fileName = new FileName("*.csv", null);
 		conf.init();
 		final CsvFilePool pool = CsvFilePoolFactory.createPoolForReading(conf, 
-				Collections.singleton(baseDir), new FileName("*file*.csv", null));
+				Collections.singleton(baseDir), new FileName("*/csvfilepool/*file*.csv", null));
 		Assert.assertNotNull(pool);
 		Assert.assertTrue(pool instanceof OneByOneCsvFilePool);
 		Assert.assertEquals(3, pool.getAllFiles().size());
 		
-		Collection<File> files = CsvbangUti.getAllFiles(baseDir, new FileName("*file*.csv", null).generateFilter());
+		Collection<File> files = CsvbangUti.getAllFiles(baseDir, new FileName("*/csvfilepool/*file*.csv", null).generateFilter());
 		Assert.assertEquals(3, files.size());
 		long totalSize = 0;
 		for (File file:files){
@@ -323,6 +343,6 @@ public class CsvFilePoolTest {
 			totalSize += file.length();
 		}
 		
-		threadSafeReadingTest(conf, pool, "OneByOneCsvFilePool", true, files.size(), totalSize);
+		threadSafeReadingTest(conf, pool, "SimpleCsvFilePool", true, files.size(), totalSize);
 	}
 }

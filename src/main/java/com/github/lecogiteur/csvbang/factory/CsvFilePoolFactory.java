@@ -123,17 +123,17 @@ public class CsvFilePoolFactory {
 						files.add(path);
 					}
 				}
+			}
 
-				if (CsvbangUti.isCollectionNotEmpty(files)){
-					if (files.size() == 1){
-						//create a simple pool
-						return new SimpleCsvFilePool(conf, files.iterator().next(), FileActionType.READ_ONLY);
-					}else if (conf.isReadFileByFile){
-						return new OneByOneCsvFilePool(conf, files, FileActionType.READ_ONLY);
-					}
-
-					return new MultiCsvFilePool(conf, files, FileActionType.READ_ONLY);
+			if (CsvbangUti.isCollectionNotEmpty(files)){
+				if (files.size() == 1){
+					//create a simple pool
+					return new SimpleCsvFilePool(conf, files.iterator().next(), FileActionType.READ_ONLY);
+				}else if (conf.isReadFileByFile){
+					return new OneByOneCsvFilePool(conf, files, FileActionType.READ_ONLY);
 				}
+
+				return new MultiCsvFilePool(conf, files, FileActionType.READ_ONLY);
 			}
 		}
 		return null;

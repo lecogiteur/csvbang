@@ -185,7 +185,7 @@ public class FileName implements Cloneable{
 				if (c == '*'){
 					formatByOffset.put(pattern.length(), TYPE_FORMAT.JOKER);
 					order.add(pattern.length());
-					noSlashPattern = filenamePatternS.length()>1?filenamePatternS.charAt(filenamePatternS.length() - 1) == File.separatorChar:false;
+					noSlashPattern = i>1?filename.charAt(i - 1) == File.separatorChar:false;
 					filenamePatternS.append("(.*?)");
 					continue;
 				}
@@ -395,6 +395,13 @@ public class FileName implements Cloneable{
 	}
 	
 	
+	/**
+	 * Inner class of a FilenameFilter
+	 * @author Tony EMMA
+	 * @version 1.0.0
+	 * @since 1.0.0
+	 * @see java.io.FilenameFilter
+	 */
 	private class InternalFilenameFilter implements FilenameFilter {
 
 		/**
@@ -462,7 +469,9 @@ public class FileName implements Cloneable{
 						} catch (ParseException e) {
 							return false;
 						}
+						break;
 						default:
+							count--;
 							continue;
 					}
 				}

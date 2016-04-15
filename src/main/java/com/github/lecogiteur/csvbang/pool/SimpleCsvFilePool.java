@@ -25,6 +25,7 @@ package com.github.lecogiteur.csvbang.pool;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
@@ -36,7 +37,7 @@ import com.github.lecogiteur.csvbang.file.FileName;
 /**
  * It's a pool of file. This implementation manage a single file
  * @author Tony EMMA
- * @version 0.1.0
+ * @version 1.0.0
  * @since 0.1.0
  */
 public class SimpleCsvFilePool implements CsvFilePool {
@@ -63,13 +64,25 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	 * The file
 	 * @since 0.1.0
 	 */
-	private CsvFileWrapper fileWrapper;
+	private final CsvFileWrapper fileWrapper;
 	
 	/**
 	 * The configuration
 	 * @since 0.1.0
 	 */
-	private CsvBangConfiguration conf;
+	private final CsvBangConfiguration conf;
+	
+	/**
+	 * number byte read
+	 * @since 1.0.0
+	 */
+	private final AtomicLong byteRead = new AtomicLong(0);
+	
+	/**
+	 * The maximum of which can read
+	 * @since 1.0.0
+	 */
+	private final long maxBytes;
 
 	/**
 	 * Constructor (use for writing). With this constructor, the pool generates new file from the given pattern (see fileName parameter).
@@ -83,14 +96,16 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	public SimpleCsvFilePool(final CsvBangConfiguration conf, final FileName filename, 
 			final Object customHeader, final Object customFooter, final FileActionType action) {
 		super();
-		final CsvFileWrapper fileWrapper = new CsvFileWrapper(filename.getNewFileName(false), action);
+		fileWrapper = new CsvFileWrapper(filename.getNewFileName(false), action);
 		this.file = new CsvFileContext(conf, fileWrapper, customHeader, customFooter);
 		this.customHeader = customHeader;
 		this.customFooter = customFooter;
 		this.conf = conf;
+		this.maxBytes = fileWrapper.getFile().length();
 	}
 	
-	
+
+
 	/**
 	 * Constructor (use for reading). With this constructor, the pool doesn't generate new file. It uses a given list of file (see filesToUse parameter).
 	 * @param conf configuration
@@ -100,9 +115,10 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	 */
 	public SimpleCsvFilePool(final CsvBangConfiguration conf, final File file, final FileActionType action) {
 		super();
-		final CsvFileWrapper fileWrapper = new CsvFileWrapper(file, action);
+		fileWrapper = new CsvFileWrapper(file, action);
 		this.file = new CsvFileContext(conf, fileWrapper, null, null);
 		this.conf = conf;
+		this.maxBytes = fileWrapper.getFile().length();
 	}
 	
 	
@@ -126,6 +142,12 @@ public class SimpleCsvFilePool implements CsvFilePool {
 	@Override
 	public CsvFileContext getFile(int nbRecord, int nbByte)
 			throws CsvBangException {
+		if (FileActionType.READ_ONLY.equals(fileWrapper.getAction())){
+			if (byteRead.getAndAdd(nbByte) < maxBytes){
+				return file;
+			}
+			return null;
+		}
 		return file;
 	}
 

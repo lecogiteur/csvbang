@@ -22,6 +22,7 @@ package com.github.lecogiteur.csvbang.test.formatter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,6 +46,7 @@ public class NumberCsvFormatterTest {
 	public void numberTest(){
 		CsvFormatter format = new NumberCsvFormatter();
 		format.setPattern("#,###.##");
+		format.setLocal(Locale.FRENCH);
 		format.init();
 		
 		Assert.assertEquals("default", format.format(null, "default"));
@@ -66,6 +68,7 @@ public class NumberCsvFormatterTest {
 	@Test
 	public void numberParseTest(){
 		CsvFormatter format = new NumberCsvFormatter();
+		format.setLocal(Locale.FRENCH);
 		format.setPattern("#,###.##");
 		format.init();
 		

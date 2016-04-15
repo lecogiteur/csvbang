@@ -35,6 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.file.FileName;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
@@ -127,6 +129,22 @@ public class CsvbangUtiTest {
 		for (final File f:files){
 			Assert.assertTrue(list.contains(f.getName()));
 		}
+	}
+	
+	@Test
+	public void should_find_three_file() throws URISyntaxException, CsvBangException{
+		final List<String> fileNames = new ArrayList<String>();
+		fileNames.add("bigfile.csv");
+		fileNames.add("myfile.csv");
+		fileNames.add("file1.csv");
+		File baseDir = new File(this.getClass().getResource("/csvfilepool").toURI());
+		Collection<File> files = CsvbangUti.getAllFiles(baseDir, new FileName("*/csvfilepool/*file*.csv", null).generateFilter());
+		Assert.assertEquals(3, files.size());
+		for (final File name:files){
+			Assert.assertTrue(fileNames.contains(name.getName()));
+			fileNames.remove(name.getName());
+		}
+		Assert.assertEquals(0, fileNames.size());
 	}
 	
 	@Test

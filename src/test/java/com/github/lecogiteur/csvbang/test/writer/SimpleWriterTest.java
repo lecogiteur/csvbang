@@ -30,7 +30,8 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.writer.AbstractWriter;
 
-
+//TODO test que le dernier caractère
+//Pour les classes de state peut être modifier les exception pour en faire des IO exception
 public class SimpleWriterTest<T> extends AbstractWriter<T> {
 
 	StringBuilder result = new StringBuilder();

@@ -153,11 +153,11 @@ public class FileReadyForWritingCsvFileState implements CsvFileState {
 				//wait that all writings terminate
 				i = workers.get();
 			}
-			try {
+			/*try {
 				channel.close();
 			} catch (IOException e) {
 				new CsvBangIOException(String.format("Can't close file [%s].", csvFile.getFile().getAbsolutePath()), e);
-			}
+			}*/
 			final FileToCloseForWritingCsvFileState state = new FileToCloseForWritingCsvFileState(csvFile, conf);
 			state.close(customFooter);
 			context.setCsvFileState(state);

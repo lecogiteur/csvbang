@@ -139,15 +139,17 @@ public class CsvParserTest {
 			}
 		}
 		
-		CsvParsingResult<T> l = parser.flush();
-		if (l != null){
-			result.getCsvBeans().addAll(l.getCsvBeans());
-			result.getComments().addAll(l.getComments());
-			if (l.getHeader() != null){
-				result.setHeader(l.getHeader());
-			}
-			if (l.getFooter() != null){
-				result.setFooter(l.getFooter());
+		Collection<CsvParsingResult<T>> ls = parser.flush();
+		if (ls != null){
+			for (CsvParsingResult<T> l:ls){
+				result.getCsvBeans().addAll(l.getCsvBeans());
+				result.getComments().addAll(l.getComments());
+				if (l.getHeader() != null){
+					result.setHeader(l.getHeader());
+				}
+				if (l.getFooter() != null){
+					result.setFooter(l.getFooter());
+				}
 			}
 		}
 		return result;
@@ -1627,9 +1629,13 @@ public class CsvParserTest {
 				csvDatagram = queue.poll();
 			}
 			try {
-				CsvParsingResult<BigDataCsvParser> r = parser.flush();
-				if (r != null && r.getCsvBeans() != null && r.getCsvBeans().size() > 0){
-					result.addAll(r.getCsvBeans());
+				Collection<CsvParsingResult<BigDataCsvParser>> rs = parser.flush();
+				if (rs != null){
+					for (CsvParsingResult<BigDataCsvParser> r:rs){
+						if (r != null && r.getCsvBeans() != null && r.getCsvBeans().size() > 0){
+							result.addAll(r.getCsvBeans());
+						}
+					}
 				}
 			} catch (CsvBangException e) {
 				e.printStackTrace();

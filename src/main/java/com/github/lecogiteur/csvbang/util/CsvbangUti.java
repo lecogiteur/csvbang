@@ -23,10 +23,12 @@
 package com.github.lecogiteur.csvbang.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -39,6 +41,23 @@ import java.util.Map;
  *
  */
 public class CsvbangUti {
+	
+	/**
+	 * File filter in order to retrieve sub-directories
+	 * @since 1.0.0
+	 */
+	private static final FileFilter DIRECTORY_FILTER = new FileFilter() {
+		
+		/**
+		 * {@inheritDoc}
+		 * @see java.io.FileFilter#accept(java.io.File)
+		 * @since 1.0.0
+		 */
+		@Override
+		public boolean accept(File pathname) {
+			return pathname.isDirectory();
+		}
+	};
 
 	/**
 	 * Verify if a String is blank (null, empty or white space)
@@ -114,20 +133,26 @@ public class CsvbangUti {
 	/**
 	 * Get all files of a base directory and its sub-directories
 	 * @param baseDir base directory
+	 * @param filter filter on file name
 	 * @return all files
 	 * @since 1.0.0
 	 */
 	public static final Collection<File> getAllFiles(final File baseDir, final FilenameFilter filter){
 		if (baseDir != null && baseDir.exists()){ 
 			if (baseDir.isDirectory()){
-				final Collection<File> result = new ArrayList<File>();
+				final Collection<File> result = new HashSet<File>();
+				final File[] subDirectories = baseDir.listFiles(DIRECTORY_FILTER);
+				if (subDirectories != null){
+					for (final File dir:subDirectories){
+						final Collection<File> c = getAllFiles(dir, filter);
+						if (c != null) result.addAll(c);
+					}
+				}
+				
 				final File[] files = baseDir.listFiles(filter);
 				if (files != null){
 					for (final File file:files){
-						if (file.isDirectory()){
-							final Collection<File> c = getAllFiles(file, filter);
-							if (c != null) result.addAll(c);
-						}else{
+						if (!file.isDirectory()){
 							result.add(file);
 						}
 					}

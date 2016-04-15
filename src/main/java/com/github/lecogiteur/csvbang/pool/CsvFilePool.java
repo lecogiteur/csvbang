@@ -50,8 +50,8 @@ public interface CsvFilePool {
 	 * Get A file in pool
 	 * @param nbRecord the number of record which will be added to the file
 	 * @param nbByte the number of byte which will be appended to the file
-	 * @return a file
-	 * @throws CsvBangException if no file to return
+	 * @return a file. Null if it's a pool in order to read file
+	 * @throws CsvBangException if no file to return in case of writting action.
 	 * @since 0.1.0
 	 */
 	public CsvFileContext getFile(int nbRecord, int nbByte) throws CsvBangException;

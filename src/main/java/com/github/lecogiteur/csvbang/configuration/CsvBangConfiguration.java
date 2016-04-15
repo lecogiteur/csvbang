@@ -207,7 +207,7 @@ public class CsvBangConfiguration {
 	 */
 	public FileName fileName;
 	
-	//TODO créer les annotations pour isWriteFileByFile et isReadFileByFile
+	//TODO créer les annotations pour isWriteFileByFile et isReadFileByFile asinchronousreading et registerThread
 	
 	/**
 	 * If CsvBang must write file one by one or multiple file. This option is active only if a max number of files in pool is defined.
@@ -244,6 +244,13 @@ public class CsvBangConfiguration {
 	 * @since 1.0.0
 	 */
 	public boolean isReadingSubFolder = IConstantsCsvBang.DEFAULT_READING_SUB_FOLDER;
+	
+	/**
+	 * True if you want register all threads which are open and write/read. When close the action we verify if all threads is terminated.
+	 * The default value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_REGISTER_THREAD}
+	 * @since 1.0.0
+	 */
+	public boolean isRegisterThread = IConstantsCsvBang.DEFAULT_REGISTER_THREAD;
 	
 	/**
 	 * Initialize the configuration

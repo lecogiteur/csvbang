@@ -214,6 +214,9 @@ public class OneByOneCsvFilePool implements CsvFilePool {
 				continue;
 			} 
 			
+			if (FileActionType.READ_ONLY.equals(this.action)){
+				return null;
+			}
 			throw new CsvBangException(String.format("No file available in pool for update. The maximum number files [%s] has been already created and are full.", conf.maxFile));
 		}
 	}

@@ -203,8 +203,8 @@ public class ConfigurationUti {
 				conf.setter = ReflectionUti.getSetterMethod(member, finalClass);
 			}
 			if (conf.setter == null){
-				LOGGER.warning(String.format("No way in order to set %s in class %s. You must define a getter method or change the modifier of field.", conf.name, finalClass));
-				continue;
+				LOGGER.warning(String.format("No way in order to set %s in class %s. You must define a setter method or change the modifier of field.", conf.name, finalClass));
+				//continue;
 			}else{
 				//defined the type of setter
 				conf.typeOfSetter = ReflectionUti.getSetterType(conf.setter);
