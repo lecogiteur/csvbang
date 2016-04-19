@@ -104,18 +104,20 @@ public class CsvFilePoolFactory {
 	/**
 	 * Create a pool of file in order to read CSV file
 	 * @param conf CsvBang configuration of CSV bean
-	 * @param paths list of directories and file to read. No warranty on order when we processed files
+	 * @param paths list of directories and file to read. No warranty on order when we processed files. Can be null
 	 * @param fileNameFilter the file name to use in order to retrieve file to read. Can be null. If null, we use the {@link com.github.lecogiteur.csvbang.annotation.CsvFile#fileName()} definition. 
 	 * @return a pool of CSV file
+	 * @throws CsvBangException if no file to read is found
 	 * @since 1.0.0
 	 */
-	public static final CsvFilePool createPoolForReading(final CsvBangConfiguration conf, final Collection<File> paths, final FileName fileNameFilter){
+	public static final CsvFilePool createPoolForReading(final CsvBangConfiguration conf, final Collection<File> paths, final FileName fileNameFilter) throws CsvBangException{
+		final Collection<File> files = new HashSet<File>();
+		final FileName theFileName = fileNameFilter == null?conf.fileName:fileNameFilter;
 		if (paths != null){
-			Collection<File> files = new HashSet<File>();
 			for(final File path:paths){
 				if (path.exists()){
 					if(path.isDirectory()){
-						final Collection<File> c = CsvbangUti.getAllFiles(path, fileNameFilter == null?conf.fileName.generateFilter():fileNameFilter.generateFilter()); 
+						final Collection<File> c = CsvbangUti.getAllFiles(path, theFileName != null?theFileName.generateFilter():null); 
 						if (CsvbangUti.isCollectionNotEmpty(c)){
 							files.addAll(c);
 						}
@@ -124,19 +126,25 @@ public class CsvFilePoolFactory {
 					}
 				}
 			}
-
-			if (CsvbangUti.isCollectionNotEmpty(files)){
-				if (files.size() == 1){
-					//create a simple pool
-					return new SimpleCsvFilePool(conf, files.iterator().next(), FileActionType.READ_ONLY);
-				}else if (conf.isReadFileByFile){
-					return new OneByOneCsvFilePool(conf, files, FileActionType.READ_ONLY);
-				}
-
-				return new MultiCsvFilePool(conf, files, FileActionType.READ_ONLY);
+		}else if (theFileName != null){
+			File file = new File(theFileName.getNewFileName(false));
+			while (file.exists()){
+				files.add(file);
+				file = new File(theFileName.getNewFileName(false));
 			}
 		}
-		return null;
+
+		if (CsvbangUti.isCollectionNotEmpty(files)){
+			if (files.size() == 1){
+				//create a simple pool
+				return new SimpleCsvFilePool(conf, files.iterator().next(), FileActionType.READ_ONLY);
+			}else if (conf.isReadFileByFile){
+				return new OneByOneCsvFilePool(conf, files, FileActionType.READ_ONLY);
+			}
+			
+			return new MultiCsvFilePool(conf, files, FileActionType.READ_ONLY);
+		}
+		throw new CsvBangException(String.format("No file to read."));
 	}
 
 }
