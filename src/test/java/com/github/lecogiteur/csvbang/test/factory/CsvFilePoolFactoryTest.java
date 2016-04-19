@@ -23,7 +23,6 @@
 package com.github.lecogiteur.csvbang.test.factory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -180,7 +179,7 @@ public class CsvFilePoolFactoryTest {
 	}
 
 	@Test
-	public void nullReadPoolTest(){
+	public void nullReadPoolTest() throws CsvBangException{
 		final CsvBangConfiguration conf = new CsvBangConfiguration();
 		
 		final CsvFilePool pool1 = CsvFilePoolFactory.createPoolForReading(conf, null, null);
@@ -308,7 +307,7 @@ public class CsvFilePoolFactoryTest {
 			Assert.assertNotNull(pool.getFile(0, 3));
 		}
 		Assert.assertEquals("a big csv stringa big csv string2".length() + 3, i);
-		Assert.assertNull(pool.getFile(0, 3))conf.isReadFileByFile = true;;
+		Assert.assertNull(pool.getFile(0, 3));
 	}
 	
 	@Test
