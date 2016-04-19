@@ -36,7 +36,7 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
 @CsvType(delimiter=";", quoteCharacter="\"")
 @CsvHeader(header=true, customHeader="test header\n")
 @CsvFooter(noEndRecordOnLastRecord=true, customFooter="\ntest footer\nretest footer")
-@CsvFile(append=true, asynchronousWriter=false, blocksize=1000, maxFileNumber=3, fileByFile=false, maxRecordByFile=18000, fileName="block-%n.csv")
+@CsvFile(append=true, asynchronousWriter=false, blocksize=1000, maxFileNumber=3, writeFileByFile=false, maxRecordByFile=18000, fileName="block-%n.csv")
 public class BlockCsvWriterBean {
 
 	@CsvField(position=1)

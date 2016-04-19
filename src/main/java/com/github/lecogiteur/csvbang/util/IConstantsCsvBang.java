@@ -74,7 +74,7 @@ public interface IConstantsCsvBang {
 	 * @since 0.0.1
 	 */
 	public static final int DEFAULT_BLOCKING_SIZE = -1;
-	
+	//TODO revoir les commentaires FactoryWrite après avoir vue la génération des action
 	/**
 	 * True if you want to write file asynchronously. 
 	 * You can define the number of thread dedicate to write file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
@@ -83,6 +83,15 @@ public interface IConstantsCsvBang {
 	 * @since 0.0.1
 	 */
 	public static final boolean DEFAULT_ASYNCHRONOUS_WRITE = false;
+	
+	/**
+	 * True if you want to read file asynchronously. 
+	 * You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * By default the number of processor divide by 3.
+	 * If you read several files in the same time, the thread will be share for each files.
+	 * @since 1.0.0
+	 */
+	public static final boolean DEFAULT_ASYNCHRONOUS_READ = false;
 	
 	/**
 	 * Display the header on the first line. By default {@value}.

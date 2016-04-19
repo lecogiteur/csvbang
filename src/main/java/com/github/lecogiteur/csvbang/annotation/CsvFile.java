@@ -62,6 +62,16 @@ public @interface CsvFile {
 	boolean asynchronousWriter() default IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_WRITE;
 	
 	/**
+	 * True if you want to read file asynchronously. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_ASYNCHRONOUS_READ}.
+	 * <p>You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * By default the number of thread is the number of processor divide by 3.
+	 * If you read several files in the same time, the thread will be share for each files.</p>
+	 * @return True if you want to write asynchronously 
+	 * @since 1.0.0
+	 */
+	boolean asynchronousReader() default IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_READ;
+	
+	/**
 	 * <p>You can define a static file name. </p>
 	 * <p>It is not required. You could define dynamically the filename in Factory.</p>
 	 * <p>It is possible to mix configuration. For example you can define dynamically 
@@ -137,7 +147,17 @@ public @interface CsvFile {
 	 * @see com.github.lecogiteur.csvbang.annotation.CsvFile#maxRecordByFile()
 	 * @since 0.1.0
 	 */
-	boolean fileByFile() default IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
+	boolean writeFileByFile() default IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
+	
+	/**
+	 * <p>When you set a maximum of file in pool, the maximum of records in file or the maximum size of file, you can define if you process file by file or if you process files simultaneous.</p>
+	 * <p>This option is deactivated if the maximum of files in pool is lesser than 1. You must have at least two files in pool in order to use this option.</p>
+	 * <p>By default, the value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}</p>
+	 * @return True if you want to process file by file
+	 * @see com.github.lecogiteur.csvbang.annotation.CsvFile#maxFileNumber()
+	 * @since 1.0.0
+	 */
+	boolean readFileByFile() default IConstantsCsvBang.DEFAULT_PROCESS_FILE_BY_FILE;
 	
 	/**
 	 * True if you want that reader search all CSV files in sub-directories. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_PROCESS_FILE_BY_FILE}
@@ -145,5 +165,14 @@ public @interface CsvFile {
 	 * @since 1.0.0
 	 */
 	boolean readSubFolders() default IConstantsCsvBang.DEFAULT_READING_SUB_FOLDER;
+	
+	//TODO register for write
+	
+	/**
+	 * True if you want register all threads which are open and write/read. When close the action we verify if all threads is terminated.
+	 * The default value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_REGISTER_THREAD}
+	 * @since 1.0.0
+	 */
+	boolean registerThread() default IConstantsCsvBang.DEFAULT_REGISTER_THREAD;
 
 }

@@ -396,11 +396,14 @@ public class ConfigurationUti {
 				conf.isAppendToFile = csvFile.append();
 				conf.blockSize = csvFile.blocksize();
 				conf.isAsynchronousWrite = csvFile.asynchronousWriter();
+				conf.isAsynchronousRead = csvFile.asynchronousReader();
 				conf.maxFile = csvFile.maxFileNumber();
 				conf.maxFileSize = csvFile.maxFileSize();
 				conf.maxRecordByFile = csvFile.maxRecordByFile();
-				conf.isWriteFileByFile = csvFile.fileByFile();
+				conf.isWriteFileByFile = csvFile.writeFileByFile();
+				conf.isReadFileByFile = csvFile.readFileByFile();
 				conf.isReadingSubFolder = csvFile.readSubFolders();
+				conf.isRegisterThread = csvFile.registerThread();
 			}
 			
 			loadCsvFieldConfiguration(clazz, c, mapFieldConf, mapCommentFields, generators);

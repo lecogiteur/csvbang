@@ -207,7 +207,18 @@ public class CsvBangConfiguration {
 	 */
 	public FileName fileName;
 	
-	//TODO créer les annotations pour isWriteFileByFile et isReadFileByFile asinchronousreading et registerThread
+	//TODO faire la factory pour la lecture
+	
+	/**
+	 * 
+	 * True if you want to read file asynchronously. 
+	 * You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * By default the number of processor divide by 3.
+	 * If you read several files in the same time, the threads will be share for each files.
+	 * 
+	 * @since 1.0.0
+	 */
+	public boolean isAsynchronousRead = IConstantsCsvBang.DEFAULT_ASYNCHRONOUS_READ;
 	
 	/**
 	 * If CsvBang must write file one by one or multiple file. This option is active only if a max number of files in pool is defined.
