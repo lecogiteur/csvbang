@@ -134,7 +134,7 @@ public class FileName implements Cloneable{
 	 * <p>
 	 * List of pattern
 	 * <ul>
-	 * 	<li>%n : the number file</li>
+	 * 	<li>%n : the number file. Start to 1</li>
 	 * 	<li>%d : date format</li>
 	 * 	<li>* :  Zero or multiple characters (only use for reading files. In case of writing it replaces this joker by an empty string)</li>
 	 * </ul>

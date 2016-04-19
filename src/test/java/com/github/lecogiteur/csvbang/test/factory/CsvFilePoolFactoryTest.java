@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.junit.Assert;
@@ -306,6 +308,22 @@ public class CsvFilePoolFactoryTest {
 			Assert.assertNotNull(pool.getFile(0, 3));
 		}
 		Assert.assertEquals("a big csv stringa big csv string2".length() + 3, i);
-		Assert.assertNull(pool.getFile(0, 3));
+		Assert.assertNull(pool.getFile(0, 3))conf.isReadFileByFile = true;;
+	}
+	
+	@Test
+	public void should_read_static_file() throws IOException, CsvBangException, URISyntaxException{
+		URL dir = getClass().getResource("/csvfilename");
+		File f = new File(dir.toURI());
+		
+		
+		final CsvBangConfiguration conf = new CsvBangConfiguration();
+		conf.isReadFileByFile = true;
+		
+		final CsvFilePool pool = CsvFilePoolFactory.createPoolForReading(conf, null, 
+				new FileName(f.getAbsolutePath()+ "/file%n.csv", null));
+		Assert.assertNotNull(pool);
+		Assert.assertTrue(pool instanceof OneByOneCsvFilePool);
+		Assert.assertEquals(3, pool.getAllFiles().size());
 	}
 }
