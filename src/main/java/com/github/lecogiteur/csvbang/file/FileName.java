@@ -44,7 +44,16 @@ import com.github.lecogiteur.csvbang.util.CsvBangDateFormat;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 /**
- * Manage filename
+ * <p>Manage file name. Can insert the file number or date. You define an absolute path, relative path or just file name</p>
+ * <p>
+ * List of pattern
+ * <ul>
+ * 	<li>%n : the number file. Start to 1</li>
+ * 	<li>%d : date format</li>
+ * 	<li>* :  Zero or multiple characters (only use for reading files in case of defining a source path directory. In case of writing it replaces this joker by an empty string)</li>
+ * </ul>
+ * </p>
+ * 
  * @author Tony EMMA
  * @version 1.0.0
  * @since 0.1.0

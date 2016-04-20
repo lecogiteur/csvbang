@@ -179,19 +179,27 @@ public class CsvFilePoolFactoryTest {
 	}
 
 	@Test
-	public void nullReadPoolTest() throws CsvBangException{
+	public void nullReadPoolTest(){
 		final CsvBangConfiguration conf = new CsvBangConfiguration();
-		
-		final CsvFilePool pool1 = CsvFilePoolFactory.createPoolForReading(conf, null, null);
-		Assert.assertNull(pool1);
-		
-		final CsvFilePool pool2 = CsvFilePoolFactory.createPoolForReading(conf, new ArrayList<File>(), null);
-		Assert.assertNull(pool2);
-		
+
+		try {
+			CsvFilePoolFactory.createPoolForReading(conf, null, null);
+			Assert.fail();
+		} catch (CsvBangException e) {
+		}
+
+		try {
+			CsvFilePoolFactory.createPoolForReading(conf, new ArrayList<File>(), null);
+			Assert.fail();
+		} catch (CsvBangException e) {
+		}
+
 		ArrayList<File> files = new ArrayList<File>();
 		files.add(new File("notExist.csv"));
-		final CsvFilePool pool3 = CsvFilePoolFactory.createPoolForReading(conf, files, null);
-		Assert.assertNull(pool3);
+		try {
+			CsvFilePoolFactory.createPoolForReading(conf, files, null);
+		} catch (CsvBangException e) {
+		}
 	}
 	
 	@Test
@@ -324,5 +332,37 @@ public class CsvFilePoolFactoryTest {
 		Assert.assertNotNull(pool);
 		Assert.assertTrue(pool instanceof OneByOneCsvFilePool);
 		Assert.assertEquals(3, pool.getAllFiles().size());
+	}
+	
+	@Test
+	public void should_read_static_filein_CSV_configuration() throws IOException, CsvBangException, URISyntaxException{
+		URL dir = getClass().getResource("/csvfilename");
+		File f = new File(dir.toURI());
+		
+		
+		final CsvBangConfiguration conf = new CsvBangConfiguration();
+		conf.isReadFileByFile = true;
+		conf.fileName = new FileName(f.getAbsolutePath()+ "/file%n.csv", null);
+		
+		final CsvFilePool pool = CsvFilePoolFactory.createPoolForReading(conf, null, null);
+		Assert.assertNotNull(pool);
+		Assert.assertTrue(pool instanceof OneByOneCsvFilePool);
+		Assert.assertEquals(3, pool.getAllFiles().size());
+	}
+	
+
+	
+	@Test
+	public void should_throw_exception_when_no_file_to_read() throws IOException, URISyntaxException{
+		final CsvBangConfiguration conf = new CsvBangConfiguration();
+		conf.isReadFileByFile = true;
+		conf.fileName = null;
+		
+		try {
+			CsvFilePoolFactory.createPoolForReading(conf, null, null);
+			Assert.fail();
+		} catch (CsvBangException e) {
+			Assert.assertTrue(true);
+		}
 	}
 }
