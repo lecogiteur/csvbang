@@ -166,8 +166,6 @@ public @interface CsvFile {
 	 */
 	boolean readSubFolders() default IConstantsCsvBang.DEFAULT_READING_SUB_FOLDER;
 	
-	//TODO register for write
-	
 	/**
 	 * True if you want register all threads which are open and write/read. When close the action we verify if all threads is terminated.
 	 * The default value is {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_REGISTER_THREAD}

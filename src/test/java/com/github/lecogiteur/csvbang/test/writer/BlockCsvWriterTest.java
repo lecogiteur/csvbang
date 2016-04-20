@@ -43,6 +43,8 @@ import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.BlockCsvWriterBean;
 import com.github.lecogiteur.csvbang.writer.BlockCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
+import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
+import com.github.lecogiteur.csvbang.writer.SimpleCsvWriter;
 
 /**
  * @author Tony EMMA
@@ -126,7 +128,8 @@ public class BlockCsvWriterTest {
 		
 		CsvWriter<BlockCsvWriterBean> writer = factory.createCsvWriter(BlockCsvWriterBean.class, folder);
 		Assert.assertNotNull(writer);
-		Assert.assertTrue(writer instanceof BlockCsvWriter);
+		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
+		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof BlockCsvWriter);
 		
 		Writer<BlockCsvWriterBean> w1 = new Writer<BlockCsvWriterBean>(writer, 20, 10000, 
 				new BlockCsvWriterBean[]{new BlockCsvWriterBean("name1W1-toto"), 
@@ -220,7 +223,8 @@ public class BlockCsvWriterTest {
 		
 		CsvWriter<BlockCsvWriterBean> writer = factory.createCsvWriter(BlockCsvWriterBean.class, folder);
 		Assert.assertNotNull(writer);
-		Assert.assertTrue(writer instanceof BlockCsvWriter);
+		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
+		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof BlockCsvWriter);
 		
 		Writer<BlockCsvWriterBean> w1 = new Writer<BlockCsvWriterBean>(writer, 20, 10000, 
 				new BlockCsvWriterBean[]{new BlockCsvWriterBean("name1W1-toto"), 

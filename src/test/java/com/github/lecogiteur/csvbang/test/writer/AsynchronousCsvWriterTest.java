@@ -22,7 +22,9 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousCsvWriterBean;
 import com.github.lecogiteur.csvbang.writer.AsynchronousCsvWriter;
+import com.github.lecogiteur.csvbang.writer.BlockCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
+import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class AsynchronousCsvWriterTest {
@@ -93,7 +95,8 @@ public class AsynchronousCsvWriterTest {
 		
 		CsvWriter<AsynchronousCsvWriterBean> writer = factory.createCsvWriter(AsynchronousCsvWriterBean.class, folder);
 		Assert.assertNotNull(writer);
-		Assert.assertTrue(writer instanceof AsynchronousCsvWriter);
+		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
+		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof AsynchronousCsvWriter);
 		Calendar c3 = Calendar.getInstance();
 		String f3 = format.format(c3.getTime());
 		

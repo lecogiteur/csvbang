@@ -170,7 +170,6 @@ public class CsvBangConfiguration {
 	 * Start string for comment
 	 * @since 0.1.0
 	 */
-	//TODO ne semble utilisé nulle part.
 	public String startComment = "";
 	
 	/**
@@ -206,8 +205,6 @@ public class CsvBangConfiguration {
 	 * @since 0.0.1
 	 */
 	public FileName fileName;
-	
-	//TODO faire la factory pour la lecture
 	
 	/**
 	 * 

@@ -27,7 +27,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
@@ -78,12 +77,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	protected final CsvBangConfiguration conf;
-	
-	/**
-	 * Register thread which open and write in order to verify if thread are closed before closing file.
-	 * @since 1.0.0
-	 */
-	protected final ConcurrentHashMap<Integer, Thread> registeredThreads;
 
 	/**
 	 * Line size
@@ -116,12 +109,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 		
 		delimiterLength = this.conf.delimiter.length();
 		defaultLineSize = 20 * this.conf.fields.size();
-		
-		if (conf.isRegisterThread){
-			registeredThreads = new ConcurrentHashMap<Integer, Thread>();
-		}else{
-			registeredThreads = null;
-		}
 	}
 	
 	
@@ -131,8 +118,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	public void open() throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
-		
 		final Collection<CsvFileContext> files = filePool.getAllFiles();
 		
 		if (CsvbangUti.isCollectionNotEmpty(files)){
@@ -194,7 +179,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	public void write(final T line) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		if (line == null){
 			return;
 		}
@@ -207,7 +191,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 * @since 0.0.1
 	 */
 	public void write(final T[] lines) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		if (lines == null || lines.length == 0){
 			return;
 		}
@@ -222,7 +205,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void write(final Collection<T> lines) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		internalWrite(lines, false);
 	}
 
@@ -233,7 +215,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void comment(final Comment comment) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		internalWrite(Collections.singleton(comment), true);
 	}
 
@@ -244,7 +225,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void comment(final T line) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		if (line == null){
 			return;
 		}
@@ -258,7 +238,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void comment(final T[] lines) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		if (lines == null || lines.length > 0){
 			return;
 		}
@@ -272,7 +251,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void comment(final Collection<T> lines) throws CsvBangException, CsvBangCloseException {
-		registerCurrentThread();
 		internalWrite(lines, true);
 	}
 	
@@ -283,15 +261,13 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	@Override
 	public void close() throws IOException {
-		isClose = isAllRegisteredThreadAreTeminated();
-		if (isClose){
-			final Collection<CsvFileContext> files = filePool.getAllFiles();
-			if (CsvbangUti.isCollectionNotEmpty(files)){
-				for (final CsvFileContext file:files){
-					file.close();
-				}
+		final Collection<CsvFileContext> files = filePool.getAllFiles();
+		if (CsvbangUti.isCollectionNotEmpty(files)){
+			for (final CsvFileContext file:files){
+				file.close();
 			}
 		}
+		isClose = true;
 	}
 
 	/**
@@ -325,34 +301,6 @@ public abstract class AbstractWriter<T> implements CsvWriter<T>{
 	 */
 	protected StringBuilder generateLine(final Object line, final boolean isComment) throws CsvBangException{
 		return isComment?writeComment(line):writeLine(line);
-	}
-	
-	/**
-	 * Register the current thread
-	 * @since 1.0.0
-	 * @see #registeredThreads
-	 */
-	protected void registerCurrentThread(){
-		if (registeredThreads != null && !registeredThreads.containsKey(Thread.currentThread().hashCode())){
-			registeredThreads.put(Thread.currentThread().hashCode(), Thread.currentThread());
-		}
-	}
-	
-	/**
-	 * Verify if all thread which are registered, are terminated
-	 * @return True if all thread is registered
-	 * @since 1.0.0
-	 * @see #registeredThreads
-	 */
-	protected boolean isAllRegisteredThreadAreTeminated(){
-		if (registeredThreads != null){
-			for (final Thread t:registeredThreads.values()){
-				if (t.isAlive() && !Thread.currentThread().equals(t)){
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 	
 	/**
