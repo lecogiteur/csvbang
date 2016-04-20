@@ -17,7 +17,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
+import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousBlockCsvWriterBean;
 import com.github.lecogiteur.csvbang.writer.AsynchronousBlockCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
@@ -78,7 +78,7 @@ public class AsynchronousBlockCsvWriterTest {
 	
 	@Test
 	public void simpleWrite() throws CsvBangException, IOException{
-		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.writer");
+		FactoryCsvbang factory = new FactoryCsvbang("com.github.lecogiteur.csvbang.test.bean.writer");
 		File folder = testFolder.newFolder();
 		System.out.println("Folder: " + folder.getAbsolutePath());
 		

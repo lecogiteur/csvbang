@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
+import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.BeanCsv;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 
@@ -46,21 +46,21 @@ public class FactoryCsvWriterTest {
 	
 	@Test
 	public void nullInitFactory() throws CsvBangException{
-		FactoryCsvWriter factory = new FactoryCsvWriter();
+		FactoryCsvbang factory = new FactoryCsvbang();
 		factory.add((Class<?>)null);
 		factory.add((Collection<Class<?>>)null);
 		factory.addPackage(null);
 		CsvWriter<BeanCsv> writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 		
-		factory = new FactoryCsvWriter((String)null);
+		factory = new FactoryCsvbang((String)null);
 		factory.add((Class<?>)null);
 		factory.add((Collection<Class<?>>)null);
 		factory.addPackage(null);
 		writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 		
-		factory = new FactoryCsvWriter((Collection<Class<?>>)null);
+		factory = new FactoryCsvbang((Collection<Class<?>>)null);
 		factory.add((Class<?>)null);
 		factory.add((Collection<Class<?>>)null);
 		factory.addPackage(null);
@@ -70,29 +70,29 @@ public class FactoryCsvWriterTest {
 	
 	@Test
 	public void classFactory() throws CsvBangException{
-		FactoryCsvWriter factory = new FactoryCsvWriter();
+		FactoryCsvbang factory = new FactoryCsvbang();
 		factory.add(BeanCsv.class);
 		CsvWriter<BeanCsv> writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 		
-		factory = new FactoryCsvWriter();
+		factory = new FactoryCsvbang();
 		factory.add(new HashSet<Class<?>>(Collections.singleton(BeanCsv.class)));
 		writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 		
-		factory = new FactoryCsvWriter(new HashSet<Class<?>>(Collections.singleton(BeanCsv.class)));
+		factory = new FactoryCsvbang(new HashSet<Class<?>>(Collections.singleton(BeanCsv.class)));
 		writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 	}
 	
 	@Test
 	public void packageFactory() throws CsvBangException{
-		FactoryCsvWriter factory = new FactoryCsvWriter();
+		FactoryCsvbang factory = new FactoryCsvbang();
 		factory.addPackage("com.github.lecogiteur.csvbang.test.bean");
 		CsvWriter<BeanCsv> writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 		
-		factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean");
+		factory = new FactoryCsvbang("com.github.lecogiteur.csvbang.test.bean");
 		writer = factory.createCsvWriter(BeanCsv.class);
 		Assert.assertNotNull(writer);
 	}

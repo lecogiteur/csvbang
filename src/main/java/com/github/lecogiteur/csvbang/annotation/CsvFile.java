@@ -53,7 +53,7 @@ public @interface CsvFile {
 	
 	/**
 	 * True if you want to write file asynchronously. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_ASYNCHRONOUS_WRITE}.
-	 * <p>You can define the number of thread dedicate to write file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * <p>You can define the number of thread dedicate to write file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvbang}. 
 	 * By default the number of thread is the number of processor divide by 3.
 	 * If you create several files in the same time, the thread will be share for each files.</p>
 	 * @return True if you want to write asynchronously 
@@ -63,7 +63,7 @@ public @interface CsvFile {
 	
 	/**
 	 * True if you want to read file asynchronously. By default {@value com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_ASYNCHRONOUS_READ}.
-	 * <p>You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * <p>You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvbang}. 
 	 * By default the number of thread is the number of processor divide by 3.
 	 * If you read several files in the same time, the thread will be share for each files.</p>
 	 * @return True if you want to write asynchronously 
@@ -88,7 +88,7 @@ public @interface CsvFile {
 	 * </p>
 	 * </p>
 	 * @return the file name
-	 * @see com.github.lecogiteur.csvbang.factory.FactoryCsvWriter
+	 * @see com.github.lecogiteur.csvbang.factory.FactoryCsvbang
 	 * @see datePattern of CsvFile annotation
 	 * @since 0.1.0
 	 */

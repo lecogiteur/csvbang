@@ -77,7 +77,7 @@ public interface IConstantsCsvBang {
 	//TODO revoir les commentaires FactoryWrite après avoir vue la génération des action
 	/**
 	 * True if you want to write file asynchronously. 
-	 * You can define the number of thread dedicate to write file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * You can define the number of thread dedicate to write file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvbang}. 
 	 * By default the number of processor divide by 3.
 	 * If you create several files in the same time, the thread will be share for each files.
 	 * @since 0.0.1
@@ -86,7 +86,7 @@ public interface IConstantsCsvBang {
 	
 	/**
 	 * True if you want to read file asynchronously. 
-	 * You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvWriter}. 
+	 * You can define the number of thread dedicate to read file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvbang}. 
 	 * By default the number of processor divide by 3.
 	 * If you read several files in the same time, the thread will be share for each files.
 	 * @since 1.0.0

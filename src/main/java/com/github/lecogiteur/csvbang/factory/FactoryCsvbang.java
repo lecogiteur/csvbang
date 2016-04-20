@@ -1,5 +1,5 @@
 /**
- *  com.github.lecogiteur.csvbang.factory.FactoryCsvWriter
+ *  com.github.lecogiteur.csvbang.factory.FactoryCsvbang
  * 
  *  Copyright (C) 2013  Tony EMMA
  *
@@ -32,8 +32,12 @@ import java.util.regex.Pattern;
 import com.github.lecogiteur.csvbang.annotation.CsvType;
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.file.FileName;
 import com.github.lecogiteur.csvbang.pool.CsvbangExecutorService;
 import com.github.lecogiteur.csvbang.pool.CsvbangThreadPoolExecutor;
+import com.github.lecogiteur.csvbang.reader.AsynchronousCsvReader;
+import com.github.lecogiteur.csvbang.reader.CsvReader;
+import com.github.lecogiteur.csvbang.reader.SimpleCsvReader;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.ReflectionUti;
@@ -45,52 +49,52 @@ import com.github.lecogiteur.csvbang.writer.SimpleCsvWriter;
 
 
 /**
- * <p>Factory which generates CSV write. This factory manages a list of class (CSV bean) and their configuration.</p>
+ * <p>Factory which generates CSV writer or reader. This factory manages a list of class (CSV bean) and their configuration.</p>
  * <p>
- * The factory creates a writer in function of configuration. Writers are thread-safe and can manage different strategies of multi-threading.
+ * The factory creates a writer/reader in function of configuration. Writers/Readers are thread-safe and can manage different strategies of multi-threading.
  * In fact, it exists two strategies of multi-threading:
  * <ul>
  * 	<li>parallelism</li>
  *  <li>distributed</li>
  * </ul> 
- * The factory selects the best writer in function your strategy. 
+ * The factory selects the best writer/reader in function your strategy. 
  * </p>
  * @author Tony EMMA
- * @version 0.0.1
+ * @version 1.0.0
  */
-public class FactoryCsvWriter {
+public class FactoryCsvbang {
 
 	/**
 	 * Pattern in order to split a list of package
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	private static final Pattern PACKAGE_SEPARATOR = Pattern.compile("\\s*,\\s*");
 	
 	/**
 	 * Number of thread used for all asynchronous writer
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	private int numberOfWriterThread = Math.max(1, Math.round(Runtime.getRuntime().availableProcessors() / 3));
 	
 	/**
-	 * Service which manages writing Thread. 
-	 * @since 0.0.1
+	 * Service which manages Thread. 
+	 * @since 1.0.0
 	 */
-	private CsvbangExecutorService executorWriterService;
+	private CsvbangExecutorService executorService;
 
 
 	/**
 	 * List of CSV bean with their configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	private final Map<Class<?>, CsvBangConfiguration> configurations = new HashMap<Class<?>, CsvBangConfiguration>();
 	
 	/**
 	 * Default constructor. In this case the configuration of CSV class is loaded in lazy mode.
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
-	public FactoryCsvWriter(){
-		executorWriterService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
+	public FactoryCsvbang(){
+		executorService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
 	}
 
 
@@ -98,20 +102,20 @@ public class FactoryCsvWriter {
 	 * Constructor
 	 * @param clazzs list of class to parse. This class must be annotated with {@link CsvType}
 	 * @throws CsvBangException if we cannot load a CSV bean configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
-	public FactoryCsvWriter (final Collection<Class<?>> clazzs) throws CsvBangException{
+	public FactoryCsvbang (final Collection<Class<?>> clazzs) throws CsvBangException{
 		loadConfigurations(clazzs);
-		executorWriterService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
+		executorService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
 	}
 
 	/**
 	 * Constructor
 	 * @param sPkg list of package separated by comma which contains annotated classes with {@link CsvType}
 	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
-	public FactoryCsvWriter (final String sPkg) throws CsvBangException{
+	public FactoryCsvbang (final String sPkg) throws CsvBangException{
 		if (CsvbangUti.isStringNotBlank(sPkg)){
 			final String[] pkgs = PACKAGE_SEPARATOR.split(sPkg);
 			if (pkgs != null){
@@ -121,19 +125,19 @@ public class FactoryCsvWriter {
 				}
 			}
 		}
-		executorWriterService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
+		executorService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
 	}
 	
 	/**
-	 * Set the number of thread in order to write files. Used only if you want to write asynchronous. 
+	 * Set the number of thread in order to write/read files. Used only if you want to write/read asynchronous. 
 	 * By default the number of processor divide by 3. Be careful. if set this value during CSV generation you loose all information.
 	 * This method reset all processes. 
 	 * @param number number of thread
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	public void setNumberOfWriterThread(int number){
 		this.numberOfWriterThread = number;
-		executorWriterService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
+		executorService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
 	}
 	
 	/**
@@ -142,7 +146,7 @@ public class FactoryCsvWriter {
 	 * @param clazz bean CSV annotated with {@link CsvType}
 	 * @return the CSV writer
 	 * @throws CsvBangException if an error occurred
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz) throws CsvBangException{
 		CsvBangConfiguration conf = configurations.get(clazz);
@@ -157,13 +161,13 @@ public class FactoryCsvWriter {
 		}
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf, executorWriterService);
+				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf, executorService);
 			}
 			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf);
 		}
 		
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf, executorWriterService);
+			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf, executorService);
 		}
 
 		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, (File)null, null, null), conf);
@@ -176,7 +180,7 @@ public class FactoryCsvWriter {
 	 * @param destination path of file  for destination
 	 * @return the CSV writer
 	 * @throws CsvBangException if an error occurred
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination) throws CsvBangException{
 		CsvBangConfiguration conf = configurations.get(clazz);
@@ -191,13 +195,13 @@ public class FactoryCsvWriter {
 		}
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
+				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorService);
 			}
 			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 		}
 		
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
+			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorService);
 		}
 
 		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
@@ -210,7 +214,7 @@ public class FactoryCsvWriter {
 	 * @param destination path of file  for destination
 	 * @return the CSV writer
 	 * @throws CsvBangException if an error occurred
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination) throws CsvBangException{
 		CsvBangConfiguration conf = configurations.get(clazz);
@@ -226,23 +230,136 @@ public class FactoryCsvWriter {
 
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
+				return new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorService);
 			}
 			return new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 		}
 		
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorWriterService);
+			return new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf, executorService);
 		}
 
 		return new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, destination, null, null), conf);
 	}
 
 	/**
+	 * Create a reader
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param paths list of directories and file to read. No warranty on order when we processed files. can be null.
+	 * @param filename the file name to use in order to retrieve file to read. Can be null. If null, we use the {@link com.github.lecogiteur.csvbang.annotation.CsvFile#fileName()} definition. 
+	 * @return the CSV reader
+	 * @throws CsvBangException if no file to read or if no configuration has been found for CSV bean.
+	 * @since 1.0.0
+	 */
+	public <T> CsvReader<T> createCsvReader(final Class<T> clazz, final Collection<File> paths, final FileName filename) throws CsvBangException{
+		CsvBangConfiguration conf = configurations.get(clazz);
+
+		if (conf == null){
+			//lazy mode
+			add(clazz);
+			conf = configurations.get(clazz);
+			if (conf == null){
+				throw new CsvBangException(String.format("No configuration available for class [%s]. Verify if this class has an annotation CsvType.", clazz));
+			}
+		}
+		if (conf.isAsynchronousWrite){
+			return new AsynchronousCsvReader<T>(conf, clazz, 
+					CsvFilePoolFactory.createPoolForReading(conf, paths, filename), executorService);
+		}
+
+		return new SimpleCsvReader<T>(conf, clazz, CsvFilePoolFactory.createPoolForReading(conf, paths, filename));
+	}
+	
+	/**
+	 * Create a reader
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param paths list of directories and file to read. No warranty on order when we processed files. can't be null.
+	 * @return the CSV reader
+	 * @throws CsvBangException if no file to read or if no configuration has been found for CSV bean.
+	 * @since 1.0.0
+	 */
+	public <T> CsvReader<T> createCsvReader(final Class<T> clazz, final Collection<File> paths) throws CsvBangException{
+		CsvBangConfiguration conf = configurations.get(clazz);
+
+		if (conf == null){
+			//lazy mode
+			add(clazz);
+			conf = configurations.get(clazz);
+			if (conf == null){
+				throw new CsvBangException(String.format("No configuration available for class [%s]. Verify if this class has an annotation CsvType.", clazz));
+			}
+		}
+		if (conf.isAsynchronousWrite){
+			return new AsynchronousCsvReader<T>(conf, clazz, 
+					CsvFilePoolFactory.createPoolForReading(conf, paths, null), executorService);
+		}
+
+		return new SimpleCsvReader<T>(conf, clazz, CsvFilePoolFactory.createPoolForReading(conf, paths, null));
+	}
+	
+	/**
+	 * Create a reader
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param filename the file name to use in order to retrieve file to read. Can be null. If null, we use the {@link com.github.lecogiteur.csvbang.annotation.CsvFile#fileName()} definition. 
+	 * @return the CSV reader
+	 * @throws CsvBangException if no file to read or if no configuration has been found for CSV bean.
+	 * @since 1.0.0
+	 */
+	public <T> CsvReader<T> createCsvReader(final Class<T> clazz, final FileName filename) throws CsvBangException{
+		CsvBangConfiguration conf = configurations.get(clazz);
+
+		if (conf == null){
+			//lazy mode
+			add(clazz);
+			conf = configurations.get(clazz);
+			if (conf == null){
+				throw new CsvBangException(String.format("No configuration available for class [%s]. Verify if this class has an annotation CsvType.", clazz));
+			}
+		}
+		if (conf.isAsynchronousWrite){
+			return new AsynchronousCsvReader<T>(conf, clazz, 
+					CsvFilePoolFactory.createPoolForReading(conf, null, filename), executorService);
+		}
+
+		return new SimpleCsvReader<T>(conf, clazz, CsvFilePoolFactory.createPoolForReading(conf, null, filename));
+	}
+	
+	/**
+	 * Create a reader. The CSV bean must defined filename attribute in CsvFile annotation (without <b>*</b> pattern).
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @return the CSV reader
+	 * @throws CsvBangException if no file to read or if no configuration has been found for CSV bean.
+	 * @since 1.0.0
+	 */
+	public <T> CsvReader<T> createCsvReader(final Class<T> clazz) throws CsvBangException{
+		CsvBangConfiguration conf = configurations.get(clazz);
+
+		if (conf == null){
+			//lazy mode
+			add(clazz);
+			conf = configurations.get(clazz);
+			if (conf == null){
+				throw new CsvBangException(String.format("No configuration available for class [%s]. Verify if this class has an annotation CsvType.", clazz));
+			}
+		}
+		if (conf.isAsynchronousWrite){
+			return new AsynchronousCsvReader<T>(conf, clazz, 
+					CsvFilePoolFactory.createPoolForReading(conf, null, null), executorService);
+		}
+
+		return new SimpleCsvReader<T>(conf, clazz, CsvFilePoolFactory.createPoolForReading(conf, null, null));
+	}
+	
+	
+	/**
 	 * Add a class to the factory
 	 * @param clazz class
 	 * @throws CsvBangException if we cannot load a CSV bean configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	public void add(final Class<?> clazz) throws CsvBangException{
 		if (clazz != null){
@@ -256,7 +373,7 @@ public class FactoryCsvWriter {
 	 * Add a list of class to factory
 	 * @param clazzs classes
 	 * @throws CsvBangException if we cannot load a CSV bean configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	public void add(final Collection<Class<?>> clazzs) throws CsvBangException {
 		loadConfigurations(clazzs);
@@ -266,7 +383,7 @@ public class FactoryCsvWriter {
 	 * Add package to the factory. The package must be separated be a comma.
 	 * @param packages packages
 	 * @throws CsvBangException if we cannot scan package or load a CSV bean configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	public void addPackage(final String packages) throws CsvBangException {
 		if(CsvbangUti.isStringNotBlank(packages)){
@@ -285,7 +402,7 @@ public class FactoryCsvWriter {
 	 * @param clazzs a list of class
 	 * 
 	 * @throws CsvBangException if we cannot load configuration
-	 * @since 0.0.1
+	 * @since 1.0.0
 	 */
 	private void loadConfigurations(final Collection<Class<?>> clazzs) throws CsvBangException {
 		if (clazzs != null){

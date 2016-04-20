@@ -19,7 +19,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
+import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousCsvWriterBean;
 import com.github.lecogiteur.csvbang.writer.AsynchronousCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
@@ -85,7 +85,7 @@ public class AsynchronousCsvWriterTest {
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 		Calendar c1 = Calendar.getInstance();
 		String f1 = format.format(c1.getTime());
-		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.writer");
+		FactoryCsvbang factory = new FactoryCsvbang("com.github.lecogiteur.csvbang.test.bean.writer");
 		File folder = testFolder.newFolder();
 		System.out.println("Folder: " + folder.getAbsolutePath());
 		Calendar c2 = Calendar.getInstance();

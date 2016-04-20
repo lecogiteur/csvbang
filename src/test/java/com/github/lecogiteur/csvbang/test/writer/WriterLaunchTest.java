@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-import com.github.lecogiteur.csvbang.factory.FactoryCsvWriter;
+import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.BeanChildCsv;
 import com.github.lecogiteur.csvbang.test.util.WriterThread;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
@@ -49,7 +49,7 @@ public class WriterLaunchTest {
 	@Test
 	@Ignore
 	public void testSimpleWriter() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
-		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.*");
+		FactoryCsvbang factory = new FactoryCsvbang("com.github.lecogiteur.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony.csv");
 		
 		
@@ -113,7 +113,7 @@ public class WriterLaunchTest {
 	@Test
 	@Ignore
 	public void testSimpleWriter2() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
-		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.*");
+		FactoryCsvbang factory = new FactoryCsvbang("com.github.lecogiteur.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony2.csv");
 		
 		List<BeanChildCsv> list = new ArrayList<BeanChildCsv>(10000);
@@ -150,7 +150,7 @@ public class WriterLaunchTest {
 	@Test
 	@Ignore
 	public void testSimpleWriter3() throws ClassNotFoundException, IOException, IntrospectionException, CsvBangException, IllegalAccessException, InstantiationException{
-		FactoryCsvWriter factory = new FactoryCsvWriter("com.github.lecogiteur.csvbang.test.bean.*");
+		FactoryCsvbang factory = new FactoryCsvbang("com.github.lecogiteur.csvbang.test.bean.*");
 		final CsvWriter<BeanChildCsv> writer = factory.createCsvWriter(BeanChildCsv.class, "/tmp/tony3.csv");
 		
 		
