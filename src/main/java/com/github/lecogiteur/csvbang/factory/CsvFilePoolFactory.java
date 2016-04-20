@@ -128,8 +128,10 @@ public class CsvFilePoolFactory {
 			}
 		}else if (theFileName != null){
 			File file = new File(theFileName.getNewFileName(false));
-			while (file.exists()){
+			File previousFile = null;
+			while (file.exists() && !file.equals(previousFile) ){
 				files.add(file);
+				previousFile = file;
 				file = new File(theFileName.getNewFileName(false));
 			}
 		}

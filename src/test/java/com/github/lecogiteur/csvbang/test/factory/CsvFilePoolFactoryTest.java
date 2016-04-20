@@ -335,7 +335,7 @@ public class CsvFilePoolFactoryTest {
 	}
 	
 	@Test
-	public void should_read_static_filein_CSV_configuration() throws IOException, CsvBangException, URISyntaxException{
+	public void should_read_dynamic_file_in_CSV_configuration() throws IOException, CsvBangException, URISyntaxException{
 		URL dir = getClass().getResource("/csvfilename");
 		File f = new File(dir.toURI());
 		
@@ -348,6 +348,22 @@ public class CsvFilePoolFactoryTest {
 		Assert.assertNotNull(pool);
 		Assert.assertTrue(pool instanceof OneByOneCsvFilePool);
 		Assert.assertEquals(3, pool.getAllFiles().size());
+	}
+	
+	@Test
+	public void should_read_static_file_in_CSV_configuration() throws IOException, CsvBangException, URISyntaxException{
+		URL dir = getClass().getResource("/csvfilename");
+		File f = new File(dir.toURI());
+		
+		
+		final CsvBangConfiguration conf = new CsvBangConfiguration();
+		conf.isReadFileByFile = true;
+		conf.fileName = new FileName(f.getAbsolutePath()+ "/file.csv", null);
+		
+		final CsvFilePool pool = CsvFilePoolFactory.createPoolForReading(conf, null, null);
+		Assert.assertNotNull(pool);
+		Assert.assertTrue(pool instanceof SimpleCsvFilePool);
+		Assert.assertEquals(1, pool.getAllFiles().size());
 	}
 	
 
