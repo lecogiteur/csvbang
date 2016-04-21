@@ -20,7 +20,6 @@ import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousBlockCsvWriterBean;
 import com.github.lecogiteur.csvbang.writer.AsynchronousBlockCsvWriter;
-import com.github.lecogiteur.csvbang.writer.AsynchronousCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
 

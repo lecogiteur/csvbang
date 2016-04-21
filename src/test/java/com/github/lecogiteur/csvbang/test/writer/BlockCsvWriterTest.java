@@ -41,6 +41,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.BlockCsvWriterBean;
+import com.github.lecogiteur.csvbang.test.bean.writer.BlockCsvWriterWithoutRegisterThreadBean;
 import com.github.lecogiteur.csvbang.writer.BlockCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
@@ -126,21 +127,20 @@ public class BlockCsvWriterTest {
 		File folder = testFolder.newFolder();
 		System.out.println("Folder: " + folder.getAbsolutePath());
 		
-		CsvWriter<BlockCsvWriterBean> writer = factory.createCsvWriter(BlockCsvWriterBean.class, folder);
+		CsvWriter<BlockCsvWriterWithoutRegisterThreadBean> writer = factory.createCsvWriter(BlockCsvWriterWithoutRegisterThreadBean.class, folder);
 		Assert.assertNotNull(writer);
-		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
-		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof BlockCsvWriter);
+		Assert.assertTrue(writer instanceof BlockCsvWriter);
 		
-		Writer<BlockCsvWriterBean> w1 = new Writer<BlockCsvWriterBean>(writer, 20, 10000, 
-				new BlockCsvWriterBean[]{new BlockCsvWriterBean("name1W1-toto"), 
-				new BlockCsvWriterBean("name2W1-tu")}, false);
+		Writer<BlockCsvWriterWithoutRegisterThreadBean> w1 = new Writer<BlockCsvWriterWithoutRegisterThreadBean>(writer, 20, 10000, 
+				new BlockCsvWriterWithoutRegisterThreadBean[]{new BlockCsvWriterWithoutRegisterThreadBean("name1W1-toto"), 
+				new BlockCsvWriterWithoutRegisterThreadBean("name2W1-tu")}, false);
 		
-		Writer<BlockCsvWriterBean> w2 = new Writer<BlockCsvWriterBean>(writer, 10, 5000, 
-				new BlockCsvWriterBean[]{new BlockCsvWriterBean("name1W2;csa"), 
-				new BlockCsvWriterBean("name2W2;tututi"), new BlockCsvWriterBean("name3W2;oioi")}, false);
+		Writer<BlockCsvWriterWithoutRegisterThreadBean> w2 = new Writer<BlockCsvWriterWithoutRegisterThreadBean>(writer, 10, 5000, 
+				new BlockCsvWriterWithoutRegisterThreadBean[]{new BlockCsvWriterWithoutRegisterThreadBean("name1W2;csa"), 
+				new BlockCsvWriterWithoutRegisterThreadBean("name2W2;tututi"), new BlockCsvWriterWithoutRegisterThreadBean("name3W2;oioi")}, false);
 		
-		Writer<BlockCsvWriterBean> w3 = new Writer<BlockCsvWriterBean>(writer, 0, 15000, 
-				new BlockCsvWriterBean[]{new BlockCsvWriterBean("name1W3/2")}, false);
+		Writer<BlockCsvWriterWithoutRegisterThreadBean> w3 = new Writer<BlockCsvWriterWithoutRegisterThreadBean>(writer, 0, 15000, 
+				new BlockCsvWriterWithoutRegisterThreadBean[]{new BlockCsvWriterWithoutRegisterThreadBean("name1W3/2")}, false);
 		
 		Thread t1 = new Thread(w1);
 		Thread t2 = new Thread(w2);

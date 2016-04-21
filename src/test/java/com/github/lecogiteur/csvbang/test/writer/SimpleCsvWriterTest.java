@@ -21,6 +21,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.CommentWriterBean;
+import com.github.lecogiteur.csvbang.test.bean.writer.CommentWriterBeanWithoutRegisterThread;
 import com.github.lecogiteur.csvbang.test.bean.writer.SimpleWriterBean;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
@@ -105,21 +106,20 @@ public class SimpleCsvWriterTest {
 		File folder = testFolder.newFolder();
 		System.out.println("Folder: " + folder.getAbsolutePath());
 		
-		CsvWriter<CommentWriterBean> writer = factory.createCsvWriter(CommentWriterBean.class, folder);
+		CsvWriter<CommentWriterBeanWithoutRegisterThread> writer = factory.createCsvWriter(CommentWriterBeanWithoutRegisterThread.class, folder);
 		Assert.assertNotNull(writer);
-		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
-		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof SimpleCsvWriter);
+		Assert.assertTrue(writer instanceof SimpleCsvWriter);
 		
-		Writer<CommentWriterBean> w1 = new Writer<CommentWriterBean>(writer, 20, 10000, 
-				new CommentWriterBean[]{new CommentWriterBean(1, "name1W1", c, 18.3333), 
-				new CommentWriterBean(2, "name2W1", null, 23.54)}, false);
+		Writer<CommentWriterBeanWithoutRegisterThread> w1 = new Writer<CommentWriterBeanWithoutRegisterThread>(writer, 20, 10000, 
+				new CommentWriterBeanWithoutRegisterThread[]{new CommentWriterBeanWithoutRegisterThread(1, "name1W1", c, 18.3333), 
+				new CommentWriterBeanWithoutRegisterThread(2, "name2W1", null, 23.54)}, false);
 		
-		Writer<CommentWriterBean> w2 = new Writer<CommentWriterBean>(writer, 10, 5000, 
-				new CommentWriterBean[]{new CommentWriterBean(3, "name1W2", c, 34434.34345356), 
-				new CommentWriterBean(4, "name2W2", c, 64.4534), new CommentWriterBean(5, "name3W2", c, 128.0)}, false);
+		Writer<CommentWriterBeanWithoutRegisterThread> w2 = new Writer<CommentWriterBeanWithoutRegisterThread>(writer, 10, 5000, 
+				new CommentWriterBeanWithoutRegisterThread[]{new CommentWriterBeanWithoutRegisterThread(3, "name1W2", c, 34434.34345356), 
+				new CommentWriterBeanWithoutRegisterThread(4, "name2W2", c, 64.4534), new CommentWriterBeanWithoutRegisterThread(5, "name3W2", c, 128.0)}, false);
 		
-		Writer<CommentWriterBean> w3 = new Writer<CommentWriterBean>(writer, 0, 15000, 
-				new CommentWriterBean[]{new CommentWriterBean(6, "name1W3", c, 1348.3333)}, false);
+		Writer<CommentWriterBeanWithoutRegisterThread> w3 = new Writer<CommentWriterBeanWithoutRegisterThread>(writer, 0, 15000, 
+				new CommentWriterBeanWithoutRegisterThread[]{new CommentWriterBeanWithoutRegisterThread(6, "name1W3", c, 1348.3333)}, false);
 		
 		Thread t1 = new Thread(w1);
 		Thread t2 = new Thread(w2);

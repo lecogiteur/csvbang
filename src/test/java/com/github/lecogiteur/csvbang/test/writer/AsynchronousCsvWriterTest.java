@@ -77,7 +77,7 @@ public class AsynchronousCsvWriterTest {
 		}
 		
 		
-	}
+	}//TODO registerThread pour les reader
 
 	@Rule
 	public TemporaryFolder testFolder = new TemporaryFolder();
