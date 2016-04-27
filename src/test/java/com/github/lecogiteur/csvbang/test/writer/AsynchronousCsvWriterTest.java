@@ -21,8 +21,8 @@ import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousCsvWriterBean;
+import com.github.lecogiteur.csvbang.util.AbstractDelegatedWithRegisterThread;
 import com.github.lecogiteur.csvbang.writer.AsynchronousCsvWriter;
-import com.github.lecogiteur.csvbang.writer.BlockCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
 
@@ -77,7 +77,7 @@ public class AsynchronousCsvWriterTest {
 		}
 		
 		
-	}//TODO registerThread pour les reader
+	}//TODO test unitaire pour les reader
 
 	@Rule
 	public TemporaryFolder testFolder = new TemporaryFolder();
@@ -96,7 +96,7 @@ public class AsynchronousCsvWriterTest {
 		CsvWriter<AsynchronousCsvWriterBean> writer = factory.createCsvWriter(AsynchronousCsvWriterBean.class, folder);
 		Assert.assertNotNull(writer);
 		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
-		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof AsynchronousCsvWriter);
+		Assert.assertTrue(((AbstractDelegatedWithRegisterThread)writer).getActor() instanceof AsynchronousCsvWriter);
 		Calendar c3 = Calendar.getInstance();
 		String f3 = format.format(c3.getTime());
 		

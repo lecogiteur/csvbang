@@ -19,6 +19,7 @@ import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.AsynchronousBlockCsvWriterBean;
+import com.github.lecogiteur.csvbang.util.AbstractDelegatedWithRegisterThread;
 import com.github.lecogiteur.csvbang.writer.AsynchronousBlockCsvWriter;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
@@ -86,7 +87,7 @@ public class AsynchronousBlockCsvWriterTest {
 		CsvWriter<AsynchronousBlockCsvWriterBean> writer = factory.createCsvWriter(AsynchronousBlockCsvWriterBean.class, folder);
 		Assert.assertNotNull(writer);
 		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
-		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof AsynchronousBlockCsvWriter);
+		Assert.assertTrue(((AbstractDelegatedWithRegisterThread)writer).getActor() instanceof AsynchronousBlockCsvWriter);
 		
 		Writer<AsynchronousBlockCsvWriterBean> w1 = new Writer<AsynchronousBlockCsvWriterBean>(writer, 20, 10000, 
 				new AsynchronousBlockCsvWriterBean[]{new AsynchronousBlockCsvWriterBean("name1W1", "value1W1"), 

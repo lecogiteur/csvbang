@@ -37,6 +37,7 @@ import com.github.lecogiteur.csvbang.pool.CsvbangExecutorService;
 import com.github.lecogiteur.csvbang.pool.CsvbangThreadPoolExecutor;
 import com.github.lecogiteur.csvbang.reader.AsynchronousCsvReader;
 import com.github.lecogiteur.csvbang.reader.CsvReader;
+import com.github.lecogiteur.csvbang.reader.DelegatedReaderWithThreadRegister;
 import com.github.lecogiteur.csvbang.reader.SimpleCsvReader;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
@@ -222,6 +223,20 @@ public class FactoryCsvbang {
 		}
 		return writer;
 	}
+	
+	/**
+	 * Verify if we must register thread in order to close CSV reader when all threads are closed.
+	 * @param conf the CSV configuration
+	 * @param reader the reader to delegate
+	 * @return the reader implementation
+	 * @since 1.0.0
+	 */
+	private <T> CsvReader<T> mustRegisterThread(final CsvBangConfiguration conf, final CsvReader<T> reader){
+		if (conf.isRegisterThread){
+			return new DelegatedReaderWithThreadRegister<T>(reader);
+		}
+		return reader;
+	}
 
 	/**
 	 * Create a reader
@@ -245,11 +260,12 @@ public class FactoryCsvbang {
 			}
 		}
 		if (conf.isAsynchronousWrite){
-			return new AsynchronousCsvReader<T>(conf, clazz, 
-					CsvFilePoolFactory.createPoolForReading(conf, paths, filename), executorService);
+			return mustRegisterThread(conf, new AsynchronousCsvReader<T>(conf, clazz, 
+					CsvFilePoolFactory.createPoolForReading(conf, paths, filename), executorService));
 		}
 
-		return new SimpleCsvReader<T>(conf, clazz, CsvFilePoolFactory.createPoolForReading(conf, paths, filename));
+		return mustRegisterThread(conf, 
+				new SimpleCsvReader<T>(conf, clazz, CsvFilePoolFactory.createPoolForReading(conf, paths, filename)));
 	}
 	
 	/**

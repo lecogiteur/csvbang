@@ -22,13 +22,12 @@
  */
 package com.github.lecogiteur.csvbang.writer;
 
-import java.io.IOException;
+import java.io.Closeable;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
+import com.github.lecogiteur.csvbang.util.AbstractDelegatedWithRegisterThread;
 import com.github.lecogiteur.csvbang.util.Comment;
 
 /**
@@ -37,24 +36,13 @@ import com.github.lecogiteur.csvbang.util.Comment;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class DelegatedWriterWithRegisterThreadCsvWriter<T> implements CsvWriter<T> {
+public class DelegatedWriterWithRegisterThreadCsvWriter<T> extends AbstractDelegatedWithRegisterThread implements CsvWriter<T> {
 	
 	/**
 	 * Csv Writer to delegate
 	 * @since 1.0.0
 	 */
 	private final CsvWriter<T> writer;
-	
-	/**
-	 * Register thread which open and write in order to verify if thread are closed before closing file.
-	 * @since 1.0.0
-	 */
-	protected final ConcurrentSkipListSet<Thread> registeredThreads = new ConcurrentSkipListSet<Thread>(new Comparator<Thread>() {
-		@Override
-		public int compare(Thread o1, Thread o2) {
-			return o1.equals(o2)?0:1;
-		}
-	});
 	
 	
 
@@ -67,15 +55,8 @@ public class DelegatedWriterWithRegisterThreadCsvWriter<T> implements CsvWriter<
 		super();
 		this.writer = writer;
 	}
-
-	/**
-	 * Get the writer
-	 * @return the writer
-	 * @since 1.0.0
-	 */
-	public CsvWriter<T> getWriter() {
-		return writer;
-	}
+	
+	
 
 	/**
 	 * {@inheritDoc}
@@ -209,21 +190,7 @@ public class DelegatedWriterWithRegisterThreadCsvWriter<T> implements CsvWriter<
 		registerCurrentThread();
 		writer.comment(lines);
 	}
-
-
-
-	/**
-	 * {@inheritDoc}
-	 * @throws IOException
-	 * @see com.github.lecogiteur.csvbang.writer.CsvWriter#close()
-	 * @since 1.0.0
-	 */
-	public void close() throws IOException {
-		if (isAllRegisteredThreadAreTeminated()){
-			writer.close();
-		}
-	}
-
+	
 
 
 	/**
@@ -263,28 +230,12 @@ public class DelegatedWriterWithRegisterThreadCsvWriter<T> implements CsvWriter<
 	}
 
 	/**
-	 * Register the current thread
+	 * {@inheritDoc}
+	 * @see com.github.lecogiteur.csvbang.util.AbstractDelegatedWithRegisterThread#getActor()
 	 * @since 1.0.0
-	 * @see #registeredThreads
 	 */
-	private void registerCurrentThread(){
-		registeredThreads.add(Thread.currentThread());
-	}
-
-	/**
-	 * Verify if all thread which are registered, are terminated
-	 * @return True if all thread is registered
-	 * @since 1.0.0
-	 * @see #registeredThreads
-	 */
-	private boolean isAllRegisteredThreadAreTeminated(){
-		if (registeredThreads != null){
-			for (final Thread t:registeredThreads){
-				if (t.isAlive() && !Thread.currentThread().equals(t)){
-					return false;
-				}
-			}
-		}
-		return true;
+	@Override
+	public Closeable getActor() {
+		return writer;
 	}
 }

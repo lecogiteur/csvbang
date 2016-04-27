@@ -23,6 +23,7 @@ import com.github.lecogiteur.csvbang.factory.FactoryCsvbang;
 import com.github.lecogiteur.csvbang.test.bean.writer.CommentWriterBean;
 import com.github.lecogiteur.csvbang.test.bean.writer.CommentWriterBeanWithoutRegisterThread;
 import com.github.lecogiteur.csvbang.test.bean.writer.SimpleWriterBean;
+import com.github.lecogiteur.csvbang.util.AbstractDelegatedWithRegisterThread;
 import com.github.lecogiteur.csvbang.writer.CsvWriter;
 import com.github.lecogiteur.csvbang.writer.DelegatedWriterWithRegisterThreadCsvWriter;
 import com.github.lecogiteur.csvbang.writer.SimpleCsvWriter;
@@ -208,7 +209,7 @@ public class SimpleCsvWriterTest {
 		CsvWriter<CommentWriterBean> writer = factory.createCsvWriter(CommentWriterBean.class, folder);
 		Assert.assertNotNull(writer);
 		Assert.assertTrue(writer instanceof DelegatedWriterWithRegisterThreadCsvWriter);
-		Assert.assertTrue(((DelegatedWriterWithRegisterThreadCsvWriter)writer).getWriter() instanceof SimpleCsvWriter);
+		Assert.assertTrue(((AbstractDelegatedWithRegisterThread)writer).getActor() instanceof SimpleCsvWriter);
 		
 		Writer<CommentWriterBean> w1 = new Writer<CommentWriterBean>(writer, 20, 10000, 
 				new CommentWriterBean[]{new CommentWriterBean(1, "name1W1", c, 18.3333), 
