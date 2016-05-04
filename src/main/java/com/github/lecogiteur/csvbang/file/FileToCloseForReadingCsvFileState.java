@@ -85,11 +85,11 @@ public class FileToCloseForReadingCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read()
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read(int)
 	 * @since 1.0.0
 	 */
 	@Override
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException {
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException  {
 		throw new CsvBangCloseException(String.format("The file [%s] is being closed. We can't read file.", csvFile.getFile().getAbsolutePath()));
 	}
 

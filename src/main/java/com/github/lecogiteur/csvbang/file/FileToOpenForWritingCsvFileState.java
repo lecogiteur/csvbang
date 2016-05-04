@@ -209,11 +209,11 @@ public class FileToOpenForWritingCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read()
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read(int)
 	 * @since 1.0.0
 	 */
 	@Override
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException {
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException {
 		throw new CsvBangException("You cannot read a file with a writer !");
 	}
 

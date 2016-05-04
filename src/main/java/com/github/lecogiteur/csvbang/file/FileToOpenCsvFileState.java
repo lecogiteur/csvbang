@@ -111,15 +111,15 @@ public class FileToOpenCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read()
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read(int)
 	 * @since 1.0.0
 	 */
 	@Override
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException {
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException  {
 		if (!isInit.getAndSet(true)){
 			context.setCsvFileState(internState);
 		}
-		return context.read();
+		return context.read(nbByteToRead);
 	}
 
 	/**

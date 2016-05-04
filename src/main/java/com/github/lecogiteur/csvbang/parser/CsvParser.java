@@ -136,6 +136,9 @@ public class CsvParser<T> {
 	 * @since 1.0.0
 	 */
 	public CsvParsingResult<T> parse(final CsvDatagram csvDatagram) throws CsvBangException{
+		if (csvDatagram == null){
+			return null;
+		}
 		return internalParse(csvDatagram.getContent(), new ArrayDeque<CsvGrammarAction<?>>(10), 
 				csvDatagram.getOffset(), csvDatagram.getFileHashCode(), csvDatagram.isLastDatagram(), csvDatagram.isLastDatagram());
 	}

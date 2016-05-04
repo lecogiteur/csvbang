@@ -56,12 +56,13 @@ public interface CsvFileState{
 	
 	/**
 	 * Read a part of CSV file
+	 * @param nbByteToRead number of byte to read
 	 * @return A part of content of file
 	 * @throws CsvBangException if a problem has occurred during the reading
 	 * @throws CsvBangCloseException if the file is close and you want to read content
 	 * @since 1.0.0
 	 */
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException;
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException;
 	
 	/**
 	 * Close a file

@@ -59,13 +59,6 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 	private final CsvFileContext context;
 	
 	/**
-	 * Size of byte array used to read file
-	 * @since 1.0.0
-	 * @see {@link com.github.lecogiteur.csvbang.util.IConstantsCsvBang#DEFAULT_BYTE_BLOCK_SIZE}
-	 */
-	private final int sizeBlock;
-	
-	/**
 	 * The current offset in file
 	 * @since 1.0.0
 	 */
@@ -94,27 +87,26 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 	 * @since 0.1.0
 	 */
 	private final AtomicInteger workers = new AtomicInteger(0);
-	
+	private final FileToCloseForReadingCsvFileState closeState;
 	
 
 	/**
 	 * Constructor
 	 * @param csvFile The CSV file
 	 * @param context The file context
-	 * @param sizeBlock Size of byte array used to read file
 	 * @param fileHashCode Id of file
 	 * @param totalBytes Number of byte to read in file
 	 * @since 1.0.0
 	 */
-	public FileReadyForReadingCsvFileState(CsvFileWrapper csvFile, CsvFileContext context, int sizeBlock,
+	public FileReadyForReadingCsvFileState(CsvFileWrapper csvFile, CsvFileContext context,
 			int fileHashCode, long totalBytes) {
 		super();
 		this.csvFile = csvFile;
 		this.context = context;
-		this.sizeBlock = sizeBlock;
 		this.fileHashCode = fileHashCode;
 		this.totalBytes = totalBytes;
 		this.channel = csvFile.getInputStream().getChannel();
+		this.closeState = new FileToCloseForReadingCsvFileState(csvFile);
 	}
 
 	/**
@@ -141,34 +133,35 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read()
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read(int)
 	 * @since 1.0.0
 	 */
 	@Override
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException {
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException {
 		if (!isNotClosed){
 			throw new CsvBangCloseException(String.format("The file [%s] is being closed. We can't read file.", csvFile.getFile().getAbsolutePath()));
 		}
 		workers.incrementAndGet();
 		//get current offset
-		final long offset = currentOffset.getAndAdd(sizeBlock);
-		boolean isLastDatagram = offset + sizeBlock == totalBytes;
+		final long offset = currentOffset.getAndAdd(nbByteToRead);
+		boolean isLastDatagram = offset + nbByteToRead == totalBytes;
 		
 		if (offset >= totalBytes){
-			//We have read all file, we can close it
+		/*	//We have read all file, we can close it
 			try {
 				close(null);
 			} catch (CsvBangIOException e) {
 				throw new CsvBangCloseException(String.format("A problem has occurred when we closed the file [%s].", csvFile.getFile().getAbsolutePath()), e);
 			}finally{
 				workers.decrementAndGet();
-			}
+			}*/
+			workers.decrementAndGet();
 			return null;
 		}
 		
 		//calculate size of allocation with length of file
-		int size = sizeBlock;
-		if (offset + sizeBlock > totalBytes){
+		int size = nbByteToRead;
+		if (offset + nbByteToRead > totalBytes){
 			size = (int) (totalBytes - offset); //in fact, size < sizeBlock, so it's a int
 			isLastDatagram = true;
 		}
@@ -195,6 +188,11 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 	@Override
 	public void close(Object customFooter) throws CsvBangException,
 			CsvBangIOException {
+	/*	if (!isNotClosed){
+			//already closed
+			return;
+		}
+		isNotClosed = false;*/
 		if (!isNotClosed){
 			//already closed
 			return;
@@ -221,7 +219,14 @@ public class FileReadyForReadingCsvFileState implements CsvFileState {
 			state.close(customFooter);
 			context.setCsvFileState(state);
 		}
-		
+		/*
+		try {
+			channel.close();
+		} catch (IOException e) {
+			new CsvBangIOException(String.format("Can't close file [%s].", csvFile.getFile().getAbsolutePath()), e);
+		}
+		closeState.close(customFooter);
+		context.setCsvFileState(closeState);*/
 	}
 
 	/**

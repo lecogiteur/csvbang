@@ -103,13 +103,14 @@ public class CsvFileContext implements Channel{
 	
 	/**
 	 * Read a art of CSV file
+	 * @param nbByteToRead number of byte to read
 	 * @return part of CSV file
 	 * @throws CsvBangException if a problem has occurred when we read the file
 	 * @throws CsvBangCloseException if file is closed
 	 * @since 1.0.0
 	 */
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException{
-		return fileState.read();
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException {
+		return fileState.read(nbByteToRead);
 	}
 	
 	/**

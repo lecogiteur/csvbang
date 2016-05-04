@@ -38,6 +38,7 @@ import com.github.lecogiteur.csvbang.parser.CsvParsingResult;
 import com.github.lecogiteur.csvbang.pool.CsvFilePool;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 import com.github.lecogiteur.csvbang.util.FutureStringResult;
+import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
 /**
  * @author Tony EMMA
@@ -112,6 +113,12 @@ public abstract class AbstractCsvReader<T> implements CsvReader<T> {
 		if (isOpen){
 			return;
 		}
+
+		if (isClose){
+			//the reader is closed !
+			throw new CsvBangCloseException("The reader is closed; we can't open it");
+		}
+		
 		final Collection<CsvFileContext> files = pool.getAllFiles();
 		if (CsvbangUti.isCollectionNotEmpty(files)){
 			for (final CsvFileContext file:files){
@@ -144,14 +151,20 @@ public abstract class AbstractCsvReader<T> implements CsvReader<T> {
 	public Collection<T> readBlock() throws CsvBangException,
 			CsvBangCloseException {
 		
+		if (!isOpen){
+			//open reader
+			open();
+		}
+		
+		if (isClose){
+			//the reader is closed !
+			throw new CsvBangCloseException("The reader is closed; we can't read");
+		}
+		
 		while (true){
 			//get a file in pool
-			final CsvFileContext file = pool.getFile(0, 0);
+			final CsvFileContext file = pool.getFile(-1, IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE);
 			
-			if (isClose){
-				//the reader is closed !
-				throw new CsvBangCloseException("The reader is closed; we can't read");
-			}
 			
 			if (file == null){
 				//no file
@@ -169,19 +182,12 @@ public abstract class AbstractCsvReader<T> implements CsvReader<T> {
 					return beans;
 				}
 				
-				try {
-					//no result of parsing, we can close reader
-					close();
-				} catch (IOException e) {
-					throw new CsvBangCloseException("All files in pool have been read. We try to close but a problem has occurred.", e);
-				}
 				//no result to return
 				return null;
 			}
 
-
 			//parse a part of file
-			final CsvParsingResult<T> result = parser.parse(file.read());
+			final CsvParsingResult<T> result = parser.parse(file.read(IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE));
 
 			final Collection<T> beans = processResultParser(result);
 			if (beans != null){

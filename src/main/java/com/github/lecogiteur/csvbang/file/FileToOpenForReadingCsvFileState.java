@@ -99,15 +99,6 @@ public class FileToOpenForReadingCsvFileState implements CsvFileState {
 
 		//get the size of file
 		final long totalByte = file.length();
-		
-		//size of byte block 
-		int sizeBlock = IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE;
-		
-		//TODO faire des constantes
-		if (totalByte < (long) IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE){
-			//it's a little file
-			sizeBlock = ((int)totalByte) / 4;
-		}
 
 		if (!isOpen){
 
@@ -136,7 +127,7 @@ public class FileToOpenForReadingCsvFileState implements CsvFileState {
 					}
 				}else{
 					//the file is open now we can change state
-					context.setCsvFileState(new FileReadyForReadingCsvFileState(csvFile, context, sizeBlock, 
+					context.setCsvFileState(new FileReadyForReadingCsvFileState(csvFile, context, 
 							csvFile.getFile().hashCode(), totalByte));
 				}
 				
@@ -159,13 +150,13 @@ public class FileToOpenForReadingCsvFileState implements CsvFileState {
 
 	/**
 	 * {@inheritDoc}
-	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read()
+	 * @see com.github.lecogiteur.csvbang.file.CsvFileState#read(int)
 	 * @since 1.0.0
 	 */
 	@Override
-	public CsvDatagram read() throws CsvBangException, CsvBangCloseException {
+	public CsvDatagram read(final int nbByteToRead) throws CsvBangException, CsvBangCloseException {
 		open(null);
-		return context.read();
+		return context.read(nbByteToRead);
 	}
 
 	/**
