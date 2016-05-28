@@ -19,3 +19,7 @@ javacore.*
 #maven
 target/*
 /target
+
+#idea
+.idea/
+csvbang.iml
