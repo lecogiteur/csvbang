@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangCloseException;
@@ -88,7 +89,13 @@ public abstract class AbstractCsvReader<T> implements CsvReader<T> {
 	 * @since 1.0.0
 	 */
 	private final FutureManager comments = new FutureManager();
-	
+
+	/**
+	 * The number of current readers
+	 * @since 1.0.0
+	 */
+	private final AtomicInteger nbReaders = new AtomicInteger(0);
+
 	/**
 	 * Constructor
 	 * @param conf the Csvbang configuration for the clazz
@@ -165,8 +172,11 @@ public abstract class AbstractCsvReader<T> implements CsvReader<T> {
 			//get a file in pool
 			final CsvFileContext file = pool.getFile(-1, IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE);
 			
-			
+			nbReaders.incrementAndGet();
+
 			if (file == null){
+				nbReaders.decrementAndGet();
+				while(nbReaders.get() > 0);
 				//no file
 				//flush the parser
 				final Collection<CsvParsingResult<T>> results = parser.flush();
@@ -186,13 +196,18 @@ public abstract class AbstractCsvReader<T> implements CsvReader<T> {
 				return null;
 			}
 
-			//parse a part of file
-			final CsvParsingResult<T> result = parser.parse(file.read(IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE));
-
-			final Collection<T> beans = processResultParser(result);
-			if (beans != null){
-				return beans;
-				//else continue
+			try {
+				//parse a part of file
+				final CsvParsingResult<T> result = parser.parse(file.read(IConstantsCsvBang.DEFAULT_BYTE_BLOCK_SIZE));
+				nbReaders.decrementAndGet();
+				final Collection<T> beans = processResultParser(result);
+				if (beans != null) {
+					return beans;
+					//else continue
+				}
+			} catch(CsvBangException e){
+				nbReaders.set(0);
+				throw e;
 			}
 		}
 	}

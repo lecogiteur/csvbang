@@ -114,7 +114,7 @@ public class SimpleReaderTest {
 							ids.remove(r.getId());
 							counter++;
 						}
-						System.out.println(ids.size());
+						//System.out.println(ids.size());
 					}else{
 						break;
 					}
@@ -152,22 +152,27 @@ public class SimpleReaderTest {
 		ReaderCsv r1 = new ReaderCsv(reader, false, ids);
 		ReaderCsv r2 = new ReaderCsv(reader, false, ids);
 		ReaderCsv r3 = new ReaderCsv(reader, false, ids);
+		ReaderCsv r4 = new ReaderCsv(reader, false, ids);
+
 		Thread t1 = new Thread(r1);
 		Thread t2 = new Thread(r2);
 		Thread t3 = new Thread(r3);
+		Thread t4 = new Thread(r4);
 		
 		t1.start();
 		t2.start();
 		t3.start();
-		while (t1.isAlive() || t2.isAlive() || t3.isAlive());
+		t4.start();
+		while (t1.isAlive() || t2.isAlive() || t3.isAlive() || t4.isAlive());
 		
 		reader.close();
 		
 		Assert.assertFalse(r1.hasError);
 		Assert.assertFalse(r2.hasError);
 		Assert.assertFalse(r3.hasError);
-		
-		Assert.assertEquals(2000, r1.counter + r2.counter + r3.counter);
+		Assert.assertFalse(r4.hasError);
+
+		Assert.assertEquals(2000, r1.counter + r2.counter + r3.counter + r4.counter);
 		Assert.assertEquals(0, ids.size());
 		
 	}
