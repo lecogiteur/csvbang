@@ -53,7 +53,7 @@ public class AsynchronousReaderTest {
 
         final FactoryCsvbang factory = new FactoryCsvbang();
         final CsvReader<Read1> reader = factory.createCsvReader(Read1.class, new FileName(file.getAbsolutePath(), null));
-        factory.setNumberOfWriterThread(5);
+        factory.setNumberOfThread(5);
         ConcurrentSkipListSet<Integer> ids = new ConcurrentSkipListSet<Integer>();
         for (int i=1; i<2001; i++){
             ids.add(i);

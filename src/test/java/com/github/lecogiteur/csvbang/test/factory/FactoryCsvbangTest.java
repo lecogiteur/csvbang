@@ -45,7 +45,6 @@ import com.github.lecogiteur.csvbang.writer.CsvWriter;
  * @version 0.1.0
  * @since 0.1.0
  */
-//TODO crer des reader et des writer qui surcharge les classe pour la gestion de registerThread
 @RunWith(BlockJUnit4ClassRunner.class)
 public class FactoryCsvbangTest {
 	private File file;

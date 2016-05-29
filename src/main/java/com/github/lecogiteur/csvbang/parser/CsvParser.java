@@ -415,7 +415,6 @@ public class CsvParser<T> {
 	 * @throws CsvBangException if a problem has occurred when CsvBang parsed the CSV file
 	 * @since 1.0.0
 	 */
-	//TODO vérifier les AtomicBoolean getAndSet équivaut plutot à setAndGet
 	public Collection<CsvParsingResult<T>> flush() throws CsvBangException{
 		int request = requestOfFlush.incrementAndGet();
 		if (request > 1){
@@ -753,7 +752,6 @@ public class CsvParser<T> {
 						if (!isEnd && j < keywordTable[i].length){
 							//Not enough content in order to know if it's a keyword
 							//so unknowing content
-							//TODO faire une constante pour l'action undefined
 							return keywordTable.length;
 						}
 						//it's keyword

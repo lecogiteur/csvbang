@@ -177,5 +177,4 @@ public class FactoryObjectGenerator<T> implements ObjectGenerator<T> {
 		}
 		return null;
 	}
-	//TODO dans l'annotation csvfield il faut ajouter les factory et factory method
 }

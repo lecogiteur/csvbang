@@ -74,7 +74,7 @@ public interface IConstantsCsvBang {
 	 * @since 0.0.1
 	 */
 	public static final int DEFAULT_BLOCKING_SIZE = -1;
-	//TODO revoir les commentaires FactoryWrite après avoir vue la génération des action
+
 	/**
 	 * True if you want to write file asynchronously. 
 	 * You can define the number of thread dedicate to write file in {@link com.github.lecogiteur.csvbang.factory.FactoryCsvbang}. 

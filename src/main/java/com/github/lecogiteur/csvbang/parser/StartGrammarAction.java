@@ -122,7 +122,6 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	 * @throws CsvBangException When we add buffer to action
 	 * @since 1.0.0
 	 */
-	//TODO enlever le paramètre action
 	private void initDelegatedAction(final CsvGrammarActionType actionType, final CsvGrammarAction<?> action) throws CsvBangException{
 		final CsvGrammarActionType type = action == null?actionType:action.getType();
 		//set the delegated action

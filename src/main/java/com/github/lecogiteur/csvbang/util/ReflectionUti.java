@@ -439,8 +439,6 @@ public class ReflectionUti {
 		return null;
 	}
 	
-	//TODO faire des tests unitaires pour ByteStreamBuffer
-	
 	
 	/**
 	 * Retrieve the parameterized type of a generic type used in order to set a CSV bean
@@ -539,7 +537,6 @@ public class ReflectionUti {
 	 * @throws CsvBangException If a problem occurred during creation.
 	 * @since 1.0.0
 	 */
-	//TODO faire les tests unitaires pour cette méthode. Necessite la création des annotations factory et factory méthode
 	@SuppressWarnings("unchecked")
 	public static final <T> ObjectGenerator<T> createTypeGenerator(final Class<T> type, 
 			final Class<?> factory, final String factoryMethodName) throws CsvBangException{

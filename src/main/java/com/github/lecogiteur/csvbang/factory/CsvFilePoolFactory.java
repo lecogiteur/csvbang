@@ -44,7 +44,6 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
  * @since 0.1.0
  */
 public class CsvFilePoolFactory {
-	//TODO verifier si les customHeader et footer sont réellement nécessaire, il semble qu'il soient toujours initialisé à null.
 	
 	/**
 	 * Create a pool of file for a CSV bean
