@@ -53,21 +53,22 @@ import com.github.lecogiteur.csvbang.test.bean.reader.Read1;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class SimpleReaderTest {
 	
-	private class ReaderCsv implements Runnable{
+
+    public static class ReaderCsv implements Runnable{
 
 		private CsvReader<Read1> reader;
 		
 		private boolean mustClose = false;
 		
-		private boolean hasError = false;
-		
+		public boolean hasError = false;
+
 		private Calendar start;
 		
 		private Calendar end;
 		
 		private ConcurrentSkipListSet<Integer> ids;
 		
-		private int counter = 0;
+		public int counter = 0;
 		
 		/**
 		 * Constructor
