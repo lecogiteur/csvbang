@@ -137,7 +137,7 @@ public class FactoryCsvbang {
 	 * @param number number of thread
 	 * @since 1.0.0
 	 */
-	public void setNumberOfWriterThread(int number){
+	public void setNumberOfThread(int number){
 		this.numberOfWriterThread = number;
 		executorService = new CsvbangThreadPoolExecutor(numberOfWriterThread);
 	}
@@ -153,6 +153,20 @@ public class FactoryCsvbang {
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz) throws CsvBangException{
 		return createCsvWriter(clazz, (File)null);
 	}
+
+	/**
+	 * Create a writer
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param customHeader custom header
+	 * @param customFooter custom footer
+	 * @return the CSV writer
+	 * @throws CsvBangException if an error occurred
+	 * @since 1.0.0
+	 */
+	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final Object customHeader, final Object customFooter) throws CsvBangException{
+		return createCsvWriter(clazz, (File)null, customHeader, customFooter);
+	}
 	
 	/**
 	 * Create a writer
@@ -164,10 +178,25 @@ public class FactoryCsvbang {
 	 * @since 1.0.0
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination) throws CsvBangException{
+		return createCsvWriter(clazz, destination, null, null);
+	}
+
+	/**
+	 * Create a writer
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param destination path of file  for destination
+	 * @param customHeader custom header
+	 * @param customFooter custom footer
+	 * @return the CSV writer
+	 * @throws CsvBangException if an error occurred
+	 * @since 1.0.0
+	 */
+	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final String destination, final Object customHeader, final Object customFooter) throws CsvBangException{
 		if (CsvbangUti.isStringNotBlank(destination)){
-			return createCsvWriter(clazz, new File(destination));
+			return createCsvWriter(clazz, new File(destination), customHeader, customFooter);
 		}
-		return createCsvWriter(clazz, (File)null);
+		return createCsvWriter(clazz, (File)null, customHeader, customFooter);
 	}
 
 	/**
@@ -180,6 +209,21 @@ public class FactoryCsvbang {
 	 * @since 1.0.0
 	 */
 	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination) throws CsvBangException{
+		return createCsvWriter(clazz, destination, null, null);
+	}
+
+	/**
+	 * Create a writer
+	 * @param <T> bean CSV annotated with {@link CsvType}
+	 * @param clazz bean CSV annotated with {@link CsvType}
+	 * @param destination path of file  for destination
+	 * @param customHeader custom header
+	 * @param customFooter custom footer
+	 * @return the CSV writer
+	 * @throws CsvBangException if an error occurred
+	 * @since 1.0.0
+	 */
+	public <T> CsvWriter<T> createCsvWriter(final Class<T> clazz, final File destination, final Object customHeader, final Object customFooter) throws CsvBangException{
 		CsvBangConfiguration conf = configurations.get(clazz);
 
 		if (conf == null){
@@ -193,21 +237,21 @@ public class FactoryCsvbang {
 
 		if (0 < conf.blockSize){
 			if (conf.isAsynchronousWrite){
-				return mustRegisterThread(conf, new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, 
-						destination, null, null), 
+				return mustRegisterThread(conf, new AsynchronousBlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf,
+						destination, customHeader, customFooter),
 						conf, executorService));
 			}
-			return mustRegisterThread(conf, new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, 
-					destination, null, null), conf));
-		}
-		
-		if (conf.isAsynchronousWrite){
-			return mustRegisterThread(conf, new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, 
-					destination, null, null), conf, executorService));
+			return mustRegisterThread(conf, new BlockCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf,
+					destination, customHeader, customFooter), conf));
 		}
 
-		return mustRegisterThread(conf, new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf, 
-				destination, null, null), conf));
+		if (conf.isAsynchronousWrite){
+			return mustRegisterThread(conf, new AsynchronousCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf,
+					destination, customHeader, customFooter), conf, executorService));
+		}
+
+		return mustRegisterThread(conf, new SimpleCsvWriter<T>(CsvFilePoolFactory.createPoolForWriting(conf,
+				destination, customHeader, customFooter), conf));
 	}
 	
 	/**
