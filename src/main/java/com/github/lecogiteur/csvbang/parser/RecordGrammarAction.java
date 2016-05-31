@@ -290,7 +290,6 @@ public class RecordGrammarAction<T> extends AbstractGrammarAction<T> {
 	 * @since 1.0.0
 	 */
 	@Override
-	//TODO créer un paramètre pour désactiver la lecture des commentaires
 	public T execute() throws CsvBangException {
 		T bean = null;
 		boolean isNull = true;

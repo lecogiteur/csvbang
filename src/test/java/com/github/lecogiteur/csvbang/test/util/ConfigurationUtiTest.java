@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.lecogiteur.csvbang.test.bean.configuration.*;
+import com.github.lecogiteur.csvbang.test.exception.BeanWithCsvFieldOnPrivateMethod;
 import com.github.lecogiteur.csvbang.test.exception.BeanWithNoDefaultConstructor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -724,12 +725,18 @@ public class ConfigurationUtiTest {
 	}
 
 	@Test
-	public void should_throw_exception_when_bean_have_no_default_constructor(){
+	public void should_throw_exception_when_bean_has_no_default_constructor(){
 		try {
 			CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeanWithNoDefaultConstructor.class);
 		} catch (CsvBangException e) {
 			return;
 		}
 		Assert.fail();
+	}
+
+	@Test
+	public void should_throw_exception_when_bean_has_csv_field_on_private_method() throws CsvBangException {
+		CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeanWithCsvFieldOnPrivateMethod.class);
+		Assert.assertNull(conf);
 	}
 }

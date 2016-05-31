@@ -155,10 +155,13 @@ public class ConfigurationUti {
 					if (m != null){
 						getter = m;
 					}else{
-						LOGGER.warning(String.format("No way in order to access to %s in class %s. You must define a getter method or change the modifier of field.", f.getName(), finalClass));
+						LOGGER.warning(String.format("No way in order to access to %s in class %s. You must define a public getter method or change the modifier of field.", f.getName(), finalClass));
 						continue;
 					}
 				}
+			}else if (member instanceof Method && !Modifier.isPublic(((Method)getter).getModifiers())){
+				LOGGER.warning(String.format("No way in order to access to %s in class %s. You must define a public getter method or change the modifier of field.", ((Method)getter).getName(), finalClass));
+				continue;
 			}
 			
 			//retrieve conf

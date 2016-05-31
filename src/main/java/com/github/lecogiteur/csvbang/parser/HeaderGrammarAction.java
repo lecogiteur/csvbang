@@ -24,7 +24,6 @@ package com.github.lecogiteur.csvbang.parser;
 
 import com.github.lecogiteur.csvbang.configuration.CsvBangConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
-//TODO la taille du header doit être inférieur à la taille d'un datagram. Mettre une erreur lors de la création d'un reader.
 /**
  * Generate header of CSV file
  * @author Tony EMMA
