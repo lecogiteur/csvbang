@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangRuntimeException;
+import com.github.lecogiteur.csvbang.util.CsvBangNumberFormat;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 
@@ -49,7 +50,7 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 	 * @since 0.0.1
 	 * 
 	 */
-	private DecimalFormat format;
+	private CsvBangNumberFormat format;
 	
 	/**
 	 * Pattern of currency
@@ -82,9 +83,8 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 			locale = Locale.US;
 		}
 		
-		format = (DecimalFormat)DecimalFormat.getCurrencyInstance(locale);
+		format = new CsvBangNumberFormat(null, locale);
 		format.setCurrency(Currency.getInstance(locale));
-		format.setParseBigDecimal(true);
 		hasDecimal = true;
 		if (CsvbangUti.isStringNotBlank(pattern)){
 			String[] nb = ".".equals(pattern)?new String[]{"",""}:pattern.split("\\.");
@@ -165,7 +165,7 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 		if (o == null){
 			return defaultIfNull;
 		}
-		return format.format(o);
+		return format.get().format(o);
 	}
 
 	/**
@@ -184,9 +184,9 @@ public class CurrencyCsvFormatter implements CsvFormatter {
 		}
 		
 		try {
-			BigDecimal number = (BigDecimal) format.parse(value.trim());
+			BigDecimal number = (BigDecimal) format.get().parse(value.trim());
 			if (hasDecimal){
-				number = number.setScale(format.getMaximumFractionDigits(), RoundingMode.HALF_UP);
+				number = number.setScale(format.get().getMaximumFractionDigits(), RoundingMode.HALF_UP);
 			}
 			if (BigDecimal.class.equals(typeOfReturn)){
 				return number;

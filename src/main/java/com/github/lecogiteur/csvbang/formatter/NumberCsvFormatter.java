@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.lecogiteur.csvbang.exception.CsvBangRuntimeException;
+import com.github.lecogiteur.csvbang.util.CsvBangNumberFormat;
 import com.github.lecogiteur.csvbang.util.CsvbangUti;
 
 /**
@@ -46,7 +47,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 	 * Number format
 	 * @since 0.0.1
 	 */
-	private DecimalFormat format;
+	private CsvBangNumberFormat format;
 	
 	/**
 	 * the pattern of number
@@ -69,11 +70,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 		if (locale == null){
 			locale = Locale.US;
 		}
-		format = (DecimalFormat) DecimalFormat.getInstance(locale);
-		if (CsvbangUti.isStringNotBlank(pattern)){
-			format.applyPattern(pattern);
-		}
-		format.setParseBigDecimal(true);
+		format = new CsvBangNumberFormat(pattern, locale);
 	}
 
 	/**
@@ -104,7 +101,7 @@ public class NumberCsvFormatter implements CsvFormatter {
 		if (o == null){
 			return defaultIfNull;
 		}
-		return format.format(o);
+		return format.get().format(o);
 	}
 
 	/**
@@ -123,8 +120,8 @@ public class NumberCsvFormatter implements CsvFormatter {
 		}
 		
 		try {
-			BigDecimal number = (BigDecimal) format.parse(value.trim());
-			number = number.setScale(format.getMaximumFractionDigits(), RoundingMode.HALF_UP);
+			BigDecimal number = (BigDecimal) format.get().parse(value.trim());
+			number = number.setScale(format.get().getMaximumFractionDigits(), RoundingMode.HALF_UP);
 			
 			if (BigDecimal.class.equals(typeOfReturn)){
 				return number;
