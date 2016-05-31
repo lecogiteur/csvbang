@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-//TODO unit test
+
 /**
  * A future result of String type. Used in order to retrieve comment, header or footer. 
  * In order to read CSV file we use multiple thread. So we don't know when we can retrieve this elements.

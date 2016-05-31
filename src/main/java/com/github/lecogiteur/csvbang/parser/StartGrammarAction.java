@@ -80,7 +80,6 @@ public class StartGrammarAction<T> implements CsvGrammarAction<CsvGrammarAction<
 	 * Char for comment
 	 * @since 1.0.0
 	 */
-	//TODO verifier le charset conversion
 	private final byte[] commentChar;
 	
 	/**

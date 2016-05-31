@@ -634,7 +634,7 @@ public class CsvParserTest {
 	public void simpleQuoteFieldTest() throws CsvBangException{
 		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
 		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
-		final Collection<CsvDatagram> datagrams = generator("#a comment, two comments #i say: \"comment\"\n\"test\",\"18\",\"32.6\"", 0, 10, conf.charset);
+		final Collection<CsvDatagram> datagrams = generator("#a comment, two comments #i say: \"comment\"\n\"test,\n\",\"18\",\"32.6\"", 0, 10, conf.charset);
 		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
 		final List<MultipleFieldCsvParserBean> beans = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
 		
@@ -645,15 +645,53 @@ public class CsvParserTest {
 		for (String c:result.getComments()){
 			Assert.assertTrue("a comment, two comments #i say: \"comment\"".equals(c));
 		}
-		Assert.assertEquals("test", beans.get(0).getField1());
+		Assert.assertEquals("test,\n", beans.get(0).getField1());
 		Assert.assertEquals(new Integer(18), beans.get(0).getField2());
 		Assert.assertEquals(new Double(32.6), beans.get(0).getField3());
 	}
-	
-	//TODO test unitaire avec un charactère de start crecord, idem supprimer le caractère de fin de ligne du end record 
-	//TODO idem mettre un quote et désactiver le caractère de quote . Normalement le caractère doit apparraitre dans le contenu du champs
-	
-	//TODO tester un csv pourri
+
+
+	@Test
+	public void simpleNoQuoteFieldTest() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
+		conf.quote = null;
+		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#a comment, two comments #i say: \"comment\"\n\"test\",18,32.6", 0, 10, conf.charset);
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> beans = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
+
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals(1, result.getCsvBeans().size());
+		Assert.assertEquals(1, result.getComments().size());
+		for (String c:result.getComments()){
+			Assert.assertTrue("a comment, two comments #i say: \"comment\"".equals(c));
+		}
+		Assert.assertEquals("\"test\"", beans.get(0).getField1());
+		Assert.assertEquals(new Integer(18), beans.get(0).getField2());
+		Assert.assertEquals(new Double(32.6), beans.get(0).getField3());
+	}
+
+	@Test
+	public void should_read_empty_record() throws CsvBangException{
+		final CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(MultipleFieldCsvParserBean.class);
+		conf.quote = null;
+		final CsvParser<MultipleFieldCsvParserBean> parser = new CsvParser<MultipleFieldCsvParserBean>(MultipleFieldCsvParserBean.class, conf);
+		final Collection<CsvDatagram> datagrams = generator("#a comment, two comments #i say: \"comment\"\n\n\"test\",18,32.6", 0, 10, conf.charset);
+		final CsvParsingResult<MultipleFieldCsvParserBean> result = parse(datagrams, parser);
+		final List<MultipleFieldCsvParserBean> beans = new ArrayList<MultipleFieldCsvParserBean>(result.getCsvBeans());
+
+		Assert.assertNotNull(result.getCsvBeans());
+		Assert.assertNotNull(result.getComments());
+		Assert.assertEquals(1, result.getCsvBeans().size());
+		Assert.assertEquals(1, result.getComments().size());
+		for (String c:result.getComments()){
+			Assert.assertTrue("a comment, two comments #i say: \"comment\"".equals(c));
+		}
+		Assert.assertEquals("\"test\"", beans.get(0).getField1());
+		Assert.assertEquals(new Integer(18), beans.get(0).getField2());
+		Assert.assertEquals(new Double(32.6), beans.get(0).getField3());
+	}
 	
 	@Test
 	public void simpleQuoteField2Test() throws CsvBangException{
