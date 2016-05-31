@@ -70,8 +70,7 @@ public class CsvbangUtiTest {
 	@Test
 	public void isCollectionEmptyTest(){
 		Collection<String> c = new ArrayList<String>(1);
-		//TODO enlever les commentaires
-		//Assert.assertTrue("null collection is empty", CsvbangUti.isCollectionEmpty(null));
+		Assert.assertTrue("null collection is empty", CsvbangUti.isCollectionEmpty((List)null));
 		Assert.assertTrue("empty collection is empty", CsvbangUti.isCollectionEmpty(c));
 		
 		c.add("string");
@@ -81,8 +80,7 @@ public class CsvbangUtiTest {
 	@Test
 	public void isCollectionNotEmptyTest(){
 		Collection<String> c = new ArrayList<String>(1);
-		//TODO enlever les commentaires
-		//Assert.assertFalse("null collection is empty", CsvbangUti.isCollectionNotEmpty(null));
+		Assert.assertFalse("null collection is empty", CsvbangUti.isCollectionNotEmpty((List)null));
 		Assert.assertFalse("empty collection is empty", CsvbangUti.isCollectionNotEmpty(c));
 		
 		c.add("string");
