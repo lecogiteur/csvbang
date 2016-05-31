@@ -290,7 +290,6 @@ public class RecordGrammarAction<T> extends AbstractGrammarAction<T> {
 	 * @since 1.0.0
 	 */
 	@Override
-	//TODO vérifier que les beans CSV ont un constructeur par défaut
 	//TODO créer un paramètre pour désactiver la lecture des commentaires
 	public T execute() throws CsvBangException {
 		T bean = null;

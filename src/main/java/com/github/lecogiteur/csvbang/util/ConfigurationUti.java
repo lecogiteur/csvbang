@@ -331,7 +331,14 @@ public class ConfigurationUti {
 		if (ReflectionUti.getCsvTypeAnnotation(clazz.getAnnotations()) == null){
 			return null;
 		}
-		
+
+		//verify if this class has a default constructor
+		try {
+			clazz.getConstructor();
+		} catch (NoSuchMethodException e) {
+			throw new CsvBangException(String.format("This class [%s] must have a default constructor.", clazz), e);
+		}
+
 		//get parents
 		final List<Class<?>> parents = new ArrayList<Class<?>>();
 		Class<?> parent = clazz;

@@ -78,7 +78,6 @@ import com.github.lecogiteur.csvbang.util.CsvbangUti;
  * @version 1.0.0
  * @since 1.0.0
  */
-//TODO numericformat n'est pas thread safe utilisé un thread local
 @RunWith(BlockJUnit4ClassRunner.class)
 public class CsvParserTest {
 

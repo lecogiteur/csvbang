@@ -41,7 +41,13 @@ public class BlockCsvWriterBean {
 
 	@CsvField(position=1)
 	private String name;
-	
+
+
+
+	public BlockCsvWriterBean() {
+		super();
+	}
+
 	public BlockCsvWriterBean(String name) {
 		super();
 		this.name = name;

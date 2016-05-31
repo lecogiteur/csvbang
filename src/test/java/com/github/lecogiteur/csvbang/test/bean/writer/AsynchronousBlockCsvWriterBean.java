@@ -9,7 +9,12 @@ import com.github.lecogiteur.csvbang.annotation.CsvType;
 @CsvHeader(header=true)
 @CsvFile(asynchronousWriter=true, maxFileNumber=3, maxRecordByFile=18000, blocksize=1000, fileName="async-%n.csv")
 public class AsynchronousBlockCsvWriterBean {
-	
+
+
+	public AsynchronousBlockCsvWriterBean(){
+
+	}
+
 	/**
 	 * @param name
 	 * @param value

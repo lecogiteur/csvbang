@@ -32,6 +32,10 @@ import com.github.lecogiteur.csvbang.annotation.CsvFile;
 @CsvFile(registerThread=false, append=true, asynchronousWriter=false, blocksize=1000, maxFileNumber=3, writeFileByFile=false, maxRecordByFile=18000, fileName="block-%n.csv")
 public class BlockCsvWriterWithoutRegisterThreadBean extends BlockCsvWriterBean {
 
+	public BlockCsvWriterWithoutRegisterThreadBean(){
+
+	}
+
 	/**
 	 * Constructor
 	 * @param name

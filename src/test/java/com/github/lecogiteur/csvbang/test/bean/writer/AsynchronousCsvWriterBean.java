@@ -15,6 +15,10 @@ public class AsynchronousCsvWriterBean extends AsynchronousBlockCsvWriterBean{
 	@CsvFormat(type=TYPE_FORMAT.DATE, pattern="dd/MM/yyyy")
 	private Calendar date;
 
+	public AsynchronousCsvWriterBean(){
+
+	}
+
 	public AsynchronousCsvWriterBean(String name, String value, Calendar date) {
 		super(name, value);
 		this.date = date;

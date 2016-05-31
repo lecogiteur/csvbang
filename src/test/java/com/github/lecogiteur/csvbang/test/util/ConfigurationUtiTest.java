@@ -28,6 +28,8 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.lecogiteur.csvbang.test.bean.configuration.*;
+import com.github.lecogiteur.csvbang.test.exception.BeanWithNoDefaultConstructor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,14 +40,6 @@ import com.github.lecogiteur.csvbang.configuration.CsvFieldConfiguration;
 import com.github.lecogiteur.csvbang.exception.CsvBangException;
 import com.github.lecogiteur.csvbang.formatter.DateCsvFormatter;
 import com.github.lecogiteur.csvbang.formatter.Default;
-import com.github.lecogiteur.csvbang.test.bean.configuration.Child2SimpleConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.Child3SimpleConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.ChildSimpleConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.Final2ConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.Final3ConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.FinalConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.Simple3ConfigurationBean;
-import com.github.lecogiteur.csvbang.test.bean.configuration.SimpleConfigurationBean;
 import com.github.lecogiteur.csvbang.util.ConfigurationUti;
 import com.github.lecogiteur.csvbang.util.IConstantsCsvBang;
 
@@ -727,5 +721,15 @@ public class ConfigurationUtiTest {
 		Assert.assertTrue(e.format instanceof Default);
 		Assert.assertEquals("year", ((Member)e.getter).getName());
 		
+	}
+
+	@Test
+	public void should_throw_exception_when_bean_have_no_default_constructor(){
+		try {
+			CsvBangConfiguration conf = ConfigurationUti.loadCsvBangConfiguration(BeanWithNoDefaultConstructor.class);
+		} catch (CsvBangException e) {
+			return;
+		}
+		Assert.fail();
 	}
 }
