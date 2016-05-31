@@ -148,6 +148,9 @@ public class ConfigurationUti {
 			
 			//Retrieve getter of value
 			AnnotatedElement getter = member;
+			if (csvField != null && CsvbangUti.isStringNotBlank(csvField.customMethodNameGetter())){
+				getter = ReflectionUti.getMethod(finalClass, csvField.customMethodNameGetter());
+			}
 			if (member instanceof Field){
 				final Field f = (Field)member;
 				if (!Modifier.isPublic(f.getModifiers())){

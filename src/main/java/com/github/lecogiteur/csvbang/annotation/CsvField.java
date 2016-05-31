@@ -86,13 +86,22 @@ public @interface CsvField {
 	boolean deleteIfNull() default IConstantsCsvBang.DEFAULT_FIELD_DELETE_IF_NULL; 
 	
 	/**
-	 * The name of custom method in order to set CSV bean when we read CSV file. 
+	 * The name of custom method in order to set CSV field when we read CSV file.
 	 * By default, CsvBang verify if the field is public modifier or standard getter and setter method.
 	 * In case of the field is a method, we can define a custom method in order to set CSV bean. 
 	 * @return name of custom method in order to set CSV bean.
 	 * @since 1.0.0
 	 */
 	String customMethodNameSetter() default IConstantsCsvBang.DEFAULT_FIELD_SETTER;
+
+	/**
+	 * The name of custom method in order to get CSV field when we read CSV file.
+	 * By default, CsvBang verify if the field is public modifier or standard getter and setter method.
+	 * In case of the field is a method, we can define a custom method in order to set CSV bean.
+	 * @return name of custom method in order to set CSV bean.
+	 * @since 1.0.0
+	 */
+	String customMethodNameGetter() default IConstantsCsvBang.DEFAULT_FIELD_SETTER;
 	
 	/**
 	 * <p>The factory is used in order to set CSV bean. When CsvBang read a CSV file, it generate field with String type. 
